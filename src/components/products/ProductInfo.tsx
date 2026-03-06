@@ -3,12 +3,13 @@
 import { useState } from 'react'
 import { StarRating } from '@/components/ui/StarRating'
 import { Plus, Minus, ShieldCheck, Clock, Truck } from 'lucide-react'
-import swell from '@/lib/swell'
+import { useCart } from '@/context/CartContext'
 
 export function ProductInfo({ product }: { product: any }) {
     const [quantity, setQuantity] = useState(1)
     const [customNames, setCustomNames] = useState('')
     const [isAdding, setIsAdding] = useState(false)
+    const { addToCart } = useCart()
 
     const handleQuantityChange = (delta: number) => {
         setQuantity(prev => Math.max(1, prev + delta))
@@ -35,14 +36,7 @@ export function ProductInfo({ product }: { product: any }) {
                 options.push({ name: 'Custom Names', value: customNames })
             }
 
-            await swell.cart.addItem({
-                product_id: product._id,
-                quantity: quantity,
-                options: options
-            })
-
-            // Optionally open a custom cart drawer here or notify the user
-            alert("✅ Added to cart successfully!")
+            await addToCart(product._id, quantity, options)
 
         } catch (error) {
             console.error('Error adding to Swell cart:', error)

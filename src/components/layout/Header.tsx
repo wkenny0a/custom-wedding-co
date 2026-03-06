@@ -4,10 +4,12 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { Search, ShoppingBag, Menu } from 'lucide-react'
 import { MobileDrawer } from './MobileDrawer'
+import { useCart } from '@/context/CartContext'
 
 export function Header() {
     const [isScrolled, setIsScrolled] = useState(false)
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+    const { cart, setIsCartOpen } = useCart()
 
     useEffect(() => {
         const handleScroll = () => {
@@ -60,10 +62,13 @@ export function Header() {
                             <button className="hover:text-gold transition-colors">
                                 <Search size={20} strokeWidth={1.5} />
                             </button>
-                            <button className="relative hover:text-gold transition-colors flex items-center group">
+                            <button
+                                onClick={() => setIsCartOpen(true)}
+                                className="relative hover:text-gold transition-colors flex items-center group"
+                            >
                                 <ShoppingBag size={20} className="group-hover:text-gold" strokeWidth={1.5} />
                                 <span className="absolute -top-1.5 -right-2 bg-gold text-cream text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
-                                    0
+                                    {cart?.itemQuantity || 0}
                                 </span>
                             </button>
                         </div>
