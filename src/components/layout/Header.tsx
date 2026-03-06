@@ -68,7 +68,7 @@ export function Header() {
                             >
                                 <ShoppingBag size={20} className="group-hover:text-gold" strokeWidth={1.5} />
                                 <span className="absolute -top-1.5 -right-2 bg-gold text-cream text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
-                                    {cart?.itemQuantity || 0}
+                                    {cart?.items?.reduce((acc: number, item: any) => acc + (item.quantity || 1), 0) || 0}
                                 </span>
                             </button>
                         </div>
