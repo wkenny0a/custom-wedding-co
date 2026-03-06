@@ -2,6 +2,8 @@ import { Suspense } from 'react'
 import { ShopCatalog } from '@/components/shop/ShopCatalog'
 import { getProducts } from '@/lib/swell'
 
+export const dynamic = 'force-dynamic'
+
 export const metadata = {
     title: 'Category | Custom Wedding Co.',
 }
