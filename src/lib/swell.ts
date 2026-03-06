@@ -1,7 +1,6 @@
 import swell from 'swell-js';
 
-// Initialize the Swell client
-// Find your Store ID and Public Key in the Swell dashboard under Settings > API
+// Initialize the Swell client for any client-side components that might need it
 const storeId = process.env.NEXT_PUBLIC_SWELL_STORE_ID;
 const publicKey = process.env.NEXT_PUBLIC_SWELL_PUBLIC_KEY;
 
@@ -14,14 +13,41 @@ if (storeId && publicKey) {
 export default swell;
 
 /**
- * Fetches products from your Swell store.
+ * Fetches products from your Swell store using native fetch for Server Components.
  */
-export async function getProducts(options = {}) {
+export async function getProducts(options: any = {}) {
+    if (!storeId || !publicKey) {
+        console.error('Missing Swell credentials. Cannot fetch products.');
+        // Return a mock object with a debug property so we know it failed due to missing keys
+        return { results: [], _debug_missing_keys: true };
+    }
+
     try {
-        const products = await swell.products.list(options);
-        return products;
+        const auth = Buffer.from(`${publicKey}:`).toString('base64');
+        let url = `https://${storeId}.swell.store/api/products?expand=options`;
+
+        if (options.category) {
+            url += `&category=${options.category}`;
+        }
+
+        const response = await fetch(url, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Basic ${auth}`,
+                'Content-Type': 'application/json'
+            },
+            cache: 'no-store'
+        });
+
+        if (!response.ok) {
+            console.error(`Swell fetch failed with status: ${response.status}`);
+            return { results: [], _debug_error: response.status };
+        }
+
+        const data = await response.json();
+        return data;
     } catch (error) {
         console.error('Error fetching products from Swell:', error);
-        return null;
+        return { results: [], _debug_error: 'fetch_exception' };
     }
 }
