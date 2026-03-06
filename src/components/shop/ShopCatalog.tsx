@@ -6,29 +6,18 @@ import { SortDropdown } from './SortDropdown'
 import { ProductCard } from '../ui/ProductCard'
 import { Filter, X } from 'lucide-react'
 
-// Dummy Data until Sanity passes props
+// Dummy Data until Sanity passes props for categories
 const DUMMY_CATEGORIES = [
     'Paper Goods', 'Décor & Signage', 'Keepsakes', 'Wearables', 'Day-Of Essentials', 'Sentimental Gifts'
 ]
 
-const generateDummyProducts = (count = 24) => {
-    return Array.from({ length: count }).map((_, i) => ({
-        _id: `prod-${i}`,
-        name: 'Custom Luxury Wedding Vow Books',
-        slug: { current: 'custom-vow-books' },
-        price: 35 + (i * 2),
-        priceNote: 'per pair',
-        badge: i === 0 ? 'Bestseller' : i === 2 ? 'Trending' : undefined,
-        category: { title: DUMMY_CATEGORIES[i % DUMMY_CATEGORIES.length] },
-        rating: 4.8 + (Math.random() * 0.2), // 4.8 to 5.0
-        reviewCount: 20 + i,
-        images: []
-    }))
+interface ShopCatalogProps {
+    categoryName?: string;
+    products: any[];
 }
 
-export function ShopCatalog({ categoryName }: { categoryName?: string }) {
+export function ShopCatalog({ categoryName, products }: ShopCatalogProps) {
     const [mobileFilterOpen, setMobileFilterOpen] = useState(false)
-    const products = generateDummyProducts(24) // Replace with props from server
 
     return (
         <div className="bg-cream min-h-screen py-10 lg:py-16">

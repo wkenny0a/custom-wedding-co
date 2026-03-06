@@ -18,7 +18,7 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product }: ProductCardProps) {
-    const imageUrl = product.images?.[0] ? '/placeholder.jpg' : '/placeholder.jpg' // We will implement Sanity Image URL later
+    const imageUrl = product.images?.[0]?.file?.url || product.images?.[0]?.url || null
 
     return (
         <div className="group flex flex-col gap-4 cursor-pointer">
@@ -28,8 +28,19 @@ export function ProductCard({ product }: ProductCardProps) {
                         {product.badge}
                     </span>
                 )}
-                {/* We use a placeholder div right now, replace with Sanity Image */}
-                <div className="w-full h-full bg-gray-200 transition-transform duration-500 group-hover:scale-105" />
+
+                {imageUrl ? (
+                    <Image
+                        src={imageUrl}
+                        alt={product.name}
+                        fill
+                        className="object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                ) : (
+                    <div className="w-full h-full bg-gray-200 transition-transform duration-500 group-hover:scale-105 flex items-center justify-center text-gray-400 text-sm">
+                        No Image
+                    </div>
+                )}
             </Link>
 
             <div className="flex flex-col gap-1">
