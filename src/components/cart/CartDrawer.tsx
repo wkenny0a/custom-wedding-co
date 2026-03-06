@@ -146,8 +146,8 @@ export function CartDrawer() {
                         </p>
 
                         <a
-                            href={cart?.checkoutUrl || '#'}
-                            className={`w-full bg-espresso text-cream font-sans font-bold uppercase tracking-widest text-sm py-4 text-center hover:bg-espresso-light transition-colors shadow-md ${!cart?.checkoutUrl ? 'opacity-50 pointer-events-none' : ''}`}
+                            href={cart?.checkoutUrl || cart?.checkout_url || '#'}
+                            className={`w-full bg-espresso text-cream font-sans font-bold uppercase tracking-widest text-sm py-4 text-center hover:bg-espresso-light transition-colors shadow-md ${!(cart?.checkoutUrl || cart?.checkout_url) ? 'opacity-50 pointer-events-none' : ''}`}
                         >
                             Proceed to Checkout
                         </a>
