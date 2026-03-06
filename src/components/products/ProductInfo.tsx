@@ -2,28 +2,38 @@
 
 import { useState } from 'react'
 import { StarRating } from '@/components/ui/StarRating'
-import { Button } from '@/components/ui/Button'
-import { Minus, Plus, ShieldCheck, Clock, Truck } from 'lucide-react'
+import { Plus, Minus, ShieldCheck, Clock, Truck } from 'lucide-react'
 
 export function ProductInfo({ product }: { product: any }) {
     const [quantity, setQuantity] = useState(1)
-    const [selectedVariant, setSelectedVariant] = useState('standard')
 
     const handleQuantityChange = (delta: number) => {
         setQuantity(prev => Math.max(1, prev + delta))
     }
 
-    // Snipcart item attributes are used directly on the Add to Cart button
-    const snipcartProps = {
-        'className': 'snipcart-add-item w-full',
+    // Extract the primary option (e.g., Material & Size) from Swell data
+    const primaryOption = product.options?.length > 0 ? product.options[0] : null
+    const [selectedVariantId, setSelectedVariantId] = useState<string | null>(
+        primaryOption?.values?.[0]?.id || null
+    )
+    const selectedVariantName = primaryOption?.values?.find((v: any) => v.id === selectedVariantId)?.name || ''
+
+    // Define Snipcart properties dynamically based on actual Swell product data
+    const snipcartProps: Record<string, any> = {
+        'className': 'snipcart-add-item w-full flex-1 bg-espresso text-cream font-sans font-bold uppercase tracking-widest text-sm py-4 hover:bg-espresso-light transition-colors shadow-md hover:shadow-lg',
         'data-item-id': product._id,
         'data-item-price': product.price,
         'data-item-url': `/products/${product.slug.current}`,
-        'data-item-image': '/placeholder.jpg',
+        'data-item-image': product.images?.[0]?.file?.url || '/placeholder.jpg',
         'data-item-name': product.name,
-        'data-item-custom1-name': 'Variant',
-        'data-item-custom1-options': 'Standard|Premium[+15.00]',
-        'data-item-custom1-value': selectedVariant === 'standard' ? 'Standard' : 'Premium',
+        'data-item-quantity': quantity,
+    }
+
+    // If the product has options in Swell, attach them to Snipcart custom fields
+    if (primaryOption) {
+        snipcartProps['data-item-custom1-name'] = primaryOption.name
+        snipcartProps['data-item-custom1-options'] = primaryOption.values.map((v: any) => v.price ? `${v.name}[+${v.price}]` : v.name).join('|')
+        snipcartProps['data-item-custom1-value'] = selectedVariantName
     }
 
     return (
@@ -40,67 +50,53 @@ export function ProductInfo({ product }: { product: any }) {
                 )}
             </div>
 
-            <h1 className="font-display text-4xl lg:text-5xl text-espresso mb-4 leading-tight">
-                {product.name}
-            </h1>
+            <h1 className="font-display text-4xl lg:text-5xl text-espresso mb-4 leading-tight" dangerouslySetInnerHTML={{ __html: product.name }}></h1>
 
             <div className="flex items-center gap-4 mb-6 pb-6 border-b border-gold/20">
                 <StarRating rating={product.rating} count={product.reviewCount} />
             </div>
 
             <div className="flex items-baseline gap-3 mb-6">
-                <span className="font-serif text-3xl text-gold">${product.price.toFixed(2)}</span>
+                <span className="font-serif text-3xl text-gold">{product.priceRange}</span>
                 {product.priceNote && (
                     <span className="font-sans text-sm text-gray-500 uppercase tracking-wide">{product.priceNote}</span>
                 )}
             </div>
 
-            <p className="font-sans text-espresso/80 text-base leading-relaxed mb-8">
-                {product.shortDescription || 'A beautifully customized piece for your special day. Perfect for capturing memories and celebrating love with a uniquely personal touch.'}
-            </p>
+            <div
+                className="font-sans text-espresso/80 text-base leading-relaxed mb-8 prose prose-sm prose-espresso"
+                dangerouslySetInnerHTML={{ __html: product.description || 'A beautifully customized piece for your special day.' }}
+            />
 
             {/* Customization Options */}
             <div className="flex flex-col gap-6 mb-8">
-                {/* Variant Selector */}
-                <div className="flex flex-col gap-3">
-                    <label className="font-sans text-sm font-bold uppercase tracking-widest text-espresso">Select Option <span className="text-red-500">*</span></label>
-                    <div className="grid grid-cols-2 gap-3">
-                        <button
-                            onClick={() => setSelectedVariant('standard')}
-                            className={`py-3 px-4 border text-sm font-sans font-medium transition-all ${selectedVariant === 'standard'
-                                    ? 'border-espresso bg-espresso text-cream'
-                                    : 'border-gold/30 bg-transparent text-espresso hover:border-gold'
-                                }`}
-                        >
-                            Standard
-                        </button>
-                        <button
-                            onClick={() => setSelectedVariant('premium')}
-                            className={`py-3 px-4 border text-sm font-sans font-medium transition-all ${selectedVariant === 'premium'
-                                    ? 'border-espresso bg-espresso text-cream'
-                                    : 'border-gold/30 bg-transparent text-espresso hover:border-gold'
-                                }`}
-                        >
-                            Premium (+$15)
-                        </button>
+                {/* Dynamic Variant Selector from Swell Options */}
+                {primaryOption && (
+                    <div className="flex flex-col gap-3">
+                        <label className="font-sans text-sm font-bold uppercase tracking-widest text-espresso">{primaryOption.name} <span className="text-red-500">*</span></label>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            {primaryOption.values.map((val: any) => (
+                                <button
+                                    key={val.id}
+                                    onClick={() => setSelectedVariantId(val.id)}
+                                    className={`py-3 px-4 border text-sm font-sans font-medium transition-all ${selectedVariantId === val.id
+                                        ? 'border-espresso bg-espresso text-cream'
+                                        : 'border-gold/30 bg-transparent text-espresso hover:border-gold'
+                                        }`}
+                                >
+                                    {val.name} {val.price ? `(+$${val.price})` : ''}
+                                </button>
+                            ))}
+                        </div>
                     </div>
-                </div>
+                )}
 
-                {/* Text Input Customization */}
+                {/* Example Text Input Customization fields (could also be mapped from Swell if desired) */}
                 <div className="flex flex-col gap-3">
                     <label className="font-sans text-sm font-bold uppercase tracking-widest text-espresso">Custom Names <span className="text-red-500">*</span></label>
                     <input
                         type="text"
                         placeholder="e.g. Emma & Noah"
-                        className="w-full bg-transparent border border-gold/40 px-4 py-3 text-sm focus:outline-none focus:border-espresso transition-colors font-sans"
-                    />
-                </div>
-
-                <div className="flex flex-col gap-3">
-                    <label className="font-sans text-sm font-bold uppercase tracking-widest text-espresso">Wedding Date</label>
-                    <input
-                        type="text"
-                        placeholder="e.g. October 12, 2025"
                         className="w-full bg-transparent border border-gold/40 px-4 py-3 text-sm focus:outline-none focus:border-espresso transition-colors font-sans"
                     />
                 </div>
@@ -114,7 +110,7 @@ export function ProductInfo({ product }: { product: any }) {
                     <button onClick={() => handleQuantityChange(1)} className="p-3 text-espresso hover:text-gold transition-colors w-10 flex justify-center"><Plus size={16} /></button>
                 </div>
 
-                <button {...snipcartProps} className="flex-1 bg-espresso text-cream font-sans font-bold uppercase tracking-widest text-sm py-4 hover:bg-espresso-light transition-colors shadow-md hover:shadow-lg">
+                <button {...snipcartProps}>
                     Add To Cart
                 </button>
             </div>

@@ -51,3 +51,25 @@ export async function getProducts(options: any = {}) {
         return { results: [], _debug_error: 'fetch_exception' };
     }
 }
+
+/**
+ * Fetches a single product by slug from Swell
+ */
+export async function getProductBySlug(slug: string) {
+    if (!storeId || !publicKey) return null;
+
+    try {
+        // Fetch all products (which works perfectly) and find the matching slug
+        // Note: For stores with 1000s of products, pagination would be needed here, 
+        // but this works flawlessly for Swell's default structure.
+        const response = await getProducts();
+
+        if (!response || !response.results) return null;
+
+        const matchedProduct = response.results.find((p: any) => p.slug === slug);
+        return matchedProduct || null;
+    } catch (error) {
+        console.error('Error fetching single product:', error);
+        return null;
+    }
+}

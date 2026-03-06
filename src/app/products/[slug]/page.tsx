@@ -3,31 +3,42 @@ import { ProductInfo } from '@/components/products/ProductInfo'
 import { ProductTabs } from '@/components/products/ProductTabs'
 import { RelatedProducts } from '@/components/products/RelatedProducts'
 import { notFound } from 'next/navigation'
+import { getProductBySlug } from '@/lib/swell'
 
 export const metadata = {
     title: 'Product Details | Custom Wedding Co.',
 }
 
+export const dynamic = 'force-dynamic'
+
 export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
     const { slug } = await params
 
-    // Dummy product fetch simulation
-    const product = {
-        _id: `prod-${slug}`,
-        name: slug.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
-        slug: { current: slug },
-        price: 285,
-        priceRange: '$285 for set of 100',
-        priceNote: 'per suite',
-        badge: 'Bestseller',
-        category: { title: 'Paper Goods' },
-        rating: 4.9,
-        reviewCount: 124,
-        images: [] // Sanity image array later
+    const swellProduct = await getProductBySlug(slug)
+
+    console.log("DEBUG SSR: Requested Slug:", slug, "Fetched Product ID:", swellProduct?.id)
+
+    if (!swellProduct) {
+        notFound()
     }
 
-    if (!product) {
-        notFound()
+    // Map Swell product to expected structure
+    const product = {
+        _id: swellProduct.id,
+        name: swellProduct.name,
+        slug: { current: swellProduct.slug },
+        price: Number(swellProduct.price) || 0,
+        // Since Swell doesn't natively do "priceRange" out of the box without complex variant parsing, we'll format a string
+        priceRange: `$${Number(swellProduct.price || 0).toFixed(2)}`,
+        priceNote: 'per piece',
+        badge: 'Custom',
+        category: { title: 'Personalized' },
+        rating: 5.0,
+        reviewCount: 55,
+        images: swellProduct.images || [],
+        // Pass the raw options (style, material, etc) for the variant selectors if your ProductInfo component needs them
+        options: swellProduct.options || [],
+        description: swellProduct.description || ''
     }
 
     return (
