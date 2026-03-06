@@ -60,9 +60,9 @@ export function Header() {
                             <button className="hover:text-gold transition-colors">
                                 <Search size={20} strokeWidth={1.5} />
                             </button>
-                            <button className="snipcart-checkout relative hover:text-gold transition-colors flex items-center group">
+                            <button className="relative hover:text-gold transition-colors flex items-center group">
                                 <ShoppingBag size={20} className="group-hover:text-gold" strokeWidth={1.5} />
-                                <span className="snipcart-items-count absolute -top-1.5 -right-2 bg-gold text-cream text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
+                                <span className="absolute -top-1.5 -right-2 bg-gold text-cream text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
                                     0
                                 </span>
                             </button>

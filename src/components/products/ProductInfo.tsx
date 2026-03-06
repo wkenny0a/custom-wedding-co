@@ -3,10 +3,12 @@
 import { useState } from 'react'
 import { StarRating } from '@/components/ui/StarRating'
 import { Plus, Minus, ShieldCheck, Clock, Truck } from 'lucide-react'
+import swell from '@/lib/swell'
 
 export function ProductInfo({ product }: { product: any }) {
     const [quantity, setQuantity] = useState(1)
     const [customNames, setCustomNames] = useState('')
+    const [isAdding, setIsAdding] = useState(false)
 
     const handleQuantityChange = (delta: number) => {
         setQuantity(prev => Math.max(1, prev + delta))
@@ -19,31 +21,36 @@ export function ProductInfo({ product }: { product: any }) {
     )
     const selectedVariantName = primaryOption?.values?.find((v: any) => v.id === selectedVariantId)?.name || ''
 
-    // Force absolute URL to ensure Snipcart crawler never fails validation
-    const absoluteUrl = `https://custom-wedding-co.vercel.app/products/${product.slug.current}`
+    const handleAddToCart = async () => {
+        setIsAdding(true)
+        try {
+            // Build the options array for Swell
+            const options = []
 
-    // Define Snipcart properties dynamically based on actual Swell product data
-    const snipcartProps: Record<string, any> = {
-        'className': 'snipcart-add-item w-full flex-1 bg-espresso text-cream font-sans font-bold uppercase tracking-widest text-sm py-4 hover:bg-espresso-light transition-colors shadow-md hover:shadow-lg',
-        'data-item-id': product._id,
-        'data-item-price': product.price,
-        'data-item-url': absoluteUrl,
-        'data-item-image': product.images?.[0]?.file?.url || product.images?.[0]?.url || '/placeholder.jpg',
-        'data-item-name': product.name,
-        'data-item-quantity': quantity,
+            if (primaryOption && selectedVariantName) {
+                options.push({ name: primaryOption.name, value: selectedVariantName })
+            }
+
+            if (customNames) {
+                options.push({ name: 'Custom Names', value: customNames })
+            }
+
+            await swell.cart.addItem({
+                product_id: product._id,
+                quantity: quantity,
+                options: options
+            })
+
+            // Optionally open a custom cart drawer here or notify the user
+            alert("✅ Added to cart successfully!")
+
+        } catch (error) {
+            console.error('Error adding to Swell cart:', error)
+            alert("Failed to add to cart. Please try again.")
+        } finally {
+            setIsAdding(false)
+        }
     }
-
-    // If the product has options in Swell, attach them to Snipcart custom fields
-    if (primaryOption) {
-        snipcartProps['data-item-custom1-name'] = primaryOption.name
-        snipcartProps['data-item-custom1-options'] = primaryOption.values.map((v: any) => v.price ? `${v.name}[+${v.price}]` : v.name).join('|')
-        snipcartProps['data-item-custom1-value'] = selectedVariantName
-    }
-
-    // Attach Custom Names
-    snipcartProps['data-item-custom2-name'] = 'Custom Names'
-    snipcartProps['data-item-custom2-type'] = 'textarea'
-    snipcartProps['data-item-custom2-value'] = customNames || 'None'
 
     return (
         <div className="flex flex-col w-full text-left">
@@ -121,8 +128,12 @@ export function ProductInfo({ product }: { product: any }) {
                     <button onClick={() => handleQuantityChange(1)} className="p-3 text-espresso hover:text-gold transition-colors w-10 flex justify-center"><Plus size={16} /></button>
                 </div>
 
-                <button {...snipcartProps}>
-                    Add To Cart
+                <button
+                    onClick={handleAddToCart}
+                    disabled={isAdding}
+                    className="w-full flex-1 bg-espresso text-cream font-sans font-bold uppercase tracking-widest text-sm py-4 hover:bg-espresso-light transition-colors shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                    {isAdding ? 'Adding...' : 'Add To Cart'}
                 </button>
             </div>
 

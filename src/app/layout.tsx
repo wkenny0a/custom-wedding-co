@@ -34,11 +34,6 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <head>
-        <link rel="preconnect" href="https://app.snipcart.com" />
-        <link rel="preconnect" href="https://cdn.snipcart.com" />
-        <link rel="stylesheet" href="https://cdn.snipcart.com/themes/v3.3.0/default/snipcart.css" />
-      </head>
       <body className={`${inter.variable} ${cormorant.variable} ${playfair.variable} antialiased font-sans flex flex-col min-h-screen text-espresso bg-cream`}>
         <AnnouncementBar />
         <Header />
@@ -46,8 +41,6 @@ export default function RootLayout({
           {children}
         </main>
         <Footer />
-        <script async src="https://cdn.snipcart.com/themes/v3.3.0/default/snipcart.js"></script>
-        <div hidden id="snipcart" data-api-key="NTRjZGFiNjItZjBhZS00Y2ViLWFjNmQtNTgxYzNjMmNiNmZmNjM4MjM4NzMxOTQxNDkxNTgw" data-config-modal-style="side"></div>
       </body>
     </html>
   );
