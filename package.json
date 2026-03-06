@@ -21,7 +21,8 @@
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "sanity": "^5.13.0",
-    "styled-components": "^6.3.11"
+    "styled-components": "^6.3.11",
+    "swell-js": "^5.4.0"
   },
   "devDependencies": {
     "@types/node": "^20",
