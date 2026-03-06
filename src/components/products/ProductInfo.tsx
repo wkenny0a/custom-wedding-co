@@ -6,6 +6,7 @@ import { Plus, Minus, ShieldCheck, Clock, Truck } from 'lucide-react'
 
 export function ProductInfo({ product }: { product: any }) {
     const [quantity, setQuantity] = useState(1)
+    const [customNames, setCustomNames] = useState('')
 
     const handleQuantityChange = (delta: number) => {
         setQuantity(prev => Math.max(1, prev + delta))
@@ -18,13 +19,16 @@ export function ProductInfo({ product }: { product: any }) {
     )
     const selectedVariantName = primaryOption?.values?.find((v: any) => v.id === selectedVariantId)?.name || ''
 
+    // Force absolute URL to ensure Snipcart crawler never fails validation
+    const absoluteUrl = `https://custom-wedding-co.vercel.app/products/${product.slug.current}`
+
     // Define Snipcart properties dynamically based on actual Swell product data
     const snipcartProps: Record<string, any> = {
         'className': 'snipcart-add-item w-full flex-1 bg-espresso text-cream font-sans font-bold uppercase tracking-widest text-sm py-4 hover:bg-espresso-light transition-colors shadow-md hover:shadow-lg',
         'data-item-id': product._id,
         'data-item-price': product.price,
-        'data-item-url': `/products/${product.slug.current}`,
-        'data-item-image': product.images?.[0]?.file?.url || '/placeholder.jpg',
+        'data-item-url': absoluteUrl,
+        'data-item-image': product.images?.[0]?.file?.url || product.images?.[0]?.url || '/placeholder.jpg',
         'data-item-name': product.name,
         'data-item-quantity': quantity,
     }
@@ -35,6 +39,11 @@ export function ProductInfo({ product }: { product: any }) {
         snipcartProps['data-item-custom1-options'] = primaryOption.values.map((v: any) => v.price ? `${v.name}[+${v.price}]` : v.name).join('|')
         snipcartProps['data-item-custom1-value'] = selectedVariantName
     }
+
+    // Attach Custom Names
+    snipcartProps['data-item-custom2-name'] = 'Custom Names'
+    snipcartProps['data-item-custom2-type'] = 'textarea'
+    snipcartProps['data-item-custom2-value'] = customNames || 'None'
 
     return (
         <div className="flex flex-col w-full text-left">
@@ -97,6 +106,8 @@ export function ProductInfo({ product }: { product: any }) {
                     <input
                         type="text"
                         placeholder="e.g. Emma & Noah"
+                        value={customNames}
+                        onChange={(e) => setCustomNames(e.target.value)}
                         className="w-full bg-transparent border border-gold/40 px-4 py-3 text-sm focus:outline-none focus:border-espresso transition-colors font-sans"
                     />
                 </div>
