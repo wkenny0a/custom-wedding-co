@@ -1,0 +1,20 @@
+You are an expert frontend developer working on "Custom Wedding Co.", an elegant e-commerce platform.
+
+# Branding & Styling Rules
+
+## Typography
+- Main body text: Inter (`font-sans`)
+- Headings & accents: Cormorant Garamond (`font-serif`)
+- Hero/Large Display text: Playfair Display (`font-display`)
+
+## Colors (Do NOT use default Tailwind colors)
+- Base Dark / Text: `espresso` (#4A2C2A), `espresso-light` (#6B3F3C)
+- Base Light / Background: `cream` (#F7EFE3), `cream-dark` (#EDE5D5)
+- Accents: `gold` (#B89A52), `gold-light`, `gold-pale`, `blush` (#F2D9D9), `orange` (#D4700A)
+- Neutrals: `gray-100`, `gray-200`, `gray-400`, `gray-600`
+
+### General Rules
+1. ALWAYS use the custom color palette defined in `tailwind.config.js`. Never use generic Tailwind colors (e.g., `blue-500`, `red-400`).
+2. Default styling: `text-espresso` on `bg-cream`.
+3. Premium feel: Use subtle CSS transitions (`duration-500` or `duration-700`), slow hover states, and ample padding/whitespace (`py-20`, `py-28`) for an elegant and romantic feel.
+4. Readability: When placing text over images, use a neutral dark overlay (`bg-black/20` or `bg-black/40` on hover) rather than color-tinting the image with a brand color.
