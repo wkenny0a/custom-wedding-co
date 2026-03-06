@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/Button'
 import { ArrowDown } from 'lucide-react'
+import Image from 'next/image'
 
 export function HeroSection() {
     return (
@@ -7,8 +8,13 @@ export function HeroSection() {
             {/* Background Image Setup */}
             <div className="absolute inset-0 z-0">
                 <div className="absolute inset-0 bg-espresso/45 z-10" />
-                {/* Placeholder for hero image */}
-                <div className="w-full h-full bg-espresso-light object-cover absolute inset-0" />
+                <Image
+                    src="/images/hero_wedding.png"
+                    alt="Elegant wedding reception table"
+                    fill
+                    className="object-cover absolute inset-0 z-0"
+                    priority
+                />
             </div>
 
             <div className="relative z-20 max-w-[1280px] w-full px-6 lg:px-12 flex flex-col items-center text-center">

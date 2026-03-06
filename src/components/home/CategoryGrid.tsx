@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 
 export function CategoryGrid() {
     const categories = [
@@ -28,7 +29,14 @@ export function CategoryGrid() {
                             className="group relative aspect-[3/4] overflow-hidden bg-espresso text-cream flex items-end p-8"
                         >
                             {/* Image Placeholder */}
-                            <div className="absolute inset-0 bg-espresso-light opacity-80 group-hover:opacity-60 transition-opacity duration-500 z-0"></div>
+                            <div className="absolute inset-0 z-0 bg-espresso-light opacity-80 group-hover:opacity-40 transition-opacity duration-500">
+                                <Image
+                                    src={`/images/category_${cat.slug.replace('-goods', '').replace('-signage', '').replace('-gifts', '')}.png`}
+                                    alt={cat.title}
+                                    fill
+                                    className="object-cover mix-blend-overlay transition-transform duration-700 ease-in-out group-hover:scale-105"
+                                />
+                            </div>
 
                             <div className="relative z-10 w-full transform transition-transform duration-500 group-hover:-translate-y-2">
                                 <h3 className="font-serif text-2xl lg:text-3xl mb-1">{cat.title}</h3>

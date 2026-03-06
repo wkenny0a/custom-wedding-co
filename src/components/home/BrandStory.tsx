@@ -10,8 +10,12 @@ export function BrandStory() {
                     {/* Image Side */}
                     <div className="w-full lg:w-1/2 relative">
                         <div className="aspect-[4/5] bg-gray-100 relative z-10 shadow-xl overflow-hidden">
-                            {/* Placeholder for story.jpg */}
-                            <div className="w-full h-full bg-espresso/5" />
+                            <Image
+                                src="/images/story_couple.png"
+                                alt="Happy couple on their wedding day"
+                                fill
+                                className="object-cover"
+                            />
                         </div>
                         {/* Decorative element */}
                         <div className="absolute -bottom-6 -left-6 w-32 h-32 bg-cream-dark z-0 rounded-bl-full hidden sm:block"></div>

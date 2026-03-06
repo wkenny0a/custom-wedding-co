@@ -11,9 +11,13 @@ export function FeaturedProductSpotlights() {
                     {/* Spotlight 1 */}
                     <div className="flex flex-col group">
                         <Link href="/products/custom-song-lyrics-art" className="relative aspect-[4/5] bg-gray-200 overflow-hidden mb-8">
-                            {/* Image Placeholder */}
                             <div className="absolute inset-0 bg-espresso/5 group-hover:bg-transparent transition-colors duration-500 z-10" />
-                            <div className="w-full h-full bg-gray-100 transition-transform duration-700 group-hover:scale-105" />
+                            <Image
+                                src="/images/spotlight_art.png"
+                                alt="Personalized Wedding Song Lyrics Wall Art"
+                                fill
+                                className="object-cover transition-transform duration-700 group-hover:scale-105"
+                            />
                         </Link>
                         <div className="flex flex-col items-start pe-8">
                             <span className="uppercase text-xs tracking-[0.18em] text-gray-400 mb-3">Wall Art</span>
@@ -35,9 +39,13 @@ export function FeaturedProductSpotlights() {
                     {/* Spotlight 2 */}
                     <div className="flex flex-col group md:mt-24">
                         <Link href="/products/custom-vow-books" className="relative aspect-[4/5] bg-gray-200 overflow-hidden mb-8">
-                            {/* Image Placeholder */}
                             <div className="absolute inset-0 bg-espresso/5 group-hover:bg-transparent transition-colors duration-500 z-10" />
-                            <div className="w-full h-full bg-gray-100 transition-transform duration-700 group-hover:scale-105" />
+                            <Image
+                                src="/images/spotlight_vow.png"
+                                alt="Custom Luxury Wedding Vow Books"
+                                fill
+                                className="object-cover transition-transform duration-700 group-hover:scale-105"
+                            />
                         </Link>
                         <div className="flex flex-col items-start pe-8">
                             <span className="uppercase text-xs tracking-[0.18em] text-gray-400 mb-3">Keepsakes</span>
