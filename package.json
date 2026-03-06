@@ -14,6 +14,7 @@
     "@sanity/ui": "^3.1.13",
     "@sanity/vision": "^5.13.0",
     "autoprefixer": "^10.4.27",
+    "dotenv": "^17.3.1",
     "lucide-react": "^0.577.0",
     "next": "16.1.6",
     "next-sanity": "^12.1.0",
@@ -22,7 +23,8 @@
     "react-dom": "19.2.3",
     "sanity": "^5.13.0",
     "styled-components": "^6.3.11",
-    "swell-js": "^5.4.0"
+    "swell-js": "^5.4.0",
+    "swell-node": "^6.0.3"
   },
   "devDependencies": {
     "@types/node": "^20",
