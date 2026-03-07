@@ -20,7 +20,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
     // Fetch the raw product from Swell (for cart data)
     const swellProduct = await getProductBySlug(slug)
     // Fetch the CMS structure from Sanity (for layout UI)
-    const sanityProduct = await client.fetch(productBySlugQuery, { slug })
+    const sanityProduct = await client.fetch(productBySlugQuery, { slug }, { next: { revalidate: 0 } })
 
     console.log("DEBUG SSR: Requested Slug:", slug, "Fetched Product ID:", swellProduct?.id)
 
