@@ -112,6 +112,21 @@ export const product = defineType({
             ],
         }),
         defineField({
+            name: 'specifications',
+            title: 'Specifications',
+            description: 'Add key-value pairs for the Specifications tab (e.g., Material: Cotton Paper).',
+            type: 'array',
+            of: [
+                {
+                    type: 'object',
+                    fields: [
+                        { name: 'key', type: 'string', title: 'Specification Name (e.g. Dimensions)' },
+                        { name: 'value', type: 'string', title: 'Specification Value (e.g. 8" x 10")' }
+                    ]
+                }
+            ]
+        }),
+        defineField({
             name: 'tags',
             title: 'Tags',
             type: 'array',

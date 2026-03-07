@@ -8,10 +8,16 @@ export function ProductTabs({ product }: { product: any }) {
 
     const tabs = [
         { id: 'description', label: 'Description' },
-        { id: 'specifications', label: 'Specifications' },
-        { id: 'reviews', label: 'Reviews' },
-        { id: 'shipping', label: 'Shipping' },
     ]
+
+    if (product.specifications && product.specifications.length > 0) {
+        tabs.push({ id: 'specifications', label: 'Specifications' })
+    }
+
+    tabs.push(
+        { id: 'reviews', label: 'Reviews' },
+        { id: 'shipping', label: 'Shipping' }
+    )
 
     return (
         <div className="w-full mt-16 pt-16 border-t border-gold/20">
@@ -22,8 +28,8 @@ export function ProductTabs({ product }: { product: any }) {
                         key={tab.id}
                         onClick={() => setActiveTab(tab.id)}
                         className={`pb-4 font-sans text-sm uppercase tracking-widest font-bold transition-all ${activeTab === tab.id
-                                ? 'border-b-2 border-espresso text-espresso'
-                                : 'text-gray-400 hover:text-espresso'
+                            ? 'border-b-2 border-espresso text-espresso'
+                            : 'text-gray-400 hover:text-espresso'
                             }`}
                     >
                         {tab.label}
@@ -52,26 +58,16 @@ export function ProductTabs({ product }: { product: any }) {
                     </div>
                 )}
 
-                {activeTab === 'specifications' && (
+                {activeTab === 'specifications' && product.specifications && (
                     <div className="w-full overflow-x-auto">
                         <table className="w-full text-left font-sans text-sm text-espresso border-collapse">
                             <tbody>
-                                <tr className="border-b border-gray-100">
-                                    <th className="py-4 font-semibold w-1/3">Dimensions</th>
-                                    <td className="py-4 text-gray-600">8" x 10" (Standard) / 11" x 14" (Large)</td>
-                                </tr>
-                                <tr className="border-b border-gray-100">
-                                    <th className="py-4 font-semibold w-1/3">Material</th>
-                                    <td className="py-4 text-gray-600">Premium 120lb Cotton Cover Weight Paper</td>
-                                </tr>
-                                <tr className="border-b border-gray-100">
-                                    <th className="py-4 font-semibold w-1/3">Print Method</th>
-                                    <td className="py-4 text-gray-600">Fine Art Giclée Printing</td>
-                                </tr>
-                                <tr className="border-b border-gray-100">
-                                    <th className="py-4 font-semibold w-1/3">Customization</th>
-                                    <td className="py-4 text-gray-600">Full Text Customization, 14 Font Colors</td>
-                                </tr>
+                                {product.specifications.map((spec: any, index: number) => (
+                                    <tr key={index} className="border-b border-gray-100">
+                                        <th className="py-4 font-semibold w-1/3">{spec.key}</th>
+                                        <td className="py-4 text-gray-600">{spec.value}</td>
+                                    </tr>
+                                ))}
                             </tbody>
                         </table>
                     </div>
