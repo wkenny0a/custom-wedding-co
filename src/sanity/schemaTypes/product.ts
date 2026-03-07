@@ -142,6 +142,18 @@ export const product = defineType({
             of: [{ type: 'reference', to: [{ type: 'product' }] }],
         }),
         defineField({
+            name: 'pageBuilder',
+            title: 'Custom Page Layout',
+            description: 'Optional: Drag and drop layout blocks to build a completely unique page for this product. If left empty, the default template is used.',
+            type: 'array',
+            of: [
+                { type: 'productHeroBlock' },
+                { type: 'productTabsBlock' },
+                { type: 'relatedProductsBlock' },
+                { type: 'faqBlock' }
+            ],
+        }),
+        defineField({
             name: 'seo',
             title: 'SEO Title & Description',
             type: 'object',
