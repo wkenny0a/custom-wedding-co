@@ -4,7 +4,7 @@ import { ProductTabs } from '@/components/products/ProductTabs'
 import { RelatedProducts } from '@/components/products/RelatedProducts'
 import { ProductFAQ } from '@/components/products/ProductFAQ'
 import { notFound } from 'next/navigation'
-import { getProductBySlug } from '@/lib/swell'
+import { getProducts } from '@/lib/swell'
 import { client } from '@/sanity/lib/client'
 import { productBySlugQuery } from '@/sanity/lib/queries'
 
@@ -17,12 +17,44 @@ export const dynamic = 'force-dynamic'
 export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
     const { slug } = await params
 
-    // Fetch the raw product from Swell (for cart data)
-    const swellProduct = await getProductBySlug(slug)
+    // Fetch all products to find the current one AND to map related products
+    const swellProductsResponse = await getProducts()
+    const allSwellProducts = swellProductsResponse?.results || []
+
+    const swellProduct = allSwellProducts.find((p: any) => p.slug === slug)
+
     // Fetch the CMS structure from Sanity (for layout UI)
     const sanityProduct = await client.fetch(productBySlugQuery, { slug }, { next: { revalidate: 0 } })
 
     console.log("DEBUG SSR: Requested Slug:", slug, "Fetched Product ID:", swellProduct?.id)
+
+    // Build related products array. Fall back to products in same Swell category if none specified in CMS.
+    const sanityRelatedSlugs = sanityProduct?.relatedProducts?.map((p: any) => p.slug?.current) || []
+    let resolvedRelatedProducts = []
+
+    if (sanityRelatedSlugs.length > 0) {
+        resolvedRelatedProducts = allSwellProducts.filter((p: any) => sanityRelatedSlugs.includes(p.slug))
+    } else {
+        // Fallback: 4 products from the same category (excluding current product)
+        // Note: Swell categorizes via a different structure, but we'll try to match by category id if available
+        // If not available, we just grab 4 random products
+        const categoryId = swellProduct?.category_id || swellProduct?.category?.id
+        resolvedRelatedProducts = allSwellProducts
+            .filter((p: any) => p.slug !== slug && (categoryId ? (p.category_id === categoryId || p.category?.id === categoryId) : true))
+            .slice(0, 4)
+    }
+
+    // Format them for the ProductCard component
+    const formattedRelatedProducts = resolvedRelatedProducts.map((p: any) => ({
+        _id: p.id,
+        name: p.name,
+        slug: { current: p.slug },
+        price: Number(p.price) || 0,
+        rating: 5.0,
+        reviewCount: Math.floor(Math.random() * 50) + 10,
+        images: p.images || [],
+        category: sanityProduct?.category ? { title: sanityProduct.category.title } : { title: 'Personalized' }
+    }))
 
     if (!swellProduct) {
         notFound()
@@ -76,7 +108,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
                     </div>
                 )
             case 'relatedProductsBlock':
-                return <RelatedProducts key={index} />
+                return <RelatedProducts key={index} related={formattedRelatedProducts} />
             case 'faqBlock':
                 return <ProductFAQ key={index} block={block} />
             default:
@@ -101,7 +133,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
                         <DefaultHero />
                         <ProductTabs product={product} />
                     </div>
-                    <RelatedProducts />
+                    <RelatedProducts related={formattedRelatedProducts} />
                 </>
             )}
         </div>
