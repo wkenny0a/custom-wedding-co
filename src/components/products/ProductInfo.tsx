@@ -12,6 +12,7 @@ export function ProductInfo({ product }: { product: any }) {
     const [weddingDate, setWeddingDate] = useState('')
     const [date, setDate] = useState('')
     const [extraRequests, setExtraRequests] = useState('')
+    const [extraInformation, setExtraInformation] = useState('')
     const [isAdding, setIsAdding] = useState(false)
     const { addToCart } = useCart()
 
@@ -32,6 +33,7 @@ export function ProductInfo({ product }: { product: any }) {
     const hasWeddingDate = product.options?.some((opt: any) => opt.name === 'Wedding Date') || false
     const hasDate = product.options?.some((opt: any) => opt.name === 'Date') || false
     const hasExtraRequests = product.options?.some((opt: any) => opt.name === 'Extra Requests') || false
+    const hasExtraInformation = product.options?.some((opt: any) => opt.name === 'Extra Information') || false
 
     const handleAddToCart = async () => {
         setIsAdding(true)
@@ -61,6 +63,10 @@ export function ProductInfo({ product }: { product: any }) {
 
             if (extraRequests) {
                 options.push({ name: 'Extra Requests', value: extraRequests })
+            }
+
+            if (extraInformation) {
+                options.push({ name: 'Extra Information', value: extraInformation })
             }
 
             await addToCart(product._id, quantity, options)
@@ -188,6 +194,18 @@ export function ProductInfo({ product }: { product: any }) {
                             placeholder="Any special design requests or notes?"
                             value={extraRequests}
                             onChange={(e) => setExtraRequests(e.target.value)}
+                            className="w-full bg-transparent border border-gold/40 px-4 py-3 text-sm focus:outline-none focus:border-espresso transition-colors font-sans min-h-[100px]"
+                        />
+                    </div>
+                )}
+
+                {hasExtraInformation && (
+                    <div className="flex flex-col gap-3">
+                        <label className="font-sans text-sm font-bold uppercase tracking-widest text-espresso">Extra Information</label>
+                        <textarea
+                            placeholder="Any extra details or customization requests?"
+                            value={extraInformation}
+                            onChange={(e) => setExtraInformation(e.target.value)}
                             className="w-full bg-transparent border border-gold/40 px-4 py-3 text-sm focus:outline-none focus:border-espresso transition-colors font-sans min-h-[100px]"
                         />
                     </div>
