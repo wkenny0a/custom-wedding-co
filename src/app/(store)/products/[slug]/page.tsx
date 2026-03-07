@@ -42,6 +42,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
         reviewCount: 55,
         images: swellProduct.images || [],
         options: swellProduct.options || [],
+        specifications: sanityProduct?.specifications || [],
         description: swellProduct.description || ''
     }
 
