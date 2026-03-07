@@ -23,6 +23,10 @@ export function ProductInfo({ product }: { product: any }) {
     )
     const selectedVariantName = primaryOption?.values?.find((v: any) => v.id === selectedVariantId)?.name || ''
 
+    // Helper booleans for Custom Options logic
+    const hasCustomNames = product.options?.some((opt: any) => opt.name === 'Custom Names') || false
+    const hasWeddingDate = product.options?.some((opt: any) => opt.name === 'Wedding Date') || false
+
     const handleAddToCart = async () => {
         setIsAdding(true)
         try {
@@ -106,28 +110,32 @@ export function ProductInfo({ product }: { product: any }) {
                     </div>
                 )}
 
-                {/* Example Text Input Customization fields (could also be mapped from Swell if desired) */}
-                <div className="flex flex-col gap-3">
-                    <label className="font-sans text-sm font-bold uppercase tracking-widest text-espresso">Custom Names <span className="text-red-500">*</span></label>
-                    <input
-                        type="text"
-                        placeholder="e.g. Emma & Noah"
-                        value={customNames}
-                        onChange={(e) => setCustomNames(e.target.value)}
-                        className="w-full bg-transparent border border-gold/40 px-4 py-3 text-sm focus:outline-none focus:border-espresso transition-colors font-sans"
-                    />
-                </div>
+                {/* Dynamic Text Input Customization fields mapped from Swell options */}
+                {hasCustomNames && (
+                    <div className="flex flex-col gap-3">
+                        <label className="font-sans text-sm font-bold uppercase tracking-widest text-espresso">Custom Names <span className="text-red-500">*</span></label>
+                        <input
+                            type="text"
+                            placeholder="e.g. Emma & Noah"
+                            value={customNames}
+                            onChange={(e) => setCustomNames(e.target.value)}
+                            className="w-full bg-transparent border border-gold/40 px-4 py-3 text-sm focus:outline-none focus:border-espresso transition-colors font-sans"
+                        />
+                    </div>
+                )}
 
-                <div className="flex flex-col gap-3">
-                    <label className="font-sans text-sm font-bold uppercase tracking-widest text-espresso">Wedding Date <span className="text-red-500">*</span></label>
-                    <input
-                        type="text"
-                        placeholder="e.g. October 14, 2026"
-                        value={weddingDate}
-                        onChange={(e) => setWeddingDate(e.target.value)}
-                        className="w-full bg-transparent border border-gold/40 px-4 py-3 text-sm focus:outline-none focus:border-espresso transition-colors font-sans"
-                    />
-                </div>
+                {hasWeddingDate && (
+                    <div className="flex flex-col gap-3">
+                        <label className="font-sans text-sm font-bold uppercase tracking-widest text-espresso">Wedding Date <span className="text-red-500">*</span></label>
+                        <input
+                            type="text"
+                            placeholder="e.g. October 14, 2026"
+                            value={weddingDate}
+                            onChange={(e) => setWeddingDate(e.target.value)}
+                            className="w-full bg-transparent border border-gold/40 px-4 py-3 text-sm focus:outline-none focus:border-espresso transition-colors font-sans"
+                        />
+                    </div>
+                )}
             </div>
 
             {/* Add To Cart Row */}
