@@ -20,12 +20,18 @@ export function ProductInfo({ product }: { product: any }) {
         setQuantity(prev => Math.max(1, prev + delta))
     }
 
-    // Extract the primary option (e.g., Material & Size) from Swell data
-    const primaryOption = product.options?.length > 0 ? product.options[0] : null
-    const [selectedVariantId, setSelectedVariantId] = useState<string | null>(
-        primaryOption?.values?.[0]?.id || null
-    )
-    const selectedVariantName = primaryOption?.values?.find((v: any) => v.id === selectedVariantId)?.name || ''
+    // Extract all select-based variant options
+    const variantOptions = product.options?.filter((opt: any) => opt.values && opt.values.length > 0) || []
+
+    const [selectedVariants, setSelectedVariants] = useState<Record<string, string>>(() => {
+        const initial: Record<string, string> = {}
+        variantOptions.forEach((opt: any) => {
+            if (opt.values && opt.values.length > 0) {
+                initial[opt.name] = opt.values[0].name
+            }
+        })
+        return initial
+    })
 
     // Helper booleans for Custom Options logic
     const hasCustomNames = product.options?.some((opt: any) => opt.name === 'Custom Names') || false
@@ -39,11 +45,12 @@ export function ProductInfo({ product }: { product: any }) {
         setIsAdding(true)
         try {
             // Build the options array for Swell
-            const options = []
+            const options: any[] = []
 
-            if (primaryOption && selectedVariantName) {
-                options.push({ name: primaryOption.name, value: selectedVariantName })
-            }
+            // Push all selected dropdown variants
+            Object.entries(selectedVariants).forEach(([key, value]) => {
+                options.push({ name: key, value })
+            })
 
             if (customNames) {
                 options.push({ name: 'Custom Names', value: customNames })
@@ -113,16 +120,16 @@ export function ProductInfo({ product }: { product: any }) {
 
             {/* Customization Options */}
             <div className="flex flex-col gap-6 mb-8">
-                {/* Dynamic Variant Selector from Swell Options */}
-                {primaryOption && (
-                    <div className="flex flex-col gap-3">
-                        <label className="font-sans text-sm font-bold uppercase tracking-widest text-espresso">{primaryOption.name} <span className="text-red-500">*</span></label>
+                {/* Dynamic Variant Selectors from Swell Options */}
+                {variantOptions.map((opt: any) => (
+                    <div key={opt.id || opt.name} className="flex flex-col gap-3">
+                        <label className="font-sans text-sm font-bold uppercase tracking-widest text-espresso">{opt.name} <span className="text-red-500">*</span></label>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            {primaryOption.values.map((val: any) => (
+                            {opt.values.map((val: any) => (
                                 <button
                                     key={val.id}
-                                    onClick={() => setSelectedVariantId(val.id)}
-                                    className={`py-3 px-4 border text-sm font-sans font-medium transition-all ${selectedVariantId === val.id
+                                    onClick={() => setSelectedVariants(prev => ({ ...prev, [opt.name]: val.name }))}
+                                    className={`py-3 px-4 border text-sm font-sans font-medium transition-all ${selectedVariants[opt.name] === val.name
                                         ? 'border-espresso bg-espresso text-cream'
                                         : 'border-gold/30 bg-transparent text-espresso hover:border-gold'
                                         }`}
@@ -132,7 +139,7 @@ export function ProductInfo({ product }: { product: any }) {
                             ))}
                         </div>
                     </div>
-                )}
+                ))}
 
                 {/* Dynamic Text Input Customization fields mapped from Swell options */}
                 {hasCustomNames && (
