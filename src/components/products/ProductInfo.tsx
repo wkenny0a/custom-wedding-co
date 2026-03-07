@@ -8,7 +8,10 @@ import { useCart } from '@/context/CartContext'
 export function ProductInfo({ product }: { product: any }) {
     const [quantity, setQuantity] = useState(1)
     const [customNames, setCustomNames] = useState('')
+    const [customCoupleNames, setCustomCoupleNames] = useState('')
     const [weddingDate, setWeddingDate] = useState('')
+    const [date, setDate] = useState('')
+    const [extraRequests, setExtraRequests] = useState('')
     const [isAdding, setIsAdding] = useState(false)
     const { addToCart } = useCart()
 
@@ -25,7 +28,10 @@ export function ProductInfo({ product }: { product: any }) {
 
     // Helper booleans for Custom Options logic
     const hasCustomNames = product.options?.some((opt: any) => opt.name === 'Custom Names') || false
+    const hasCustomCoupleNames = product.options?.some((opt: any) => opt.name === 'Custom Couple Names') || false
     const hasWeddingDate = product.options?.some((opt: any) => opt.name === 'Wedding Date') || false
+    const hasDate = product.options?.some((opt: any) => opt.name === 'Date') || false
+    const hasExtraRequests = product.options?.some((opt: any) => opt.name === 'Extra Requests') || false
 
     const handleAddToCart = async () => {
         setIsAdding(true)
@@ -41,8 +47,20 @@ export function ProductInfo({ product }: { product: any }) {
                 options.push({ name: 'Custom Names', value: customNames })
             }
 
+            if (customCoupleNames) {
+                options.push({ name: 'Custom Couple Names', value: customCoupleNames })
+            }
+
             if (weddingDate) {
                 options.push({ name: 'Wedding Date', value: weddingDate })
+            }
+
+            if (date) {
+                options.push({ name: 'Date', value: date })
+            }
+
+            if (extraRequests) {
+                options.push({ name: 'Extra Requests', value: extraRequests })
             }
 
             await addToCart(product._id, quantity, options)
@@ -124,6 +142,19 @@ export function ProductInfo({ product }: { product: any }) {
                     </div>
                 )}
 
+                {hasCustomCoupleNames && (
+                    <div className="flex flex-col gap-3">
+                        <label className="font-sans text-sm font-bold uppercase tracking-widest text-espresso">Custom Couple Names <span className="text-red-500">*</span></label>
+                        <input
+                            type="text"
+                            placeholder="e.g. Emma & Noah"
+                            value={customCoupleNames}
+                            onChange={(e) => setCustomCoupleNames(e.target.value)}
+                            className="w-full bg-transparent border border-gold/40 px-4 py-3 text-sm focus:outline-none focus:border-espresso transition-colors font-sans"
+                        />
+                    </div>
+                )}
+
                 {hasWeddingDate && (
                     <div className="flex flex-col gap-3">
                         <label className="font-sans text-sm font-bold uppercase tracking-widest text-espresso">Wedding Date <span className="text-red-500">*</span></label>
@@ -133,6 +164,31 @@ export function ProductInfo({ product }: { product: any }) {
                             value={weddingDate}
                             onChange={(e) => setWeddingDate(e.target.value)}
                             className="w-full bg-transparent border border-gold/40 px-4 py-3 text-sm focus:outline-none focus:border-espresso transition-colors font-sans"
+                        />
+                    </div>
+                )}
+
+                {hasDate && (
+                    <div className="flex flex-col gap-3">
+                        <label className="font-sans text-sm font-bold uppercase tracking-widest text-espresso">Date <span className="text-red-500">*</span></label>
+                        <input
+                            type="text"
+                            placeholder="e.g. October 14, 2026"
+                            value={date}
+                            onChange={(e) => setDate(e.target.value)}
+                            className="w-full bg-transparent border border-gold/40 px-4 py-3 text-sm focus:outline-none focus:border-espresso transition-colors font-sans"
+                        />
+                    </div>
+                )}
+
+                {hasExtraRequests && (
+                    <div className="flex flex-col gap-3">
+                        <label className="font-sans text-sm font-bold uppercase tracking-widest text-espresso">Extra Requests</label>
+                        <textarea
+                            placeholder="Any special design requests or notes?"
+                            value={extraRequests}
+                            onChange={(e) => setExtraRequests(e.target.value)}
+                            className="w-full bg-transparent border border-gold/40 px-4 py-3 text-sm focus:outline-none focus:border-espresso transition-colors font-sans min-h-[100px]"
                         />
                     </div>
                 )}
