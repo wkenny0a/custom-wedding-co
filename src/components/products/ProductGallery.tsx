@@ -15,7 +15,7 @@ export function ProductGallery({ images }: { images?: any[] }) {
     return (
         <div className="flex flex-col gap-4 w-full">
             {/* Main Image */}
-            <div className="aspect-[4/5] bg-gray-100 w-full relative overflow-hidden group">
+            <div className="aspect-square bg-gray-100 w-full relative overflow-hidden group">
                 <div className="absolute inset-0 bg-espresso/5 transition-opacity duration-300 group-hover:opacity-0 z-10" />
                 <Image
                     src={activeImageUrl}
