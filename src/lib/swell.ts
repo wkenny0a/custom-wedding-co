@@ -36,7 +36,8 @@ export async function getProducts(options: any = {}) {
                 'Authorization': `Basic ${auth}`,
                 'Content-Type': 'application/json'
             },
-            cache: 'no-store'
+            cache: 'no-cache',
+            next: { revalidate: 0 }
         });
 
         if (!response.ok) {
