@@ -8,6 +8,7 @@ import { useCart } from '@/context/CartContext'
 export function ProductInfo({ product }: { product: any }) {
     const [quantity, setQuantity] = useState(1)
     const [customNames, setCustomNames] = useState('')
+    const [weddingDate, setWeddingDate] = useState('')
     const [isAdding, setIsAdding] = useState(false)
     const { addToCart } = useCart()
 
@@ -34,6 +35,10 @@ export function ProductInfo({ product }: { product: any }) {
 
             if (customNames) {
                 options.push({ name: 'Custom Names', value: customNames })
+            }
+
+            if (weddingDate) {
+                options.push({ name: 'Wedding Date', value: weddingDate })
             }
 
             await addToCart(product._id, quantity, options)
@@ -109,6 +114,17 @@ export function ProductInfo({ product }: { product: any }) {
                         placeholder="e.g. Emma & Noah"
                         value={customNames}
                         onChange={(e) => setCustomNames(e.target.value)}
+                        className="w-full bg-transparent border border-gold/40 px-4 py-3 text-sm focus:outline-none focus:border-espresso transition-colors font-sans"
+                    />
+                </div>
+
+                <div className="flex flex-col gap-3">
+                    <label className="font-sans text-sm font-bold uppercase tracking-widest text-espresso">Wedding Date <span className="text-red-500">*</span></label>
+                    <input
+                        type="text"
+                        placeholder="e.g. October 14, 2026"
+                        value={weddingDate}
+                        onChange={(e) => setWeddingDate(e.target.value)}
                         className="w-full bg-transparent border border-gold/40 px-4 py-3 text-sm focus:outline-none focus:border-espresso transition-colors font-sans"
                     />
                 </div>
