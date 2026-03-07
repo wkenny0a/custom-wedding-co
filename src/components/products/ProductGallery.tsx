@@ -13,7 +13,7 @@ export function ProductGallery({ images }: { images?: any[] }) {
     const activeImageUrl = displayImages[activeIndex]?.file?.url || displayImages[activeIndex]?.url || '/placeholder.jpg'
 
     return (
-        <div className="flex flex-col gap-4 w-full">
+        <div className="flex flex-col gap-4 w-full max-w-lg mx-auto">
             {/* Main Image */}
             <div className="aspect-square bg-gray-100 w-full relative overflow-hidden group">
                 <div className="absolute inset-0 bg-espresso/5 transition-opacity duration-300 group-hover:opacity-0 z-10" />
