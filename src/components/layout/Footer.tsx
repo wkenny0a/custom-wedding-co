@@ -8,8 +8,8 @@ export function Footer() {
             <div className="max-w-[1280px] mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8 mb-12">
                 {/* Col 1 - Brand */}
                 <div className="flex flex-col gap-6">
-                    <Link href="/" className="hover:opacity-80 transition-opacity">
-                        <Image src="/assets/logo.png" alt="Custom Wedding Co. Logo" width={180} height={70} className="object-contain" />
+                    <Link href="/" className="hover:opacity-80 transition-opacity mix-blend-multiply">
+                        <Image src="/assets/logo.png" alt="Custom Wedding Co. Logo" width={240} height={70} className="object-contain" />
                     </Link>
                     <p className="font-serif italic text-lg opacity-80">
                         "Celebrate Love with a Personal Touch"
