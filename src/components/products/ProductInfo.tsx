@@ -121,25 +121,68 @@ export function ProductInfo({ product }: { product: any }) {
             {/* Customization Options */}
             <div className="flex flex-col gap-6 mb-8">
                 {/* Dynamic Variant Selectors from Swell Options */}
-                {variantOptions.map((opt: any) => (
-                    <div key={opt.id || opt.name} className="flex flex-col gap-3">
-                        <label className="font-sans text-sm font-bold uppercase tracking-widest text-espresso">{opt.name} <span className="text-red-500">*</span></label>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            {opt.values.map((val: any) => (
-                                <button
-                                    key={val.id}
-                                    onClick={() => setSelectedVariants(prev => ({ ...prev, [opt.name]: val.name }))}
-                                    className={`py-3 px-4 border text-sm font-sans font-medium transition-all ${selectedVariants[opt.name] === val.name
-                                        ? 'border-espresso bg-espresso text-cream'
-                                        : 'border-gold/30 bg-transparent text-espresso hover:border-gold'
-                                        }`}
-                                >
-                                    {val.name} {val.price ? `(+$${val.price})` : ''}
-                                </button>
-                            ))}
+                {variantOptions.map((opt: any) => {
+                    const isStyleOption = opt.name.toLowerCase() === 'style'
+
+                    return (
+                        <div key={opt.id || opt.name} className="flex flex-col gap-3">
+                            <label className="font-sans text-sm font-bold uppercase tracking-widest text-espresso">{opt.name} <span className="text-red-500">*</span></label>
+
+                            {isStyleOption ? (
+                                // Render visual swatches if this is a 'Style' variant
+                                <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
+                                    {opt.values.map((val: any, index: number) => {
+                                        // Try to match the variant value to an image in the product gallery
+                                        // Fallback to text if missing image
+                                        const imageUrl = product.images?.[index]?.file?.url
+
+                                        return (
+                                            <button
+                                                key={val.id}
+                                                onClick={() => setSelectedVariants(prev => ({ ...prev, [opt.name]: val.name }))}
+                                                className={`relative w-full aspect-square border overflow-hidden transition-all ${selectedVariants[opt.name] === val.name
+                                                    ? 'ring-2 ring-gold border-transparent'
+                                                    : 'border-gold/30 hover:border-gold'
+                                                    }`}
+                                                aria-label={val.name}
+                                                title={val.name}
+                                            >
+                                                {imageUrl ? (
+                                                    // Ensure to use a standard HTML img to avoid Next/Image domain config issues in this rapid patch
+                                                    <img
+                                                        src={imageUrl}
+                                                        alt={val.name}
+                                                        className="w-full h-full object-cover"
+                                                    />
+                                                ) : (
+                                                    <div className="w-full h-full flex items-center justify-center bg-cream/50 text-xs font-sans text-espresso text-center p-2">
+                                                        {val.name}
+                                                    </div>
+                                                )}
+                                            </button>
+                                        )
+                                    })}
+                                </div>
+                            ) : (
+                                // Standard text buttons for Size, Material, etc.
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                    {opt.values.map((val: any) => (
+                                        <button
+                                            key={val.id}
+                                            onClick={() => setSelectedVariants(prev => ({ ...prev, [opt.name]: val.name }))}
+                                            className={`py-3 px-4 border text-sm font-sans font-medium transition-all ${selectedVariants[opt.name] === val.name
+                                                ? 'border-espresso bg-espresso text-cream'
+                                                : 'border-gold/30 bg-transparent text-espresso hover:border-gold'
+                                                }`}
+                                        >
+                                            {val.name} {val.price ? `(+$${val.price})` : ''}
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
                         </div>
-                    </div>
-                ))}
+                    )
+                })}
 
                 {/* Dynamic Text Input Customization fields mapped from Swell options */}
                 {hasCustomNames && (
