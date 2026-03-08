@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { Search, ShoppingBag, Menu } from 'lucide-react'
 import { MobileDrawer } from './MobileDrawer'
 import { useCart } from '@/context/CartContext'
@@ -47,8 +48,8 @@ export function Header() {
 
                     {/* Center Logo */}
                     <div className="w-1/3 flex justify-center">
-                        <Link href="/" className="font-display font-bold text-3xl tracking-tight text-espresso hover:text-gold transition-colors text-center">
-                            Custom<br className="sm:hidden" /> Wedding Co.
+                        <Link href="/" className="hover:opacity-80 transition-opacity flex items-center justify-center">
+                            <Image src="/assets/logo.png" alt="Custom Wedding Co. Logo" width={200} height={80} className="object-contain" priority />
                         </Link>
                     </div>
 
