@@ -48,8 +48,8 @@ export function Header() {
 
                     {/* Center Logo */}
                     <div className="w-1/3 flex justify-center">
-                        <Link href="/" className="hover:opacity-80 transition-opacity flex items-center justify-center mix-blend-multiply">
-                            <Image src="/assets/logo.png" alt="Custom Wedding Co. Logo" width={280} height={80} className="object-contain" priority />
+                        <Link href="/" className="hover:opacity-80 transition-opacity flex items-center justify-center">
+                            <Image src="/assets/logo.png" alt="Custom Wedding Co. Logo" width={250} height={100} className="object-contain" priority />
                         </Link>
                     </div>
 
