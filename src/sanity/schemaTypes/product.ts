@@ -151,6 +151,39 @@ export const product = defineType({
             ],
         }),
         defineField({
+            name: 'styleVariants',
+            title: 'Style Variant Images',
+            description: 'Map custom preview images to specific style variant names (e.g. "WEL 001"). The variant name must match the Swell option value exactly.',
+            type: 'array',
+            of: [
+                {
+                    type: 'object',
+                    fields: [
+                        {
+                            name: 'variantName',
+                            type: 'string',
+                            title: 'Variant Name',
+                            description: 'Must match the Swell variant value name exactly (e.g. "WEL 001")',
+                            validation: (Rule: any) => Rule.required(),
+                        },
+                        {
+                            name: 'image',
+                            type: 'image',
+                            title: 'Preview Image',
+                            options: { hotspot: true },
+                            validation: (Rule: any) => Rule.required(),
+                        },
+                    ],
+                    preview: {
+                        select: {
+                            title: 'variantName',
+                            media: 'image',
+                        },
+                    },
+                },
+            ],
+        }),
+        defineField({
             name: 'relatedProducts',
             title: 'Related Products',
             type: 'array',

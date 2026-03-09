@@ -75,7 +75,8 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
         images: swellProduct.images || [],
         options: swellProduct.options || [],
         specifications: sanityProduct?.specifications || [],
-        description: swellProduct.description || ''
+        description: swellProduct.description || '',
+        styleVariantImages: sanityProduct?.styleVariants || [],
     }
 
     // Default Hero Component definition

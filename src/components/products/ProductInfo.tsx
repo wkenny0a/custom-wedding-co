@@ -132,9 +132,12 @@ export function ProductInfo({ product }: { product: any }) {
                                 // Render visual swatches if this is a 'Style' variant
                                 <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
                                     {opt.values.map((val: any, index: number) => {
-                                        // Try to match the variant value to an image in the product gallery
-                                        // Fallback to text if missing image
-                                        const imageUrl = product.images?.[index]?.file?.url
+                                        // 1. Try Sanity-managed style variant image (matched by name)
+                                        const sanityMatch = product.styleVariantImages?.find(
+                                            (sv: any) => sv.variantName === val.name
+                                        )
+                                        // 2. Fallback to Swell gallery image by index
+                                        const imageUrl = sanityMatch?.imageUrl || product.images?.[index]?.file?.url
 
                                         return (
                                             <button

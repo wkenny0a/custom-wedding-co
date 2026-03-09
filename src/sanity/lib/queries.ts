@@ -21,5 +21,9 @@ export const productBySlugQuery = groq`*[_type == "product" && slug.current == $
   ...,
   category->,
   relatedProducts[]->,
+  styleVariants[] {
+    variantName,
+    "imageUrl": image.asset->url
+  },
   "reviews": *[_type == "review" && references(^._id)] | order(_createdAt desc)
 }`
