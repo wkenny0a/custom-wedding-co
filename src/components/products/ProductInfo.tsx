@@ -281,22 +281,6 @@ export function ProductInfo({ product }: { product: any }) {
                     {isAdding ? 'Adding...' : 'Add To Cart'}
                 </button>
             </div>
-
-            {/* Trust Badges */}
-            <div className="flex flex-col gap-4">
-                <div className="flex items-center gap-3">
-                    <ShieldCheck className="text-gold w-5 h-5 flex-shrink-0" />
-                    <span className="font-sans text-sm text-espresso font-medium">Personalization Included</span>
-                </div>
-                <div className="flex items-center gap-3">
-                    <Clock className="text-gold w-5 h-5 flex-shrink-0" />
-                    <span className="font-sans text-sm text-espresso font-medium">Digital Proof Sent Within 24hrs</span>
-                </div>
-                <div className="flex items-center gap-3">
-                    <Truck className="text-gold w-5 h-5 flex-shrink-0" />
-                    <span className="font-sans text-sm text-espresso font-medium">Free Shipping on Orders $75+</span>
-                </div>
-            </div>
         </div>
     )
 }

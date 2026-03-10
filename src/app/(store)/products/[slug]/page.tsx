@@ -7,6 +7,7 @@ import { notFound } from 'next/navigation'
 import { getProducts } from '@/lib/swell'
 import { client } from '@/sanity/lib/client'
 import { productBySlugQuery } from '@/sanity/lib/queries'
+import { ShieldCheck, Clock, Truck } from 'lucide-react'
 
 export const metadata = {
     title: 'Product Details | Custom Wedding Co.',
@@ -93,13 +94,36 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
         </div>
     )
 
+    // Horizontal Trust Badges Strip
+    const TrustBadges = () => (
+        <div className="border-y border-gold/20 bg-cream/40">
+            <div className="max-w-[1280px] mx-auto px-6 lg:px-12 py-5 flex flex-col sm:flex-row items-center justify-center gap-6 sm:gap-12">
+                <div className="flex items-center gap-2.5">
+                    <ShieldCheck className="text-gold w-5 h-5 flex-shrink-0" />
+                    <span className="font-sans text-sm text-espresso font-medium">Personalization Included</span>
+                </div>
+                <div className="flex items-center gap-2.5">
+                    <Clock className="text-gold w-5 h-5 flex-shrink-0" />
+                    <span className="font-sans text-sm text-espresso font-medium">Digital Proof Sent Within 24hrs</span>
+                </div>
+                <div className="flex items-center gap-2.5">
+                    <Truck className="text-gold w-5 h-5 flex-shrink-0" />
+                    <span className="font-sans text-sm text-espresso font-medium">Free Shipping on Orders $75+</span>
+                </div>
+            </div>
+        </div>
+    )
+
     // Render Function for Sanity Blocks
     const renderBlock = (block: any, index: number) => {
         switch (block._type) {
             case 'productHeroBlock':
                 return (
-                    <div key={index} className="max-w-[1280px] mx-auto px-6 lg:px-12 py-10 lg:py-16">
-                        <DefaultHero />
+                    <div key={index}>
+                        <div className="max-w-[1280px] mx-auto px-6 lg:px-12 py-10 lg:py-16">
+                            <DefaultHero />
+                        </div>
+                        <TrustBadges />
                     </div>
                 )
             case 'productTabsBlock':
@@ -132,6 +156,9 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
                 <>
                     <div className="max-w-[1280px] mx-auto px-6 lg:px-12 py-10 lg:py-16">
                         <DefaultHero />
+                    </div>
+                    <TrustBadges />
+                    <div className="max-w-[1280px] mx-auto px-6 lg:px-12 pb-16">
                         <ProductTabs product={product} />
                     </div>
                     <RelatedProducts related={formattedRelatedProducts} />
