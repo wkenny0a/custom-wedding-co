@@ -78,7 +78,18 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
         specifications: sanityProduct?.specifications || [],
         description: swellProduct.description || '',
         styleVariantImages: sanityProduct?.styleVariants || [],
-        bundleProducts: sanityProduct?.bundleProducts || [],
+        bundleProducts: (sanityProduct?.bundleProducts || [])
+            .map((bpSlug: string) => {
+                const match = allSwellProducts.find((p: any) => p.slug === bpSlug)
+                if (!match) return null
+                return {
+                    name: match.name,
+                    slug: match.slug,
+                    price: Number(match.price) || 0,
+                    imageUrl: match.images?.[0]?.file?.url || null,
+                }
+            })
+            .filter(Boolean),
     }
 
     // Default Hero Component definition

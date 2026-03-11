@@ -192,9 +192,9 @@ export const product = defineType({
         defineField({
             name: 'bundleProducts',
             title: 'Bundle Upsell Products',
-            description: 'Select up to 3 products to suggest in the "Bundle & Save 20%" section below the Add to Cart button.',
+            description: 'Enter up to 3 Swell product slugs to suggest in the "Bundle & Save 20%" section below Add to Cart. The slug must match the Swell product URL slug exactly.',
             type: 'array',
-            of: [{ type: 'reference', to: [{ type: 'product' }] }],
+            of: [{ type: 'string' }],
             validation: (Rule) => Rule.max(3),
         }),
         defineField({
