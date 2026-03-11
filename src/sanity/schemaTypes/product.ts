@@ -190,6 +190,14 @@ export const product = defineType({
             of: [{ type: 'reference', to: [{ type: 'product' }] }],
         }),
         defineField({
+            name: 'bundleProducts',
+            title: 'Bundle Upsell Products',
+            description: 'Select up to 3 products to suggest in the "Bundle & Save 20%" section below the Add to Cart button.',
+            type: 'array',
+            of: [{ type: 'reference', to: [{ type: 'product' }] }],
+            validation: (Rule) => Rule.max(3),
+        }),
+        defineField({
             name: 'pageBuilder',
             title: 'Custom Page Layout',
             description: 'Optional: Drag and drop layout blocks to build a completely unique page for this product. If left empty, the default template is used.',

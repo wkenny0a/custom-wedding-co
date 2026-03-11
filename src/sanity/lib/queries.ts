@@ -21,6 +21,12 @@ export const productBySlugQuery = groq`*[_type == "product" && slug.current == $
   ...,
   category->,
   relatedProducts[]->,
+  bundleProducts[]-> {
+    name,
+    slug,
+    price,
+    "imageUrl": images[0].asset->url
+  },
   styleVariants[] {
     variantName,
     "imageUrl": image.asset->url

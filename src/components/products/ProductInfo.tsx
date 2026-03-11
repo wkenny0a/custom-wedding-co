@@ -2,8 +2,9 @@
 
 import { useState } from 'react'
 import { StarRating } from '@/components/ui/StarRating'
-import { Plus, Minus, ShieldCheck, Clock, Truck } from 'lucide-react'
+import { Plus, Minus, ShieldCheck, Clock, Truck, Gift } from 'lucide-react'
 import { useCart } from '@/context/CartContext'
+import Link from 'next/link'
 
 export function ProductInfo({ product }: { product: any }) {
     const [quantity, setQuantity] = useState(1)
@@ -281,6 +282,51 @@ export function ProductInfo({ product }: { product: any }) {
                     {isAdding ? 'Adding...' : 'Add To Cart'}
                 </button>
             </div>
+
+            {/* Bundle & Save Section */}
+            {product.bundleProducts && product.bundleProducts.length > 0 && (
+                <div className="border border-gold/30 bg-cream/30 p-5">
+                    <div className="flex items-center gap-2.5 mb-4">
+                        <Gift className="text-gold w-5 h-5" />
+                        <h3 className="font-sans text-sm font-bold uppercase tracking-widest text-espresso">Bundle It & Receive 20% Off!</h3>
+                    </div>
+                    <p className="font-sans text-xs text-espresso/70 mb-4">Add any of these items to your order for a 20% bundle discount.</p>
+                    <div className="flex flex-col gap-3">
+                        {product.bundleProducts.map((bp: any) => {
+                            const originalPrice = Number(bp.price) || 0
+                            const discountedPrice = (originalPrice * 0.8).toFixed(2)
+                            const slug = bp.slug?.current || bp.slug
+
+                            return (
+                                <div key={bp.name} className="flex items-center gap-3 p-3 border border-gold/20 bg-white hover:border-gold/50 transition-colors">
+                                    {bp.imageUrl && (
+                                        <img
+                                            src={bp.imageUrl}
+                                            alt={bp.name}
+                                            className="w-14 h-14 object-cover flex-shrink-0"
+                                        />
+                                    )}
+                                    <div className="flex-1 min-w-0">
+                                        <Link
+                                            href={`/products/${slug}`}
+                                            className="font-sans text-sm font-medium text-espresso hover:text-gold transition-colors line-clamp-1"
+                                        >
+                                            {bp.name}
+                                        </Link>
+                                        <div className="flex items-center gap-2 mt-0.5">
+                                            <span className="font-sans text-xs text-gray-400 line-through">${originalPrice.toFixed(2)}</span>
+                                            <span className="font-sans text-sm font-semibold text-gold">${discountedPrice}</span>
+                                        </div>
+                                    </div>
+                                    <span className="font-sans text-[10px] uppercase tracking-wider bg-gold/10 text-gold px-2 py-1 font-bold flex-shrink-0">
+                                        -20%
+                                    </span>
+                                </div>
+                            )
+                        })}
+                    </div>
+                </div>
+            )}
         </div>
     )
 }
