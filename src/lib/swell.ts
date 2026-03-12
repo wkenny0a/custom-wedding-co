@@ -24,29 +24,46 @@ export async function getProducts(options: any = {}) {
 
     try {
         const auth = Buffer.from(`${publicKey}:`).toString('base64');
-        let url = `https://${storeId}.swell.store/api/products?expand=options`;
+        let baseUrl = `https://${storeId}.swell.store/api/products?expand=options&limit=100`;
 
         if (options.category) {
-            url += `&category=${options.category}`;
+            baseUrl += `&category=${options.category}`;
         }
 
-        const response = await fetch(url, {
-            method: 'GET',
-            headers: {
-                'Authorization': `Basic ${auth}`,
-                'Content-Type': 'application/json'
-            },
-            cache: 'no-cache',
-            next: { revalidate: 0 }
-        });
+        let allResults: any[] = [];
+        let page = 1;
+        let hasMore = true;
 
-        if (!response.ok) {
-            console.error(`Swell fetch failed with status: ${response.status}`);
-            return { results: [], _debug_error: response.status };
+        while (hasMore) {
+            const url = `${baseUrl}&page=${page}`;
+            const response = await fetch(url, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Basic ${auth}`,
+                    'Content-Type': 'application/json'
+                },
+                cache: 'no-cache',
+                next: { revalidate: 0 }
+            });
+
+            if (!response.ok) {
+                console.error(`Swell fetch failed with status: ${response.status}`);
+                return { results: allResults.length ? allResults : [], _debug_error: response.status };
+            }
+
+            const data = await response.json();
+            const results = data.results || [];
+            allResults = allResults.concat(results);
+
+            // Stop if we got fewer results than the limit (last page)
+            if (results.length < 100 || allResults.length >= (data.count || Infinity)) {
+                hasMore = false;
+            } else {
+                page++;
+            }
         }
 
-        const data = await response.json();
-        return data;
+        return { results: allResults, count: allResults.length };
     } catch (error) {
         console.error('Error fetching products from Swell:', error);
         return { results: [], _debug_error: 'fetch_exception' };
