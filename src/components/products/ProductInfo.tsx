@@ -124,6 +124,11 @@ export function ProductInfo({ product }: { product: any }) {
 
             // Clear toast after 2.5s
             setTimeout(() => setJustAdded(null), 2500)
+
+            // Auto-open cart when all items in the set are added
+            if (itemsAdded + 1 >= quantity) {
+                setTimeout(() => setIsCartOpen(true), 1000)
+            }
         } catch (error) {
             console.error('Error adding to Swell cart:', error)
             alert("Failed to add to cart. Please try again.")
@@ -304,23 +309,45 @@ export function ProductInfo({ product }: { product: any }) {
                             </div>
                         )}
 
-                        {/* Add To Cart Row */}
+                        {/* Quantity + Add To Cart Row */}
                         <div className="flex flex-col gap-3">
-                            {/* Quantity selector (only for standard flow, not "add next" mode) */}
-                            {!hasPerItemFieldsForOptionA && (
-                                <div className="flex items-center border border-espresso w-full sm:w-32">
-                                    <button onClick={() => handleQuantityChange(-1)} className="p-3 text-espresso hover:text-gold transition-colors w-10 flex justify-center"><Minus size={16} /></button>
-                                    <span className="font-sans font-semibold text-espresso flex-1 text-center">{quantity}</span>
-                                    <button onClick={() => handleQuantityChange(1)} className="p-3 text-espresso hover:text-gold transition-colors w-10 flex justify-center"><Plus size={16} /></button>
-                                </div>
-                            )}
+                            {/* Quantity Dropdown */}
+                            <div className="flex flex-col gap-2">
+                                <label className="font-sans text-sm font-bold uppercase tracking-widest text-espresso">Quantity</label>
+                                <select
+                                    value={quantity}
+                                    onChange={(e) => {
+                                        const newQty = Number(e.target.value)
+                                        setQuantity(newQty)
+                                        // Reset the add-next counter when qty changes
+                                        setItemsAdded(0)
+                                        setJustAdded(null)
+                                    }}
+                                    className="w-full sm:w-40 bg-transparent border border-gold/40 px-4 py-3 text-sm font-sans text-espresso focus:outline-none focus:border-espresso transition-colors appearance-none cursor-pointer"
+                                    style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%234A2C2A' d='M6 8L1 3h10z'/%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 12px center' }}
+                                >
+                                    {Array.from({ length: 20 }, (_, i) => i + 1).map(n => (
+                                        <option key={n} value={n}>{n}</option>
+                                    ))}
+                                </select>
+                            </div>
 
-                            {hasPerItemFieldsForOptionA ? (
-                                /* Option A: Two-button layout */
+                            {/* Button: depends on quantity */}
+                            {quantity === 1 || !hasPerItemFieldsForOptionA ? (
+                                /* Standard: Add to Cart */
+                                <button
+                                    onClick={handleAddToCart}
+                                    disabled={isAdding}
+                                    className="w-full bg-espresso text-cream font-sans font-bold uppercase tracking-widest text-sm py-4 hover:bg-espresso-light transition-colors shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                                >
+                                    {isAdding ? 'Adding...' : 'Add To Cart'}
+                                </button>
+                            ) : (
+                                /* Multi-qty: Add & Customize Next loop */
                                 <div className="flex flex-col sm:flex-row gap-3">
                                     <button
                                         onClick={handleAddAndNext}
-                                        disabled={isAdding}
+                                        disabled={isAdding || itemsAdded >= quantity}
                                         className="flex-1 bg-espresso text-cream font-sans font-bold uppercase tracking-widest text-sm py-4 hover:bg-espresso-light transition-colors shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                                     >
                                         {isAdding ? (
@@ -328,10 +355,15 @@ export function ProductInfo({ product }: { product: any }) {
                                                 <span className="w-4 h-4 border-2 border-cream/30 border-t-cream rounded-full animate-spin" />
                                                 Adding...
                                             </>
+                                        ) : itemsAdded >= quantity ? (
+                                            <>
+                                                <Check size={15} />
+                                                All {quantity} Added!
+                                            </>
                                         ) : (
                                             <>
                                                 <RotateCcw size={15} />
-                                                Add & Customize Next
+                                                Add & Customize Next ({itemsAdded + 1} of {quantity})
                                             </>
                                         )}
                                     </button>
@@ -341,19 +373,10 @@ export function ProductInfo({ product }: { product: any }) {
                                             onClick={() => setIsCartOpen(true)}
                                             className="px-6 py-4 border border-espresso text-espresso font-sans font-bold uppercase tracking-widest text-sm hover:bg-espresso hover:text-cream transition-colors"
                                         >
-                                            Done — View Cart ({itemsAdded})
+                                            View Cart ({itemsAdded})
                                         </button>
                                     )}
                                 </div>
-                            ) : (
-                                /* Standard single add-to-cart */
-                                <button
-                                    onClick={handleAddToCart}
-                                    disabled={isAdding}
-                                    className="w-full bg-espresso text-cream font-sans font-bold uppercase tracking-widest text-sm py-4 hover:bg-espresso-light transition-colors shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
-                                >
-                                    {isAdding ? 'Adding...' : 'Add To Cart'}
-                                </button>
                             )}
                         </div>
                     </>
