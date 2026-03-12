@@ -9,6 +9,7 @@ interface CartContextType {
     isCartOpen: boolean;
     setIsCartOpen: (isOpen: boolean) => void;
     addToCart: (productId: string, quantity: number, options?: any[]) => Promise<void>;
+    addMultipleToCart: (items: { productId: string; quantity: number; options: any[] }[]) => Promise<void>;
     removeFromCart: (itemId: string) => Promise<void>;
     updateQuantity: (itemId: string, quantity: number) => Promise<void>;
     isLoading: boolean;
@@ -56,6 +57,29 @@ export function CartProvider({ children }: { children: ReactNode }) {
         }
     }
 
+    const addMultipleToCart = async (items: { productId: string; quantity: number; options: any[] }[]) => {
+        setIsLoading(true)
+        try {
+            let updatedCart = null
+            for (const item of items) {
+                updatedCart = await swell.cart.addItem({
+                    product_id: item.productId,
+                    quantity: item.quantity,
+                    options: item.options
+                })
+            }
+            if (updatedCart) {
+                setCart(updatedCart)
+                setIsCartOpen(true)
+            }
+        } catch (error) {
+            console.error('Error adding multiple items to cart:', error)
+            throw error
+        } finally {
+            setIsLoading(false)
+        }
+    }
+
     const removeFromCart = async (itemId: string) => {
         setIsLoading(true)
         try {
@@ -89,6 +113,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
                 isCartOpen,
                 setIsCartOpen,
                 addToCart,
+                addMultipleToCart,
                 removeFromCart,
                 updateQuantity,
                 isLoading

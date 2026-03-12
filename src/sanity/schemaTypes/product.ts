@@ -190,6 +190,21 @@ export const product = defineType({
             of: [{ type: 'reference', to: [{ type: 'product' }] }],
         }),
         defineField({
+            name: 'isMultiBuy',
+            title: 'Multi-Buy Product',
+            description: 'Enable the "Party Builder" table for this product, allowing customers to add multiple personalized items at once (e.g. bridal hangers with different names).',
+            type: 'boolean',
+            initialValue: false,
+        }),
+        defineField({
+            name: 'perItemOptionNames',
+            title: 'Per-Item Option Names',
+            description: 'List the Swell option names that change per item (e.g. "Name for Hanger", "Wedding Role"). All other options are treated as shared across items. Must match Swell option names exactly.',
+            type: 'array',
+            of: [{ type: 'string' }],
+            hidden: ({ parent }: any) => !parent?.isMultiBuy,
+        }),
+        defineField({
             name: 'bundleProducts',
             title: 'Bundle Upsell Products',
             description: 'Enter up to 3 Swell product slugs to suggest in the "Bundle & Save 20%" section below Add to Cart. The slug must match the Swell product URL slug exactly.',

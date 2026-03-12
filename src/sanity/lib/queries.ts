@@ -21,6 +21,8 @@ export const productBySlugQuery = groq`*[_type == "product" && slug.current == $
   ...,
   category->,
   relatedProducts[]->,
+  isMultiBuy,
+  perItemOptionNames,
   styleVariants[] {
     variantName,
     "imageUrl": image.asset->url

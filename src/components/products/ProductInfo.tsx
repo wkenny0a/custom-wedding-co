@@ -1,29 +1,47 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { StarRating } from '@/components/ui/StarRating'
-import { Plus, Minus, ShieldCheck, Clock, Truck, Gift } from 'lucide-react'
+import { Plus, Minus, ShieldCheck, Clock, Truck, Gift, Check, RotateCcw } from 'lucide-react'
 import { useCart } from '@/context/CartContext'
+import { MultiItemBuilder } from './MultiItemBuilder'
 import Link from 'next/link'
 
 export function ProductInfo({ product }: { product: any }) {
     const [quantity, setQuantity] = useState(1)
-    const [customNames, setCustomNames] = useState('')
-    const [customCoupleNames, setCustomCoupleNames] = useState('')
-    const [weddingDate, setWeddingDate] = useState('')
-    const [date, setDate] = useState('')
-    const [extraRequests, setExtraRequests] = useState('')
-    const [extraInformation, setExtraInformation] = useState('')
     const [isAdding, setIsAdding] = useState(false)
-    const { addToCart } = useCart()
+    const { addToCart, setIsCartOpen } = useCart()
 
-    const handleQuantityChange = (delta: number) => {
-        setQuantity(prev => Math.max(1, prev + delta))
+    // ── Classify options: use Swell's input_type for robust detection ──
+    // Variant/select options: have values to choose from
+    const isSelectOption = (opt: any) =>
+        opt.input_type === 'select' || (opt.values && opt.values.length > 0 && opt.input_type !== 'short_text' && opt.input_type !== 'long_text')
+    // Text input options: user types custom text
+    const isTextInputOption = (opt: any) =>
+        opt.input_type === 'short_text' || opt.input_type === 'long_text' ||
+        (opt.variant === false && (!opt.values || opt.values.length === 0))
+
+    const variantOptions = product.options?.filter((opt: any) => isSelectOption(opt)) || []
+    const textOptions = product.options?.filter((opt: any) => isTextInputOption(opt)) || []
+
+    // Per-item option names come from Sanity config (for multi-buy products)
+    const perItemOptionNames: string[] = product.perItemOptionNames || []
+    const isMultiBuy = product.isMultiBuy && perItemOptionNames.length > 0
+
+    // Separate text options: per-item vs shared
+    const perItemTextOptions = textOptions.filter((opt: any) => perItemOptionNames.includes(opt.name))
+    const sharedTextOptions = textOptions.filter((opt: any) => !perItemOptionNames.includes(opt.name))
+
+    // For non-multi-buy: use heuristic to detect per-item fields for Option A
+    const isPerItemField = (name: string) => {
+        const lower = name.toLowerCase()
+        return lower.includes('name') || lower.includes('role') || lower.includes('title')
     }
+    const optionAPerItemOptions = textOptions.filter((opt: any) => isPerItemField(opt.name))
+    const optionASharedOptions = textOptions.filter((opt: any) => !isPerItemField(opt.name))
+    const hasPerItemFieldsForOptionA = optionAPerItemOptions.length > 0
 
-    // Extract all select-based variant options
-    const variantOptions = product.options?.filter((opt: any) => opt.values && opt.values.length > 0) || []
-
+    // ── State: variant selections ──
     const [selectedVariants, setSelectedVariants] = useState<Record<string, string>>(() => {
         const initial: Record<string, string> = {}
         variantOptions.forEach((opt: any) => {
@@ -34,57 +52,122 @@ export function ProductInfo({ product }: { product: any }) {
         return initial
     })
 
-    // Helper booleans for Custom Options logic
-    const hasCustomNames = product.options?.some((opt: any) => opt.name === 'Custom Names') || false
-    const hasCustomCoupleNames = product.options?.some((opt: any) => opt.name === 'Custom Couple Names') || false
-    const hasWeddingDate = product.options?.some((opt: any) => opt.name === 'Wedding Date') || false
-    const hasDate = product.options?.some((opt: any) => opt.name === 'Date') || false
-    const hasExtraRequests = product.options?.some((opt: any) => opt.name === 'Extra Requests') || false
-    const hasExtraInformation = product.options?.some((opt: any) => opt.name === 'Extra Information') || false
+    // ── State: text field values ──
+    const [textFieldValues, setTextFieldValues] = useState<Record<string, string>>(() => {
+        const initial: Record<string, string> = {}
+        textOptions.forEach((opt: any) => {
+            initial[opt.name] = ''
+        })
+        return initial
+    })
 
+    const updateTextField = (name: string, value: string) => {
+        setTextFieldValues(prev => ({ ...prev, [name]: value }))
+    }
+
+    // ── Option A: "Add & Customize Next" state ──
+    const [itemsAdded, setItemsAdded] = useState(0)
+    const [justAdded, setJustAdded] = useState<string | null>(null) // Name of the item just added, for toast
+
+    const handleQuantityChange = (delta: number) => {
+        setQuantity(prev => Math.max(1, prev + delta))
+    }
+
+    // Build the options array for Swell from current state
+    const buildOptionsArray = () => {
+        const options: any[] = []
+        Object.entries(selectedVariants).forEach(([key, value]) => {
+            options.push({ name: key, value })
+        })
+        Object.entries(textFieldValues).forEach(([key, value]) => {
+            if (value?.trim()) {
+                options.push({ name: key, value: value.trim() })
+            }
+        })
+        return options
+    }
+
+    // Standard add to cart
     const handleAddToCart = async () => {
         setIsAdding(true)
         try {
-            // Build the options array for Swell
-            const options: any[] = []
-
-            // Push all selected dropdown variants
-            Object.entries(selectedVariants).forEach(([key, value]) => {
-                options.push({ name: key, value })
-            })
-
-            if (customNames) {
-                options.push({ name: 'Custom Names', value: customNames })
-            }
-
-            if (customCoupleNames) {
-                options.push({ name: 'Custom Couple Names', value: customCoupleNames })
-            }
-
-            if (weddingDate) {
-                options.push({ name: 'Wedding Date', value: weddingDate })
-            }
-
-            if (date) {
-                options.push({ name: 'Date', value: date })
-            }
-
-            if (extraRequests) {
-                options.push({ name: 'Extra Requests', value: extraRequests })
-            }
-
-            if (extraInformation) {
-                options.push({ name: 'Extra Information', value: extraInformation })
-            }
-
-            await addToCart(product._id, quantity, options)
-
+            await addToCart(product._id, quantity, buildOptionsArray())
         } catch (error) {
             console.error('Error adding to Swell cart:', error)
             alert("Failed to add to cart. Please try again.")
         } finally {
             setIsAdding(false)
         }
+    }
+
+    // Option A: Add & Customize Next
+    const handleAddAndNext = async () => {
+        setIsAdding(true)
+        try {
+            await addToCart(product._id, 1, buildOptionsArray())
+
+            // Determine a label for the toast
+            const perItemFields = isMultiBuy ? perItemTextOptions : optionAPerItemOptions
+            const nameField = perItemFields.find((o: any) => o.name.toLowerCase().includes('name'))
+            const addedLabel = nameField ? textFieldValues[nameField.name] : `Item ${itemsAdded + 1}`
+
+            setItemsAdded(prev => prev + 1)
+            setJustAdded(addedLabel)
+
+            // Reset only per-item text fields
+            const resetFieldNames = perItemFields.map((o: any) => o.name)
+            setTextFieldValues(prev => {
+                const updated = { ...prev }
+                resetFieldNames.forEach((name: string) => { updated[name] = '' })
+                return updated
+            })
+
+            // Clear toast after 2.5s
+            setTimeout(() => setJustAdded(null), 2500)
+        } catch (error) {
+            console.error('Error adding to Swell cart:', error)
+            alert("Failed to add to cart. Please try again.")
+        } finally {
+            setIsAdding(false)
+        }
+    }
+
+    // Shared options object for MultiItemBuilder
+    const sharedOptionsForBuilder: Record<string, string> = {
+        ...selectedVariants,
+        ...Object.fromEntries(
+            sharedTextOptions.map((opt: any) => [opt.name, textFieldValues[opt.name] || ''])
+        ),
+    }
+
+    // Helper to render a text input field
+    const renderTextField = (opt: any) => {
+        const isTextarea = opt.name.toLowerCase().includes('request') || opt.name.toLowerCase().includes('extra information')
+        const isDate = opt.name.toLowerCase().includes('date')
+
+        return (
+            <div key={opt.name} className="flex flex-col gap-3">
+                <label className="font-sans text-sm font-bold uppercase tracking-widest text-espresso">
+                    {opt.name} {opt.required !== false && <span className="text-red-500">*</span>}
+                </label>
+                {isTextarea ? (
+                    <textarea
+                        placeholder={opt.description || `Enter ${opt.name.toLowerCase()}`}
+                        value={textFieldValues[opt.name] || ''}
+                        onChange={(e) => updateTextField(opt.name, e.target.value)}
+                        className="w-full bg-transparent border border-gold/40 px-4 py-3 text-sm focus:outline-none focus:border-espresso transition-colors font-sans min-h-[100px]"
+                    />
+                ) : (
+                    <input
+                        type={isDate ? 'text' : 'text'}
+                        placeholder={opt.description || (isDate ? 'e.g. October 14, 2026' : `Enter ${opt.name.toLowerCase()}`)}
+                        value={textFieldValues[opt.name] || ''}
+                        onChange={(e) => updateTextField(opt.name, e.target.value)}
+                        className="w-full bg-transparent border border-gold/40 px-4 py-3 text-sm focus:outline-none focus:border-espresso transition-colors font-sans"
+                    />
+                )}
+            </div>
+        )
     }
 
     return (
@@ -119,9 +202,9 @@ export function ProductInfo({ product }: { product: any }) {
                 dangerouslySetInnerHTML={{ __html: product.description || 'A beautifully customized piece for your special day.' }}
             />
 
-            {/* Customization Options */}
+            {/* ─── Customization Options ─── */}
             <div className="flex flex-col gap-6 mb-8">
-                {/* Dynamic Variant Selectors from Swell Options */}
+                {/* Variant Selectors (always shared) */}
                 {variantOptions.map((opt: any) => {
                     const isStyleOption = opt.name.toLowerCase() === 'style'
 
@@ -130,14 +213,11 @@ export function ProductInfo({ product }: { product: any }) {
                             <label className="font-sans text-sm font-bold uppercase tracking-widest text-espresso">{opt.name} <span className="text-red-500">*</span></label>
 
                             {isStyleOption ? (
-                                // Render visual swatches if this is a 'Style' variant
                                 <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
                                     {opt.values.map((val: any, index: number) => {
-                                        // 1. Try Sanity-managed style variant image (matched by name)
                                         const sanityMatch = product.styleVariantImages?.find(
                                             (sv: any) => sv.variantName === val.name
                                         )
-                                        // 2. Fallback to Swell gallery image by index
                                         const imageUrl = sanityMatch?.imageUrl || product.images?.[index]?.file?.url
 
                                         return (
@@ -152,7 +232,6 @@ export function ProductInfo({ product }: { product: any }) {
                                                 title={val.name}
                                             >
                                                 {imageUrl ? (
-                                                    // Ensure to use a standard HTML img to avoid Next/Image domain config issues in this rapid patch
                                                     <img
                                                         src={imageUrl}
                                                         alt={val.name}
@@ -168,7 +247,6 @@ export function ProductInfo({ product }: { product: any }) {
                                     })}
                                 </div>
                             ) : (
-                                // Standard text buttons for Size, Material, etc.
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                     {opt.values.map((val: any) => (
                                         <button
@@ -188,99 +266,98 @@ export function ProductInfo({ product }: { product: any }) {
                     )
                 })}
 
-                {/* Dynamic Text Input Customization fields mapped from Swell options */}
-                {hasCustomNames && (
-                    <div className="flex flex-col gap-3">
-                        <label className="font-sans text-sm font-bold uppercase tracking-widest text-espresso">Custom Names <span className="text-red-500">*</span></label>
-                        <input
-                            type="text"
-                            placeholder="e.g. Emma & Noah"
-                            value={customNames}
-                            onChange={(e) => setCustomNames(e.target.value)}
-                            className="w-full bg-transparent border border-gold/40 px-4 py-3 text-sm focus:outline-none focus:border-espresso transition-colors font-sans"
-                        />
-                    </div>
+                {/* ─── Shared Text Fields (date, extra requests, etc.) ─── */}
+                {isMultiBuy
+                    ? sharedTextOptions.map(renderTextField)
+                    : optionASharedOptions.map(renderTextField)
+                }
+
+                {/* ─── MULTI-BUY: Party Builder (Option B) ─── */}
+                {isMultiBuy ? (
+                    <MultiItemBuilder
+                        product={product}
+                        perItemOptionNames={perItemOptionNames}
+                        sharedOptions={sharedOptionsForBuilder}
+                    />
+                ) : (
+                    <>
+                        {/* ─── STANDARD / OPTION A: Per-item text fields + Add to Cart ─── */}
+
+                        {/* Per-item text fields (for Option A these reset after each add) */}
+                        {optionAPerItemOptions.map(renderTextField)}
+
+                        {/* Items Added Toast */}
+                        {justAdded && (
+                            <div className="flex items-center gap-2 px-4 py-3 bg-green-50 border border-green-200 text-green-800 text-sm font-sans animate-in slide-in-from-top-2 fade-in duration-300">
+                                <Check size={16} className="text-green-600 flex-shrink-0" />
+                                <span><strong>{justAdded}</strong> added to cart!</span>
+                            </div>
+                        )}
+
+                        {/* Running Count Badge */}
+                        {itemsAdded > 0 && !justAdded && (
+                            <div className="flex items-center gap-2 px-4 py-2.5 bg-cream border border-gold/30 text-espresso text-sm font-sans">
+                                <span className="w-5 h-5 bg-gold text-cream text-xs font-bold flex items-center justify-center rounded-full">
+                                    {itemsAdded}
+                                </span>
+                                <span>{itemsAdded} {itemsAdded === 1 ? 'item' : 'items'} added so far</span>
+                            </div>
+                        )}
+
+                        {/* Add To Cart Row */}
+                        <div className="flex flex-col gap-3">
+                            {/* Quantity selector (only for standard flow, not "add next" mode) */}
+                            {!hasPerItemFieldsForOptionA && (
+                                <div className="flex items-center border border-espresso w-full sm:w-32">
+                                    <button onClick={() => handleQuantityChange(-1)} className="p-3 text-espresso hover:text-gold transition-colors w-10 flex justify-center"><Minus size={16} /></button>
+                                    <span className="font-sans font-semibold text-espresso flex-1 text-center">{quantity}</span>
+                                    <button onClick={() => handleQuantityChange(1)} className="p-3 text-espresso hover:text-gold transition-colors w-10 flex justify-center"><Plus size={16} /></button>
+                                </div>
+                            )}
+
+                            {hasPerItemFieldsForOptionA ? (
+                                /* Option A: Two-button layout */
+                                <div className="flex flex-col sm:flex-row gap-3">
+                                    <button
+                                        onClick={handleAddAndNext}
+                                        disabled={isAdding}
+                                        className="flex-1 bg-espresso text-cream font-sans font-bold uppercase tracking-widest text-sm py-4 hover:bg-espresso-light transition-colors shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                                    >
+                                        {isAdding ? (
+                                            <>
+                                                <span className="w-4 h-4 border-2 border-cream/30 border-t-cream rounded-full animate-spin" />
+                                                Adding...
+                                            </>
+                                        ) : (
+                                            <>
+                                                <RotateCcw size={15} />
+                                                Add & Customize Next
+                                            </>
+                                        )}
+                                    </button>
+
+                                    {itemsAdded > 0 && (
+                                        <button
+                                            onClick={() => setIsCartOpen(true)}
+                                            className="px-6 py-4 border border-espresso text-espresso font-sans font-bold uppercase tracking-widest text-sm hover:bg-espresso hover:text-cream transition-colors"
+                                        >
+                                            Done — View Cart ({itemsAdded})
+                                        </button>
+                                    )}
+                                </div>
+                            ) : (
+                                /* Standard single add-to-cart */
+                                <button
+                                    onClick={handleAddToCart}
+                                    disabled={isAdding}
+                                    className="w-full bg-espresso text-cream font-sans font-bold uppercase tracking-widest text-sm py-4 hover:bg-espresso-light transition-colors shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                                >
+                                    {isAdding ? 'Adding...' : 'Add To Cart'}
+                                </button>
+                            )}
+                        </div>
+                    </>
                 )}
-
-                {hasCustomCoupleNames && (
-                    <div className="flex flex-col gap-3">
-                        <label className="font-sans text-sm font-bold uppercase tracking-widest text-espresso">Custom Couple Names <span className="text-red-500">*</span></label>
-                        <input
-                            type="text"
-                            placeholder="e.g. Emma & Noah"
-                            value={customCoupleNames}
-                            onChange={(e) => setCustomCoupleNames(e.target.value)}
-                            className="w-full bg-transparent border border-gold/40 px-4 py-3 text-sm focus:outline-none focus:border-espresso transition-colors font-sans"
-                        />
-                    </div>
-                )}
-
-                {hasWeddingDate && (
-                    <div className="flex flex-col gap-3">
-                        <label className="font-sans text-sm font-bold uppercase tracking-widest text-espresso">Wedding Date <span className="text-red-500">*</span></label>
-                        <input
-                            type="text"
-                            placeholder="e.g. October 14, 2026"
-                            value={weddingDate}
-                            onChange={(e) => setWeddingDate(e.target.value)}
-                            className="w-full bg-transparent border border-gold/40 px-4 py-3 text-sm focus:outline-none focus:border-espresso transition-colors font-sans"
-                        />
-                    </div>
-                )}
-
-                {hasDate && (
-                    <div className="flex flex-col gap-3">
-                        <label className="font-sans text-sm font-bold uppercase tracking-widest text-espresso">Date <span className="text-red-500">*</span></label>
-                        <input
-                            type="text"
-                            placeholder="e.g. October 14, 2026"
-                            value={date}
-                            onChange={(e) => setDate(e.target.value)}
-                            className="w-full bg-transparent border border-gold/40 px-4 py-3 text-sm focus:outline-none focus:border-espresso transition-colors font-sans"
-                        />
-                    </div>
-                )}
-
-                {hasExtraRequests && (
-                    <div className="flex flex-col gap-3">
-                        <label className="font-sans text-sm font-bold uppercase tracking-widest text-espresso">Extra Requests</label>
-                        <textarea
-                            placeholder="Any special design requests or notes?"
-                            value={extraRequests}
-                            onChange={(e) => setExtraRequests(e.target.value)}
-                            className="w-full bg-transparent border border-gold/40 px-4 py-3 text-sm focus:outline-none focus:border-espresso transition-colors font-sans min-h-[100px]"
-                        />
-                    </div>
-                )}
-
-                {hasExtraInformation && (
-                    <div className="flex flex-col gap-3">
-                        <label className="font-sans text-sm font-bold uppercase tracking-widest text-espresso">Extra Information</label>
-                        <textarea
-                            placeholder="Any extra details or customization requests?"
-                            value={extraInformation}
-                            onChange={(e) => setExtraInformation(e.target.value)}
-                            className="w-full bg-transparent border border-gold/40 px-4 py-3 text-sm focus:outline-none focus:border-espresso transition-colors font-sans min-h-[100px]"
-                        />
-                    </div>
-                )}
-            </div>
-
-            {/* Add To Cart Row */}
-            <div className="flex flex-col sm:flex-row gap-4 mb-8 pb-8 border-b border-gold/20">
-                <div className="flex items-center border border-espresso w-full sm:w-32">
-                    <button onClick={() => handleQuantityChange(-1)} className="p-3 text-espresso hover:text-gold transition-colors w-10 flex justify-center"><Minus size={16} /></button>
-                    <span className="font-sans font-semibold text-espresso flex-1 text-center">{quantity}</span>
-                    <button onClick={() => handleQuantityChange(1)} className="p-3 text-espresso hover:text-gold transition-colors w-10 flex justify-center"><Plus size={16} /></button>
-                </div>
-
-                <button
-                    onClick={handleAddToCart}
-                    disabled={isAdding}
-                    className="w-full flex-1 bg-espresso text-cream font-sans font-bold uppercase tracking-widest text-sm py-4 hover:bg-espresso-light transition-colors shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                    {isAdding ? 'Adding...' : 'Add To Cart'}
-                </button>
             </div>
 
             {/* Bundle & Save Section */}

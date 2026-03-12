@@ -90,6 +90,8 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
                 }
             })
             .filter(Boolean),
+        isMultiBuy: sanityProduct?.isMultiBuy || false,
+        perItemOptionNames: sanityProduct?.perItemOptionNames || [],
     }
 
     // Default Hero Component definition
