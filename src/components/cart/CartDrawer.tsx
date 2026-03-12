@@ -19,7 +19,7 @@ export function CartDrawer() {
     }
 
     const items = cart?.items || []
-    const subtotal = cart?.subTotal || 0
+    const subtotal = cart?.sub_total ?? cart?.subTotal ?? items.reduce((sum: number, item: any) => sum + ((item.price_total ?? item.price ?? 0) * (item.quantity ?? 1)), 0)
 
     return (
         <div className="fixed inset-0 z-50 flex justify-end">
@@ -125,7 +125,7 @@ export function CartDrawer() {
                                         </div>
 
                                         <span className="font-sans font-medium text-espresso">
-                                            ${(item.price * item.quantity).toFixed(2)}
+                                            ${((item.price_total ?? item.price ?? 0) * (item.quantity ?? 1)).toFixed(2)}
                                         </span>
                                     </div>
                                 </div>

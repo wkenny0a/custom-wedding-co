@@ -7,7 +7,7 @@ import { useCart } from '@/context/CartContext'
 import { MultiItemBuilder } from './MultiItemBuilder'
 import Link from 'next/link'
 
-export function ProductInfo({ product }: { product: any }) {
+export function ProductInfo({ product, onStyleImageSelect }: { product: any, onStyleImageSelect?: (url: string | null) => void }) {
     const [quantity, setQuantity] = useState(1)
     const [isAdding, setIsAdding] = useState(false)
     const { addToCart, setIsCartOpen } = useCart()
@@ -228,7 +228,10 @@ export function ProductInfo({ product }: { product: any }) {
                                         return (
                                             <button
                                                 key={val.id}
-                                                onClick={() => setSelectedVariants(prev => ({ ...prev, [opt.name]: val.name }))}
+                                                onClick={() => {
+                                                    setSelectedVariants(prev => ({ ...prev, [opt.name]: val.name }))
+                                                    if (onStyleImageSelect) onStyleImageSelect(imageUrl || null)
+                                                }}
                                                 className={`relative w-full aspect-square border overflow-hidden transition-all ${selectedVariants[opt.name] === val.name
                                                     ? 'ring-2 ring-gold border-transparent'
                                                     : 'border-gold/30 hover:border-gold'

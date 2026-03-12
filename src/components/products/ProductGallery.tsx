@@ -3,14 +3,27 @@
 import { useState } from 'react'
 import Image from 'next/image'
 
-export function ProductGallery({ images }: { images?: any[] }) {
+interface ProductGalleryProps {
+    images?: any[]
+    selectedVariantImageUrl?: string | null
+    onClearVariantImage?: () => void
+}
+
+export function ProductGallery({ images, selectedVariantImageUrl, onClearVariantImage }: ProductGalleryProps) {
     const [activeIndex, setActiveIndex] = useState(0)
 
     // Dummy images array to map over if none provided
     const displayImages = images?.length ? images : [{ file: { url: '/placeholder.jpg' } }]
 
-    // Safely get the active image url from the Swell structure
-    const activeImageUrl = displayImages[activeIndex]?.file?.url || displayImages[activeIndex]?.url || '/placeholder.jpg'
+    // If a variant image is selected, show that; otherwise use the gallery's active image
+    const galleryImageUrl = displayImages[activeIndex]?.file?.url || displayImages[activeIndex]?.url || '/placeholder.jpg'
+    const activeImageUrl = selectedVariantImageUrl || galleryImageUrl
+
+    const handleThumbnailClick = (index: number) => {
+        setActiveIndex(index)
+        // Clear the variant override so the user can browse the gallery again
+        if (onClearVariantImage) onClearVariantImage()
+    }
 
     return (
         <div className="flex flex-col gap-4 w-full max-w-lg mx-auto">
@@ -31,11 +44,12 @@ export function ProductGallery({ images }: { images?: any[] }) {
                 <div className="grid grid-cols-5 gap-3 sm:gap-4">
                     {displayImages.map((img, i) => {
                         const thumbUrl = img?.file?.url || img?.url || '/placeholder.jpg'
+                        const isActive = !selectedVariantImageUrl && activeIndex === i
                         return (
                             <button
                                 key={i}
-                                onClick={() => setActiveIndex(i)}
-                                className={`aspect-square bg-gray-100 relative overflow-hidden transition-all duration-300 ${activeIndex === i
+                                onClick={() => handleThumbnailClick(i)}
+                                className={`aspect-square bg-gray-100 relative overflow-hidden transition-all duration-300 ${isActive
                                     ? 'ring-2 ring-gold ring-offset-2'
                                     : 'opacity-70 hover:opacity-100 hover:ring-1 hover:ring-gold/50 hover:ring-offset-1'
                                     }`}

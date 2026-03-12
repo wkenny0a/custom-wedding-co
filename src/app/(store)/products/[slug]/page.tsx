@@ -1,5 +1,4 @@
-import { ProductGallery } from '@/components/products/ProductGallery'
-import { ProductInfo } from '@/components/products/ProductInfo'
+import { ProductHero } from '@/components/products/ProductHero'
 import { ProductTabs } from '@/components/products/ProductTabs'
 import { RelatedProducts } from '@/components/products/RelatedProducts'
 import { ProductFAQ } from '@/components/products/ProductFAQ'
@@ -95,18 +94,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
     }
 
     // Default Hero Component definition
-    const DefaultHero = () => (
-        <div className="flex flex-col lg:flex-row gap-12 lg:gap-20">
-            <div className="w-full lg:w-[55%]">
-                <div className="sticky top-32">
-                    <ProductGallery images={product.images} />
-                </div>
-            </div>
-            <div className="w-full lg:w-[45%]">
-                <ProductInfo product={product} />
-            </div>
-        </div>
-    )
+    const DefaultHero = () => <ProductHero product={product} />
 
     // Horizontal Trust Badges Strip
     const TrustBadges = () => (
