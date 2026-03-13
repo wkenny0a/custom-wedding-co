@@ -6,10 +6,14 @@ swell.init(
     process.env.NEXT_PUBLIC_SWELL_SECRET_KEY
 );
 const categories = [
-    { title: 'Paper Goods', slug: 'paper-goods', description: 'Elegant paper goods for your special day' },
-    { title: 'Décor & Signage', slug: 'decor-signage', description: 'Beautiful decor and signs to guide your guests' },
+    { title: 'Paper Goods', slug: 'paper-goods', description: 'Elegant invitations, menus, and stationery for your special day' },
+    { title: 'Signs', slug: 'signs', description: 'Beautiful welcome signs and displays to guide your guests' },
+    { title: 'Guest Books', slug: 'guest-books', description: 'Heirloom-quality guest books to treasure forever' },
+    { title: 'Wedding Favors', slug: 'wedding-favors', description: 'Thoughtful personalized favors your guests will love' },
+    { title: "Bridesmaids' Gifts", slug: 'bridesmaids-gifts', description: 'Curated gift sets for your bridal party' },
+    { title: 'Cake Toppers', slug: 'cake-toppers', description: 'Personalized cake toppers for the sweetest moment' },
+    { title: 'Table Décor', slug: 'table-decor', description: 'Place cards, table numbers, and reception details' },
     { title: 'Keepsakes', slug: 'keepsakes', description: 'Memorable keepsakes to cherish forever' },
-    { title: 'Sentimental Gifts', slug: 'sentimental-gifts', description: 'Thoughtful gifts for your loved ones' },
 ];
 
 async function uploadCategories() {

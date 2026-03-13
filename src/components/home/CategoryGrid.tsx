@@ -3,10 +3,14 @@ import Image from 'next/image'
 
 export function CategoryGrid() {
     const categories = [
-        { title: 'Paper Goods', count: 12, slug: 'paper-goods' },
-        { title: 'Décor & Signage', count: 8, slug: 'decor-signage' },
-        { title: 'Keepsakes', count: 6, slug: 'keepsakes' },
-        { title: 'Sentimental Gifts', count: 4, slug: 'sentimental-gifts' },
+        { title: 'Paper Goods', count: 12, slug: 'paper-goods', image: '/images/category_paper.png' },
+        { title: 'Signs', count: 8, slug: 'signs', image: '/images/category_signs.png' },
+        { title: 'Guest Books', count: 5, slug: 'guest-books', image: '/images/category_guest_books.png' },
+        { title: 'Wedding Favors', count: 7, slug: 'wedding-favors', image: '/images/category_favors.png' },
+        { title: 'Bridesmaids\' Gifts', count: 6, slug: 'bridesmaids-gifts', image: '/images/category_bridesmaid.png' },
+        { title: 'Cake Toppers', count: 4, slug: 'cake-toppers', image: '/images/category_cake_toppers.png' },
+        { title: 'Table Décor', count: 9, slug: 'table-decor', image: '/images/category_table_decor.png' },
+        { title: 'Keepsakes', count: 6, slug: 'keepsakes', image: '/images/category_keepsakes.png' },
     ]
 
     return (
@@ -21,26 +25,28 @@ export function CategoryGrid() {
                     </h2>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
                     {categories.map((cat, i) => (
                         <Link
                             href={`/shop/${cat.slug}`}
                             key={i}
-                            className="group relative aspect-[3/4] overflow-hidden bg-espresso text-cream flex items-end p-8"
+                            className={`group relative overflow-hidden bg-espresso text-cream flex items-end p-6 lg:p-8 ${
+                                i < 4 ? 'aspect-[3/4]' : 'aspect-[3/3.5]'
+                            }`}
                         >
                             {/* Image Background */}
                             <div className="absolute inset-0 z-0">
                                 <Image
-                                    src={`/images/category_${cat.slug.replace('-goods', '').replace('-signage', '').replace('-gifts', '')}.png`}
+                                    src={cat.image}
                                     alt={cat.title}
                                     fill
                                     className="object-cover transition-transform duration-700 ease-in-out group-hover:scale-105"
                                 />
-                                <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors duration-500" />
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent group-hover:from-black/60 transition-colors duration-500" />
                             </div>
 
                             <div className="relative z-10 w-full transform transition-transform duration-500 group-hover:-translate-y-2">
-                                <h3 className="font-serif text-2xl lg:text-3xl mb-1">{cat.title}</h3>
+                                <h3 className="font-serif text-xl lg:text-2xl xl:text-3xl mb-1">{cat.title}</h3>
                                 <p className="font-sans text-xs uppercase tracking-widest text-gold-pale opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-100">
                                     {cat.count} Products
                                 </p>
