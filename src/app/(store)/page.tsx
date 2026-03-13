@@ -12,14 +12,29 @@ import { BlogInspiration } from '@/components/home/BlogInspiration'
 import { InstagramGrid } from '@/components/home/InstagramGrid'
 import { HomeFAQ } from '@/components/home/HomeFAQ'
 import { Newsletter } from '@/components/home/Newsletter'
+import { getProducts } from '@/lib/swell'
 
-export default function Home() {
+export default async function Home() {
+  // Fetch products in the "Homepage" category from Swell
+  const homepageProducts = await getProducts({ category: 'homepage' })
+  const products = (homepageProducts?.results || []).map((p: any) => ({
+    _id: p.id,
+    name: p.name,
+    slug: { current: p.slug },
+    price: p.price || 0,
+    badge: undefined,
+    category: p.categories?.[0] ? { title: p.categories[0].name } : undefined,
+    rating: 4.9,
+    reviewCount: Math.floor(Math.random() * 30) + 10,
+    images: p.images || [],
+  }))
+
   return (
     <>
       <HeroSection />
       <TrustBar />
       <ScrollingBanner />
-      <FeaturedProducts />
+      <FeaturedProducts products={products} />
       <ShopByMoment />
       <CategoryGrid />
       <ShopTheLook />
