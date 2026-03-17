@@ -314,7 +314,8 @@ export function ProductInfo({ product, onStyleImageSelect }: { product: any, onS
 
                         {/* Quantity + Add To Cart Row */}
                         <div className="flex flex-col gap-3">
-                            {/* Quantity Dropdown */}
+                            {/* Quantity Dropdown — hidden when a variant option already represents quantity */}
+                            {!variantOptions.some((opt: any) => opt.name.toLowerCase().includes('quantity')) && (
                             <div className="flex flex-col gap-2">
                                 <label className="font-sans text-sm font-bold uppercase tracking-widest text-espresso">Quantity</label>
                                 <select
@@ -334,6 +335,7 @@ export function ProductInfo({ product, onStyleImageSelect }: { product: any, onS
                                     ))}
                                 </select>
                             </div>
+                            )}
 
                             {/* Button: depends on quantity */}
                             {quantity === 1 || !hasPerItemFieldsForOptionA ? (
