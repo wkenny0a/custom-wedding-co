@@ -212,6 +212,7 @@ export function ProductInfo({ product, onStyleImageSelect }: { product: any, onS
                 {/* Variant Selectors (always shared) */}
                 {variantOptions.map((opt: any) => {
                     const isStyleOption = opt.name.toLowerCase() === 'style'
+                    const isQuantityOption = opt.name.toLowerCase().includes('quantity')
 
                     return (
                         <div key={opt.id || opt.name} className="flex flex-col gap-3">
@@ -254,6 +255,19 @@ export function ProductInfo({ product, onStyleImageSelect }: { product: any, onS
                                         )
                                     })}
                                 </div>
+                            ) : isQuantityOption ? (
+                                <select
+                                    value={selectedVariants[opt.name] || ''}
+                                    onChange={(e) => setSelectedVariants(prev => ({ ...prev, [opt.name]: e.target.value }))}
+                                    className="w-full bg-transparent border border-gold/40 px-4 py-3 text-sm font-sans text-espresso focus:outline-none focus:border-espresso transition-colors appearance-none cursor-pointer"
+                                    style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%234A2C2A' d='M6 8L1 3h10z'/%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 12px center' }}
+                                >
+                                    {opt.values.map((val: any) => (
+                                        <option key={val.id || val.name} value={val.name}>
+                                            {val.name} {val.price ? `— $${val.price.toFixed(2)}` : ''}
+                                        </option>
+                                    ))}
+                                </select>
                             ) : (
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                     {opt.values.map((val: any) => (
