@@ -8,16 +8,16 @@ swell.init(
 
 const PRODUCT_ID = '69b2d1fe9eb4fb00128a5e38';
 
-// Build 100 set-based quantity values with decreasing per-set price
-// Linear interpolation: $29.99 (1 set) → $19.99 (100 sets)
+// Build 100 set-based quantity values
+// First set: $29.99, each additional set: +$27.99
 function buildQuantityValues() {
     const values = [];
     for (let s = 1; s <= 100; s++) {
         const glasses = s * 6;
-        const pricePerSet = 29.99 - (s - 1) * (10.00 / 99);
-        const roundedPrice = Math.round(pricePerSet * 100) / 100;
+        const totalPrice = 29.99 + (s - 1) * 27.99;
+        const roundedPrice = Math.round(totalPrice * 100) / 100;
         values.push({
-            name: `${s} Set (${glasses} glasses)`,
+            name: `${s} Set (${glasses} Glasses)`,
             price: roundedPrice,
         });
     }
