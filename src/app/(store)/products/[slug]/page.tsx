@@ -68,7 +68,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
         price: Number(swellProduct.price) || 0,
         priceRange: `$${Number(swellProduct.price || 0).toFixed(2)}`,
         priceNote: 'per piece',
-        badge: sanityProduct?.badge || 'Custom',
+        badge: sanityProduct?.badge || 'Popular',
         category: sanityProduct?.category ? { title: sanityProduct.category.title } : { title: 'Personalized' },
         rating: 5.0,
         reviewCount: 55,
