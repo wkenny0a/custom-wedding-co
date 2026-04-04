@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { StarRating } from '@/components/ui/StarRating'
-import { Plus, Minus, ShieldCheck, Clock, Truck, Gift, Check, RotateCcw } from 'lucide-react'
+import { Plus, Minus, ShieldCheck, Clock, Truck, Gift, Check, RotateCcw, Upload } from 'lucide-react'
 import { useCart } from '@/context/CartContext'
 import { MultiItemBuilder } from './MultiItemBuilder'
 import Link from 'next/link'
@@ -10,6 +10,7 @@ import Link from 'next/link'
 export function ProductInfo({ product, onStyleImageSelect }: { product: any, onStyleImageSelect?: (url: string | null) => void }) {
     const [quantity, setQuantity] = useState(1)
     const [isAdding, setIsAdding] = useState(false)
+    const [customDesignFile, setCustomDesignFile] = useState<File | null>(null)
     const { addToCart, setIsCartOpen } = useCart()
 
     // ── Classify options: use Swell's input_type for robust detection ──
@@ -212,7 +213,13 @@ export function ProductInfo({ product, onStyleImageSelect }: { product: any, onS
                 {/* Variant Selectors (always shared) */}
                 {variantOptions.map((opt: any) => {
                     const isStyleOption = opt.name.toLowerCase() === 'style'
+                    const isDesignStyleOption = opt.name.toLowerCase().includes('design')
                     const isQuantityOption = opt.name.toLowerCase().includes('quantity')
+                    const isDropdownOption = isDesignStyleOption || isQuantityOption
+
+                    // Check if "Custom Design" is currently selected for this option
+                    const selectedValue = selectedVariants[opt.name] || ''
+                    const isCustomDesignSelected = isDesignStyleOption && selectedValue.toLowerCase().includes('custom design')
 
                     return (
                         <div key={opt.id || opt.name} className="flex flex-col gap-3">
@@ -255,19 +262,55 @@ export function ProductInfo({ product, onStyleImageSelect }: { product: any, onS
                                         )
                                     })}
                                 </div>
-                            ) : isQuantityOption ? (
-                                <select
-                                    value={selectedVariants[opt.name] || ''}
-                                    onChange={(e) => setSelectedVariants(prev => ({ ...prev, [opt.name]: e.target.value }))}
-                                    className="w-full bg-transparent border border-gold/40 px-4 py-3 text-sm font-sans text-espresso focus:outline-none focus:border-espresso transition-colors appearance-none cursor-pointer"
-                                    style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%234A2C2A' d='M6 8L1 3h10z'/%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 12px center' }}
-                                >
-                                    {opt.values.map((val: any) => (
-                                        <option key={val.id || val.name} value={val.name}>
-                                            {val.name} {val.price ? `— $${val.price.toFixed(2)}` : ''}
-                                        </option>
-                                    ))}
-                                </select>
+                            ) : isDropdownOption ? (
+                                <>
+                                    <select
+                                        value={selectedVariants[opt.name] || ''}
+                                        onChange={(e) => {
+                                            setSelectedVariants(prev => ({ ...prev, [opt.name]: e.target.value }))
+                                            // Clear uploaded file if switching away from Custom Design
+                                            if (isDesignStyleOption && !e.target.value.toLowerCase().includes('custom design')) {
+                                                setCustomDesignFile(null)
+                                            }
+                                        }}
+                                        className="w-full bg-transparent border border-gold/40 px-4 py-3 text-sm font-sans text-espresso focus:outline-none focus:border-espresso transition-colors appearance-none cursor-pointer"
+                                        style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%234A2C2A' d='M6 8L1 3h10z'/%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 12px center' }}
+                                    >
+                                        {opt.values.map((val: any) => (
+                                            <option key={val.id || val.name} value={val.name}>
+                                                {val.name} {val.price ? `— $${val.price.toFixed(2)}` : ''}
+                                            </option>
+                                        ))}
+                                    </select>
+
+                                    {/* Custom Design Upload — appears when Design #12 (Custom Design) is selected */}
+                                    {isCustomDesignSelected && (
+                                        <div className="flex flex-col gap-2 p-4 border border-dashed border-gold/40 bg-cream/30 animate-in fade-in slide-in-from-top-2 duration-300">
+                                            <label className="font-sans text-xs font-bold uppercase tracking-widest text-espresso/70">Upload Your Custom Design</label>
+                                            <p className="font-sans text-xs text-espresso/50">Upload an image of your custom design (PNG, JPG, or PDF).</p>
+                                            <label
+                                                className="flex items-center gap-3 px-4 py-3 border border-gold/40 bg-white cursor-pointer hover:border-espresso transition-colors"
+                                            >
+                                                <Upload size={16} className="text-gold flex-shrink-0" />
+                                                <span className="font-sans text-sm text-espresso truncate">
+                                                    {customDesignFile ? customDesignFile.name : 'Choose file...'}
+                                                </span>
+                                                <input
+                                                    type="file"
+                                                    accept="image/*,.pdf"
+                                                    className="hidden"
+                                                    onChange={(e) => setCustomDesignFile(e.target.files?.[0] || null)}
+                                                />
+                                            </label>
+                                            {customDesignFile && (
+                                                <div className="flex items-center gap-2 text-xs font-sans text-green-700">
+                                                    <Check size={14} />
+                                                    <span>File selected: {customDesignFile.name}</span>
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
+                                </>
                             ) : (
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                     {opt.values.map((val: any) => (
