@@ -22,8 +22,8 @@ export function ProductInfo({ product, onStyleImageSelect }: { product: any, onS
         opt.input_type === 'short_text' || opt.input_type === 'long_text' ||
         (opt.variant === false && (!opt.values || opt.values.length === 0))
 
-    const variantOptions = product.options?.filter((opt: any) => isSelectOption(opt)) || []
-    const textOptions = product.options?.filter((opt: any) => isTextInputOption(opt)) || []
+    const variantOptions = product.options?.filter((opt: any) => opt.active !== false && isSelectOption(opt)) || []
+    const textOptions = product.options?.filter((opt: any) => opt.active !== false && isTextInputOption(opt)) || []
 
     // Per-item option names come from Sanity config (for multi-buy products)
     const perItemOptionNames: string[] = product.perItemOptionNames || []
