@@ -1,4 +1,15 @@
-import Link from 'next/link'
+import Image from 'next/image'
+
+const instagramPosts = [
+    { src: '/images/instagram_1.png', alt: 'Custom wedding welcome sign with calligraphy and florals' },
+    { src: '/images/instagram_2.png', alt: 'Styled reception table with monogram napkins and gold details' },
+    { src: '/images/instagram_3.png', alt: 'Bride holding personalized leather vow book' },
+    { src: '/images/instagram_4.png', alt: 'Custom wax seal stickers on wedding envelopes' },
+    { src: '/images/instagram_5.png', alt: 'Bridesmaids opening personalized gift boxes' },
+    { src: '/images/instagram_6.png', alt: 'Wedding cake with custom acrylic cake topper' },
+    { src: '/images/instagram_7.png', alt: 'Custom neon Better Together sign on greenery wall' },
+    { src: '/images/instagram_8.png', alt: 'Personalized wedding guest book at reception' },
+]
 
 export function InstagramGrid() {
     return (
@@ -17,17 +28,21 @@ export function InstagramGrid() {
                 </div>
 
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                    {Array.from({ length: 8 }).map((_, i) => (
+                    {instagramPosts.map((post, i) => (
                         <a
                             key={i}
                             href="#"
-                            className={`relative aspect-square bg-gray-200 overflow-hidden group ${i >= 6 ? 'hidden lg:block' : ''}`}
+                            className={`relative aspect-square overflow-hidden group ${i >= 6 ? 'hidden lg:block' : ''}`}
                         >
                             <div className="absolute inset-0 bg-espresso/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10 flex items-center justify-center">
                                 <span className="text-cream text-sm font-sans uppercase tracking-widest font-semibold">Shop Look</span>
                             </div>
-                            {/* Image Placeholder */}
-                            <div className="w-full h-full bg-espresso-light/10 transition-transform duration-700 group-hover:scale-105" />
+                            <Image
+                                src={post.src}
+                                alt={post.alt}
+                                fill
+                                className="object-cover transition-transform duration-700 group-hover:scale-105"
+                            />
                         </a>
                     ))}
                 </div>

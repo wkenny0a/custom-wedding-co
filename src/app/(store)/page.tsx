@@ -9,7 +9,6 @@ import { HowItWorks } from '@/components/home/HowItWorks'
 import { BrandStory } from '@/components/home/BrandStory'
 import { Testimonials } from '@/components/home/Testimonials'
 import { BlogInspiration } from '@/components/home/BlogInspiration'
-import { InstagramGrid } from '@/components/home/InstagramGrid'
 import { HomeFAQ } from '@/components/home/HomeFAQ'
 import { Newsletter } from '@/components/home/Newsletter'
 import { getProducts } from '@/lib/swell'
@@ -42,7 +41,6 @@ export default async function Home() {
       <BrandStory />
       <Testimonials />
       <BlogInspiration />
-      <InstagramGrid />
       <HomeFAQ />
       <Newsletter />
     </>

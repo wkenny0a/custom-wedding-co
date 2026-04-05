@@ -8,21 +8,21 @@ export function BlogInspiration() {
             excerpt: 'From wording to timing — everything you need to know about your invitation suite, decoded for modern couples.',
             category: 'Paper Goods',
             image: '/images/blog_invitations.png',
-            slug: '#',
+            slug: '/blog/wedding-invitation-etiquette',
         },
         {
             title: 'Styling Your Wedding Day: Tips From Our Creative Team',
             excerpt: 'How to create a cohesive aesthetic from ceremony to reception, using personalized details that tell your story.',
             category: 'Planning',
             image: '/images/blog_planning.png',
-            slug: '#',
+            slug: '/blog/styling-your-wedding-day',
         },
         {
             title: '10 Thoughtful Bridesmaids\' Gift Ideas They\'ll Actually Love',
             excerpt: 'Move beyond the generic — discover personalized keepsakes that celebrate each member of your bridal party.',
             category: 'Gifts',
             image: '/images/blog_dresses.png',
-            slug: '#',
+            slug: '/blog/bridesmaid-gift-ideas',
         },
     ]
 

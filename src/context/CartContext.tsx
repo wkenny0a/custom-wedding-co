@@ -8,8 +8,8 @@ interface CartContextType {
     cart: any | null;
     isCartOpen: boolean;
     setIsCartOpen: (isOpen: boolean) => void;
-    addToCart: (productId: string, quantity: number, options?: any[]) => Promise<void>;
-    addMultipleToCart: (items: { productId: string; quantity: number; options: any[] }[]) => Promise<void>;
+    addToCart: (productId: string, quantity: number, options?: any[], metadata?: any) => Promise<void>;
+    addMultipleToCart: (items: { productId: string; quantity: number; options: any[], metadata?: any }[]) => Promise<void>;
     removeFromCart: (itemId: string) => Promise<void>;
     updateQuantity: (itemId: string, quantity: number) => Promise<void>;
     isLoading: boolean;
@@ -39,17 +39,28 @@ export function CartProvider({ children }: { children: ReactNode }) {
         fetchCart()
     }, [])
 
-    const addToCart = async (productId: string, quantity: number, options: any[] = []) => {
+    const addToCart = async (productId: string, quantity: number, options: any[] = [], metadata?: any) => {
         setIsLoading(true)
         try {
-            const updatedCart = await swell.cart.addItem({
+            const itemPayload: any = {
                 product_id: productId,
                 quantity,
                 options
-            })
+            }
+            if (metadata) {
+                itemPayload.metadata = metadata
+            }
+            const updatedCart: any = await swell.cart.addItem(itemPayload)
+            if (updatedCart?.errors) {
+                // Extract generic Swell error message
+                const errorMessages = Object.values(updatedCart.errors)
+                    .map((e: any) => e.message)
+                    .join(' | ')
+                throw new Error(errorMessages || 'Validation error adding item to cart')
+            }
             setCart(updatedCart)
             setIsCartOpen(true) // Open drawer automatically
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error adding to cart:', error)
             throw error
         } finally {
@@ -57,22 +68,32 @@ export function CartProvider({ children }: { children: ReactNode }) {
         }
     }
 
-    const addMultipleToCart = async (items: { productId: string; quantity: number; options: any[] }[]) => {
+    const addMultipleToCart = async (items: { productId: string; quantity: number; options: any[], metadata?: any }[]) => {
         setIsLoading(true)
         try {
             let updatedCart = null
             for (const item of items) {
-                updatedCart = await swell.cart.addItem({
+                const itemPayload: any = {
                     product_id: item.productId,
                     quantity: item.quantity,
                     options: item.options
-                })
+                }
+                if (item.metadata) {
+                    itemPayload.metadata = item.metadata
+                }
+                updatedCart = await swell.cart.addItem(itemPayload)
+                if ((updatedCart as any)?.errors) {
+                    const errorMessages = Object.values((updatedCart as any).errors)
+                        .map((e: any) => e.message)
+                        .join(' | ')
+                    throw new Error(errorMessages || 'Validation error adding items to cart')
+                }
             }
             if (updatedCart) {
                 setCart(updatedCart)
                 setIsCartOpen(true)
             }
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error adding multiple items to cart:', error)
             throw error
         } finally {

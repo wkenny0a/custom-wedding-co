@@ -88,14 +88,41 @@ export function ProductInfo({ product, onStyleImageSelect }: { product: any, onS
         return options
     }
 
+    const uploadCustomDesignFile = async (): Promise<string | null> => {
+        if (!customDesignFile) return null;
+        
+        const formData = new FormData();
+        formData.append('file', customDesignFile);
+        
+        const res = await fetch('/api/upload', {
+            method: 'POST',
+            body: formData,
+        });
+        
+        if (!res.ok) {
+            const err = await res.json();
+            throw new Error(err.error || 'Failed to upload custom design');
+        }
+        
+        const data = await res.json();
+        return data.url;
+    }
+
     // Standard add to cart
     const handleAddToCart = async () => {
         setIsAdding(true)
         try {
-            await addToCart(product._id, quantity, buildOptionsArray())
-        } catch (error) {
+            const options = buildOptionsArray();
+            if (customDesignFile) {
+                const url = await uploadCustomDesignFile();
+                if (url) {
+                    options.push({ name: 'Custom Design File', value: url });
+                }
+            }
+            await addToCart(product._id, quantity, options)
+        } catch (error: any) {
             console.error('Error adding to Swell cart:', error)
-            alert("Failed to add to cart. Please try again.")
+            alert(error.message || "Failed to add to cart. Please try again.")
         } finally {
             setIsAdding(false)
         }
@@ -105,7 +132,14 @@ export function ProductInfo({ product, onStyleImageSelect }: { product: any, onS
     const handleAddAndNext = async () => {
         setIsAdding(true)
         try {
-            await addToCart(product._id, 1, buildOptionsArray())
+            const options = buildOptionsArray();
+            if (customDesignFile) {
+                const url = await uploadCustomDesignFile();
+                if (url) {
+                    options.push({ name: 'Custom Design File', value: url });
+                }
+            }
+            await addToCart(product._id, 1, options)
 
             // Determine a label for the toast
             const perItemFields = isMultiBuy ? perItemTextOptions : optionAPerItemOptions
@@ -343,6 +377,7 @@ export function ProductInfo({ product, onStyleImageSelect }: { product: any, onS
                         product={product}
                         perItemOptionNames={perItemOptionNames}
                         sharedOptions={sharedOptionsForBuilder}
+                        uploadCustomDesignFile={uploadCustomDesignFile}
                     />
                 ) : (
                     <>

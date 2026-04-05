@@ -13,9 +13,10 @@ interface MultiItemBuilderProps {
     product: any
     perItemOptionNames: string[]
     sharedOptions: Record<string, string>
+    uploadCustomDesignFile?: () => Promise<string | null>
 }
 
-export function MultiItemBuilder({ product, perItemOptionNames, sharedOptions }: MultiItemBuilderProps) {
+export function MultiItemBuilder({ product, perItemOptionNames, sharedOptions, uploadCustomDesignFile }: MultiItemBuilderProps) {
     const { addMultipleToCart } = useCart()
     const [isAdding, setIsAdding] = useState(false)
     const [isSuccess, setIsSuccess] = useState(false)
@@ -67,6 +68,11 @@ export function MultiItemBuilder({ product, perItemOptionNames, sharedOptions }:
         setIsAdding(true)
 
         try {
+            let customDesignUrl = null;
+            if (uploadCustomDesignFile) {
+                customDesignUrl = await uploadCustomDesignFile();
+            }
+
             const items = filledRows.map(row => {
                 const options: any[] = []
 
@@ -80,19 +86,24 @@ export function MultiItemBuilder({ product, perItemOptionNames, sharedOptions }:
                     if (value?.trim()) options.push({ name: key, value: value.trim() })
                 })
 
+                // Add the custom design explicitly as an option so it's visible in cart/admin
+                if (customDesignUrl) {
+                    options.push({ name: 'Custom Design File', value: customDesignUrl });
+                }
+
                 return {
                     productId: product._id,
                     quantity: 1,
-                    options,
+                    options
                 }
             })
 
             await addMultipleToCart(items)
             setIsSuccess(true)
             setTimeout(() => setIsSuccess(false), 3000)
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error adding party set to cart:', error)
-            alert('Failed to add items to cart. Please try again.')
+            alert(error.message || 'Failed to add items to cart. Please try again.')
         } finally {
             setIsAdding(false)
         }
