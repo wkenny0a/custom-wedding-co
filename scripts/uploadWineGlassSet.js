@@ -179,8 +179,7 @@ var productData = {
                 title: 'Perfect Anniversary Gift',
                 text: 'We bought these for our 5th anniversary and they are absolutely gorgeous. The custom monogram came out so sharp and elegant. We use them almost every dinner now!',
                 author: 'Jessica L.',
-                verified: true,
-                image: '/images/reviews/wineglass_review_1.png'
+                verified: true
             },
             {
                 rating: 5,
@@ -188,17 +187,15 @@ var productData = {
                 title: 'Exceeded my expectations!',
                 text: 'I ordered the custom design option and sent in my own logo for our wedding toast. The engraving is phenomenal, and the presentation box it came in just blew us away. Highly recommended!',
                 author: 'David & Emma',
-                verified: true,
-                image: '/images/reviews/wineglass_review_2.png'
+                verified: true
             },
             {
-                rating: 4,
+                rating: 5,
                 date: 'Jan 10, 2026',
                 title: 'Stunning Glassware',
-                text: 'The glasses feel very premium and sit nicely in the hand. I gave 4 stars only because shipping took a couple days longer than I expected, but it was well worth the wait. The lettering in the box was the cherry on top.',
+                text: 'The glasses feel very premium and sit nicely in the hand. Shipping took a little longer than expected but it was absolutely worth the wait. The lettering in the box was the cherry on top.',
                 author: 'Michael T.',
-                verified: true,
-                image: '/images/reviews/wineglass_review_3.png'
+                verified: true
             },
             {
                 rating: 5,

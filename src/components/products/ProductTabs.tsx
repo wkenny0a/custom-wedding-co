@@ -128,13 +128,7 @@ export function ProductTabs({ product }: { product: any }) {
                                 <p className="font-sans text-sm text-espresso/80 leading-relaxed">
                                     "{review.text.replace(/^"|"$/g, '')}"
                                 </p>
-                                
-                                {review.image && (
-                                    <div className="mt-3 mb-2 h-32 w-32 relative overflow-hidden border border-gold/20 rounded object-cover">
-                                        <img src={review.image} alt="Customer review" className="w-full h-full object-cover" />
-                                    </div>
-                                )}
-                                
+
                                 <span className="font-sans text-xs font-semibold uppercase tracking-widest text-gold mt-2">
                                     — {review.author} {review.verified && <span className="text-gray-400 font-normal lowercase tracking-normal">(Verified Buyer)</span>}
                                 </span>
