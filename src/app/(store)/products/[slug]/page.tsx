@@ -23,10 +23,31 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
 
     const swellProduct = allSwellProducts.find((p: any) => p.slug === slug)
 
+    // Fetch product content (reviews etc.) via secret key — the public API strips the `content` field
+    let swellProductContent: any = {}
+    try {
+        const storeId = process.env.NEXT_PUBLIC_SWELL_STORE_ID
+        const secretKey = process.env.NEXT_PUBLIC_SWELL_SECRET_KEY
+        if (storeId && secretKey && swellProduct?.id) {
+            const auth = Buffer.from(`${storeId}:${secretKey}`).toString('base64')
+            const res = await fetch(`https://${storeId}.swell.store/api/products/${swellProduct.id}?fields=content`, {
+                headers: { 'Authorization': `Basic ${auth}`, 'Accept': 'application/json' },
+                cache: 'no-cache',
+                next: { revalidate: 0 }
+            })
+            if (res.ok) {
+                const data = await res.json()
+                swellProductContent = data.content || {}
+            }
+        }
+    } catch (e) {
+        console.warn('Could not fetch product content:', e)
+    }
+
     // Fetch the CMS structure from Sanity (for layout UI)
     const sanityProduct = await client.fetch(productBySlugQuery, { slug }, { next: { revalidate: 0 } })
 
-    console.log("DEBUG SSR: Requested Slug:", slug, "Fetched Product ID:", swellProduct?.id)
+    console.log("DEBUG SSR: Requested Slug:", slug, "Fetched Product ID:", swellProduct?.id, "Has reviews:", !!swellProductContent?.reviews)
 
     // Build related products array. Fall back to products in same Swell category if none specified in CMS.
     const sanityRelatedSlugs = sanityProduct?.relatedProducts?.map((p: any) => p.slug?.current) || []
@@ -36,8 +57,6 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
         resolvedRelatedProducts = allSwellProducts.filter((p: any) => sanityRelatedSlugs.includes(p.slug))
     } else {
         // Fallback: 4 products from the same category (excluding current product)
-        // Note: Swell categorizes via a different structure, but we'll try to match by category id if available
-        // If not available, we just grab 4 random products
         const categoryId = swellProduct?.category_id || swellProduct?.category?.id
         resolvedRelatedProducts = allSwellProducts
             .filter((p: any) => p.slug !== slug && (categoryId ? (p.category_id === categoryId || p.category?.id === categoryId) : true))
@@ -76,7 +95,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
         options: swellProduct.options || [],
         specifications: sanityProduct?.specifications || [],
         description: swellProduct.description || '',
-        content: swellProduct.content || {},
+        content: swellProductContent,
         styleVariantImages: sanityProduct?.styleVariants || [],
         bundleProducts: (sanityProduct?.bundleProducts || [])
             .map((bpSlug: string) => {
