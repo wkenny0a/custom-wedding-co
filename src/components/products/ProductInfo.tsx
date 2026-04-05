@@ -6,6 +6,7 @@ import { Plus, Minus, ShieldCheck, Clock, Truck, Gift, Check, RotateCcw, Upload 
 import { useCart } from '@/context/CartContext'
 import { MultiItemBuilder } from './MultiItemBuilder'
 import Link from 'next/link'
+import imageCompression from 'browser-image-compression'
 
 export function ProductInfo({ product, onStyleImageSelect }: { product: any, onStyleImageSelect?: (url: string | null) => void }) {
     const [quantity, setQuantity] = useState(1)
@@ -91,8 +92,23 @@ export function ProductInfo({ product, onStyleImageSelect }: { product: any, onS
     const uploadCustomDesignFile = async (): Promise<string | null> => {
         if (!customDesignFile) return null;
         
+        let fileToUpload = customDesignFile;
+
+        // Compress images automatically so Vercel does not block 4.5MB+ payloads
+        if (customDesignFile.type.startsWith('image/')) {
+            try {
+                fileToUpload = await imageCompression(customDesignFile, {
+                    maxSizeMB: 3.5, // Keep under 4MB limit
+                    maxWidthOrHeight: 2500,
+                    useWebWorker: true,
+                });
+            } catch (error) {
+                console.warn('Image compression failed, attempting original file...', error);
+            }
+        }
+
         const formData = new FormData();
-        formData.append('file', customDesignFile);
+        formData.append('file', fileToUpload);
         
         const res = await fetch('/api/upload', {
             method: 'POST',
@@ -100,8 +116,18 @@ export function ProductInfo({ product, onStyleImageSelect }: { product: any, onS
         });
         
         if (!res.ok) {
-            const err = await res.json();
-            throw new Error(err.error || 'Failed to upload custom design');
+            let errorText = 'Failed to upload custom design';
+            try {
+                const err = await res.json();
+                errorText = err.error || errorText;
+            } catch (e) {
+                errorText = await res.text();
+            }
+            throw new Error(
+                res.status === 413 || errorText.includes('Entity Too Large') 
+                ? 'File is too large! Please upload a file smaller than 4MB, OR an image we can automatically compress.' 
+                : errorText
+            );
         }
         
         const data = await res.json();
