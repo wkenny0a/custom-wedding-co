@@ -1,8 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@sanity/client';
-import swellNode from 'swell-node';
-const swell = swellNode.swell;
-
+// swell-node import removed to prevent Next.js build errors with native deasync dependencies
 const sanityClient = createClient({
   projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID,
   dataset: process.env.NEXT_PUBLIC_SANITY_DATASET,
@@ -11,10 +9,6 @@ const sanityClient = createClient({
   useCdn: false, // Must be false for uploads
 });
 
-swell.init(
-  process.env.NEXT_PUBLIC_SWELL_STORE_ID!,
-  process.env.NEXT_PUBLIC_SWELL_SECRET_KEY!
-);
 
 export async function POST(request: Request) {
   try {
@@ -38,8 +32,16 @@ export async function POST(request: Request) {
 
     // Ping Swell to aggressively verify this is a real Cart session
     try {
-      const cart: any = await swell.get('/carts/{id}', { id: cartId });
-      if (!cart || !cart.id) {
+      const swellUrl = `https://${process.env.NEXT_PUBLIC_SWELL_STORE_ID}.swell.store/api/carts/${cartId}`;
+      const auth = Buffer.from(`${process.env.NEXT_PUBLIC_SWELL_STORE_ID}:${process.env.NEXT_PUBLIC_SWELL_SECRET_KEY}`).toString('base64');
+      const res = await fetch(swellUrl, {
+        headers: {
+          'Authorization': `Basic ${auth}`,
+          'Accept': 'application/json'
+        }
+      });
+      const cart = await res.json();
+      if (!res.ok || !cart || !cart.id) {
         throw new Error('Invalid Cart');
       }
     } catch (e) {
