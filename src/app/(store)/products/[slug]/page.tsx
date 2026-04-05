@@ -76,6 +76,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
         options: swellProduct.options || [],
         specifications: sanityProduct?.specifications || [],
         description: swellProduct.description || '',
+        content: swellProduct.content || {},
         styleVariantImages: sanityProduct?.styleVariants || [],
         bundleProducts: (sanityProduct?.bundleProducts || [])
             .map((bpSlug: string) => {
