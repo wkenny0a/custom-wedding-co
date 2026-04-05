@@ -12,7 +12,7 @@ export function ProductInfo({ product, onStyleImageSelect }: { product: any, onS
     const [quantity, setQuantity] = useState(1)
     const [isAdding, setIsAdding] = useState(false)
     const [customDesignFile, setCustomDesignFile] = useState<File | null>(null)
-    const { addToCart, setIsCartOpen } = useCart()
+    const { addToCart, setIsCartOpen, cart } = useCart()
 
     // ── Classify options: use Swell's input_type for robust detection ──
     // Variant/select options: have values to choose from
@@ -109,6 +109,12 @@ export function ProductInfo({ product, onStyleImageSelect }: { product: any, onS
 
         const formData = new FormData();
         formData.append('file', fileToUpload);
+        
+        if (cart && cart.id) {
+            formData.append('cartId', cart.id);
+        } else {
+            throw new Error("Unable to upload custom design: Invalid shopping cart session. Please refresh.");
+        }
         
         const res = await fetch('/api/upload', {
             method: 'POST',
