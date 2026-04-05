@@ -159,14 +159,6 @@ var productData = {
             input_type: 'short_text',
             description: 'e.g. October 12, 2026',
         },
-        {
-            name: 'Custom Extra Messages',
-            variant: false,
-            active: true,
-            required: false,
-            input_type: 'long_text',
-            description: 'Add any special instructions, bespoke requests, or additional notes for your order.',
-        },
     ],
 
     // ── Design / Frontend Notes ───────────────────────────────────────
@@ -180,6 +172,51 @@ var productData = {
             heading_style: 'Serif, uppercase with letter-spacing',
             layout: 'Clean, minimal, generous whitespace, no harsh shadows',
         },
+        reviews: [
+            {
+                rating: 5,
+                date: 'Mar 15, 2026',
+                title: 'Perfect Anniversary Gift',
+                text: 'We bought these for our 5th anniversary and they are absolutely gorgeous. The custom monogram came out so sharp and elegant. We use them almost every dinner now!',
+                author: 'Jessica L.',
+                verified: true,
+                image: '/images/reviews/wineglass_review_1.png'
+            },
+            {
+                rating: 5,
+                date: 'Feb 28, 2026',
+                title: 'Exceeded my expectations!',
+                text: 'I ordered the custom design option and sent in my own logo for our wedding toast. The engraving is phenomenal, and the presentation box it came in just blew us away. Highly recommended!',
+                author: 'David & Emma',
+                verified: true,
+                image: '/images/reviews/wineglass_review_2.png'
+            },
+            {
+                rating: 4,
+                date: 'Jan 10, 2026',
+                title: 'Stunning Glassware',
+                text: 'The glasses feel very premium and sit nicely in the hand. I gave 4 stars only because shipping took a couple days longer than I expected, but it was well worth the wait. The lettering in the box was the cherry on top.',
+                author: 'Michael T.',
+                verified: true,
+                image: '/images/reviews/wineglass_review_3.png'
+            },
+            {
+                rating: 5,
+                date: 'Nov 05, 2025',
+                title: 'Beautiful Heirloom Quality',
+                text: 'These were a bridal shower gift for my best friend, and she literally teared up. They look far more expensive than they are. The font style is so classic and classy.',
+                author: 'Chloe S.',
+                verified: true
+            },
+            {
+                rating: 5,
+                date: 'Sep 22, 2025',
+                title: 'Exactly what we wanted',
+                text: 'I am so impressed with the attention to detail. Our names and the date are perfectly etched. They have quickly become our favorite glasses for wine nights and we even got a second set for our parents!',
+                author: 'Rachel M.',
+                verified: true
+            }
+        ]
     },
 };
 
@@ -299,7 +336,7 @@ async function run() {
     console.log('===================================================');
     console.log('\nDesign Style variants: 12 (Design #1 through Design #11, Custom Design)');
     console.log('Quantity Tiers: 100 sets');
-    console.log('Custom fields: Names or Initials, Event Date, Custom Extra Messages');
+    console.log('Custom fields: Names or Initials, Event Date');
 }
 
 run().catch(function(err) {

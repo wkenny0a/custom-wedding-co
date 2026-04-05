@@ -19,6 +19,37 @@ export function ProductTabs({ product }: { product: any }) {
         { id: 'shipping', label: 'Shipping' }
     )
 
+    const reviews = product.content?.reviews || [
+        {
+            rating: 5,
+            date: 'Oct 12, 2025',
+            title: 'Absolutely Perfect',
+            text: '"This was exactly what we were looking for. The quality is exceptional and the personalization process was wonderfully easy. Highly recommend to any couple!"',
+            author: 'Sarah M.',
+            verified: true
+        },
+        {
+            rating: 5,
+            date: 'Sep 04, 2025',
+            title: 'Beautiful Quality',
+            text: '"I bought these as a wedding gift. They are stunning in person!"',
+            author: 'John D.',
+            verified: true
+        },
+        {
+            rating: 4,
+            date: 'Aug 22, 2025',
+            title: 'Very nice',
+            text: '"Great product. Shipping took a little longer than expected."',
+            author: 'Emily R.',
+            verified: true
+        }
+    ];
+
+    const averageRating = reviews.length > 0 
+        ? (reviews.reduce((acc: number, cur: any) => acc + cur.rating, 0) / reviews.length).toFixed(1)
+        : "5.0";
+
     return (
         <div className="w-full mt-16 pt-16 border-t border-gold/20">
             {/* Tab Navigation */}
@@ -77,28 +108,35 @@ export function ProductTabs({ product }: { product: any }) {
                     <div className="flex flex-col gap-8">
                         <div className="flex flex-col sm:flex-row items-center gap-6 justify-between bg-cream p-8 rounded border border-gold/10">
                             <div className="flex flex-col items-center sm:items-start text-center sm:text-left gap-2">
-                                <span className="font-display text-4xl text-gold">4.9</span>
-                                <StarRating rating={4.9} />
-                                <span className="font-sans text-xs text-gray-500 uppercase tracking-widest mt-1">Based on 24 Reviews</span>
+                                <span className="font-display text-4xl text-gold">{averageRating}</span>
+                                <StarRating rating={Number(averageRating)} />
+                                <span className="font-sans text-xs text-gray-500 uppercase tracking-widest mt-1">Based on {reviews.length} Reviews</span>
                             </div>
                             <button className="font-sans text-sm font-bold uppercase tracking-widest text-espresso border border-espresso px-6 py-3 hover:bg-espresso hover:text-cream transition-colors">
                                 Write a Review
                             </button>
                         </div>
 
-                        {/* Dummy Reviews List */}
-                        {[1, 2, 3].map((i) => (
+                        {/* Reviews List */}
+                        {reviews.map((review: any, i: number) => (
                             <div key={i} className="flex flex-col gap-3 py-6 border-b border-gray-100">
                                 <div className="flex items-center justify-between">
-                                    <StarRating rating={5} />
-                                    <span className="font-sans text-xs text-gray-400">Oct 12, 2025</span>
+                                    <StarRating rating={review.rating} />
+                                    <span className="font-sans text-xs text-gray-400">{review.date}</span>
                                 </div>
-                                <h4 className="font-serif font-bold text-lg text-espresso">Absolutely Perfect</h4>
+                                <h4 className="font-serif font-bold text-lg text-espresso">{review.title}</h4>
                                 <p className="font-sans text-sm text-espresso/80 leading-relaxed">
-                                    "This was exactly what we were looking for. The quality is exceptional and the personalization process was wonderfully easy. Highly recommend to any couple!"
+                                    "{review.text.replace(/^"|"$/g, '')}"
                                 </p>
+                                
+                                {review.image && (
+                                    <div className="mt-3 mb-2 h-32 w-32 relative overflow-hidden border border-gold/20 rounded object-cover">
+                                        <img src={review.image} alt="Customer review" className="w-full h-full object-cover" />
+                                    </div>
+                                )}
+                                
                                 <span className="font-sans text-xs font-semibold uppercase tracking-widest text-gold mt-2">
-                                    — Sarah M. <span className="text-gray-400 font-normal lowercase tracking-normal">(Verified Buyer)</span>
+                                    — {review.author} {review.verified && <span className="text-gray-400 font-normal lowercase tracking-normal">(Verified Buyer)</span>}
                                 </span>
                             </div>
                         ))}
