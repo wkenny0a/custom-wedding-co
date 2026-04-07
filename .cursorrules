@@ -18,3 +18,7 @@ You are an expert frontend developer working on "Custom Wedding Co.", an elegant
 2. Default styling: `text-espresso` on `bg-cream`.
 3. Premium feel: Use subtle CSS transitions (`duration-500` or `duration-700`), slow hover states, and ample padding/whitespace (`py-20`, `py-28`) for an elegant and romantic feel.
 4. Readability: When placing text over images, use a neutral dark overlay (`bg-black/20` or `bg-black/40` on hover) rather than color-tinting the image with a brand color.
+
+
+# NOTE for AI: 
+ALWAYS read `AI_CONTEXT.md` first to align with the rest of the team's shared AI context! It contains architectural docs that all assistants on this project must follow.
