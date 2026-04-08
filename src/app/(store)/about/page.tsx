@@ -78,7 +78,7 @@ export default function AboutPage() {
         <div className="max-w-7xl mx-auto flex flex-col-reverse md:flex-row items-center gap-16">
           <div className="w-full md:w-1/2 relative h-[600px] rounded-xl overflow-hidden shadow-2xl group">
              <Image
-              src="/images/about/warehouse_about_us_v2_1775685001446.png"
+              src="/images/about/warehouse_about_us_v3_1775685340668.png"
               alt="Custom Wedding Co warehouse and artisans"
               fill
               className="object-cover transition-transform duration-700 group-hover:scale-105"
@@ -113,7 +113,7 @@ export default function AboutPage() {
             Ready to make your Pinterest board a reality? Start designing your perfect day with our artisan collections.
           </p>
           <Link 
-            href="/products" 
+            href="https://custom-wedding-co.vercel.app/shop" 
             className="inline-block px-10 py-4 bg-gold text-espresso font-sans uppercase tracking-widest text-sm hover:bg-gold-light transition-colors duration-500 rounded-sm"
           >
             Explore Our Collections
