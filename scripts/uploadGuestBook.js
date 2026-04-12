@@ -73,53 +73,27 @@ const productData = {
 
     // ── Options: 2 Variants + 3 Custom Text Inputs ──────────────
     options: [
-        // ─── VARIANT 1: Book Color & Typography Details ──────────
+        // ─── VARIANT 1: Design Style ──────────────────────────────
         {
-            name: 'Book Color & Typography Details',
+            name: 'Design Style',
             variant: true,
             active: true,
             required: true,
             input_type: 'select',
             values: [
-                { name: 'Eggshell w/ Black' },
-                { name: 'Eggshell w/ Gold' },
-                { name: 'Cream w/ Black' },
-                { name: 'Taupe w/ Black' },
-                { name: 'Navy w/ White' },
-                { name: 'Navy w/ Gold' },
-                { name: 'Charcoal w/ White' },
-                { name: 'Charcoal w/ Gold' },
-                { name: 'Emerald w/ White' },
-                { name: 'Emerald w/ Gold' },
-                { name: 'Bronze w/ Black' },
-                { name: 'Wine w/ White' },
-                { name: 'Wine w/ Gold' },
-                { name: 'Sage w/ Black' },
-                { name: 'Slate Gray w/ Black' },
-                { name: 'Red w/ White' },
-                { name: 'Red w/ Gold' },
-                { name: 'Tan w/ Black' },
-                { name: 'Oats w/ Black' },
-                { name: 'Butter w/ Black' },
-            ],
-        },
-
-        // ─── VARIANT 2: Archival Photo Corners ───────────────────
-        {
-            name: 'Archival Photo Corners',
-            variant: true,
-            active: true,
-            required: true,
-            input_type: 'select',
-            values: [
-                { name: 'No Add-Ons' },
-                { name: '120 Black Corners' },
-                { name: '240 Black Corners' },
-                { name: '360 Black Corners' },
-                { name: '120 Gold Corners' },
-                { name: '240 Gold Corners' },
-                { name: '360 Gold Corners' },
-            ],
+                { name: 'Design #1' },
+                { name: 'Design #2' },
+                { name: 'Design #3' },
+                { name: 'Design #4' },
+                { name: 'Design #5' },
+                { name: 'Design #6' },
+                { name: 'Design #7' },
+                { name: 'Design #8' },
+                { name: 'Design #9' },
+                { name: 'Design #10' },
+                { name: 'Design #11' },
+                { name: 'Design #12 (Custom Design)' },
+            ]
         },
 
         // ─── TEXT INPUT 1: Couple's Names (Required) ─────────────
@@ -132,7 +106,17 @@ const productData = {
             description: 'Enter the couple\'s names as you would like them displayed on the cover of your guest book.',
         },
 
-        // ─── TEXT INPUT 2: Wedding Date (Required) ───────────────
+        // ─── TEXT INPUT 2: Location / Venue (Optional) ───────────
+        {
+            name: 'Location / Venue (e.g., Santa Barbara, California)',
+            variant: false,
+            active: true,
+            required: false,
+            input_type: 'short_text',
+            description: 'Enter your wedding venue or location as you would like it displayed on the cover.',
+        },
+
+        // ─── TEXT INPUT 3: Wedding Date (Required) ───────────────
         {
             name: 'Wedding Date (e.g., October 12, 2026)',
             variant: false,
@@ -140,16 +124,6 @@ const productData = {
             required: true,
             input_type: 'short_text',
             description: 'Enter your wedding date as you would like it displayed on the cover.',
-        },
-
-        // ─── TEXT INPUT 3: Location / Venue (Required) ───────────
-        {
-            name: 'Location / Venue (e.g., Santa Barbara, California)',
-            variant: false,
-            active: true,
-            required: true,
-            input_type: 'short_text',
-            description: 'Enter your wedding venue or location as you would like it displayed on the cover.',
         },
     ],
 
@@ -249,15 +223,26 @@ async function uploadProduct() {
         const existing = await swell.get('/products', { where: { slug: SLUG } });
 
         if (existing && existing.results && existing.results.length > 0) {
-            console.log(`Product already exists (ID: ${existing.results[0].id}). Updating...`);
-            const updated = await swell.put(`/products/${existing.results[0].id}`, productData);
+            const productId = existing.results[0].id;
+            console.log(`Product already exists (ID: ${productId}). Updating...`);
+            
+            // Cleanup existing options to avoid duplicates or orphaned options
+            const oldOptions = existing.results[0].options || [];
+            if (oldOptions.length > 0) {
+                console.log(`  Cleaning up ${oldOptions.length} old options...`);
+                for (const opt of oldOptions) {
+                    await swell.delete(`/products/${productId}/options/${opt.id}`);
+                }
+            }
+
+            const updated = await swell.put(`/products/${productId}`, productData);
             console.log(`\n✅ Successfully updated product!`);
             console.log(`   Name     : ${updated.name}`);
             console.log(`   Slug     : ${updated.slug}`);
             console.log(`   Price    : $${updated.price}`);
             console.log(`   Active   : ${updated.active}`);
             console.log(`   Options  : ${updated.options?.length || 0}`);
-            console.log(`   Variants : Book Color (20) + Photo Corners (7)`);
+            console.log(`   Variants : Design Style (12)`);
         } else {
             console.log('Creating new product...');
             const created = await swell.post('/products', productData);
@@ -268,7 +253,7 @@ async function uploadProduct() {
             console.log(`   Price    : $${created.price}`);
             console.log(`   Active   : ${created.active}`);
             console.log(`   Options  : ${created.options?.length || 0}`);
-            console.log(`   Variants : Book Color (20) + Photo Corners (7)`);
+            console.log(`   Variants : Design Style (12)`);
         }
 
         console.log('\n🎉 Done! Product is live in Swell.\n');

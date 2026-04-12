@@ -12,15 +12,57 @@
  *
  * Run:  node scripts/uploadCocktailNapkins.js
  */
-require('dotenv').config({ path: '.env.local' });
-const swell = require('swell-node').swell;
 const fs = require('fs');
 const path = require('path');
 
-swell.init(
-    process.env.NEXT_PUBLIC_SWELL_STORE_ID,
-    process.env.NEXT_PUBLIC_SWELL_SECRET_KEY
-);
+const storeId = process.env.NEXT_PUBLIC_SWELL_STORE_ID || 'customweddingco';
+const secretKey = process.env.NEXT_PUBLIC_SWELL_SECRET_KEY || 'sk_bOFKfMVRD6jXYe4y6wy7xdZeqKJdYtjn';
+const authHeader = 'Basic ' + Buffer.from(storeId + ':' + secretKey).toString('base64');
+
+const swell = {
+    async get(endpoint, params) {
+        let url = `https://api.swell.store${endpoint}`;
+        if (params && params.where) {
+            const query = new URLSearchParams();
+            for (const key in params.where) {
+                query.append(`where[${key}]`, params.where[key]);
+            }
+            url += '?' + query.toString();
+        }
+        const res = await fetch(url, { headers: { Authorization: authHeader, 'Accept': 'application/json' }});
+        if (!res.ok) throw new Error(await res.text());
+        return res.json();
+    },
+    async post(endpoint, body) {
+        const url = `https://api.swell.store${endpoint}`;
+        const res = await fetch(url, {
+            method: 'POST',
+            headers: { Authorization: authHeader, 'Content-Type': 'application/json', 'Accept': 'application/json' },
+            body: JSON.stringify(body)
+        });
+        if (!res.ok) throw new Error(await res.text());
+        return res.json();
+    },
+    async put(endpoint, body) {
+        const url = `https://api.swell.store${endpoint}`;
+        const res = await fetch(url, {
+            method: 'PUT',
+            headers: { Authorization: authHeader, 'Content-Type': 'application/json', 'Accept': 'application/json' },
+            body: JSON.stringify(body)
+        });
+        if (!res.ok) throw new Error(await res.text());
+        return res.json();
+    },
+    async delete(endpoint) {
+        const url = `https://api.swell.store${endpoint}`;
+        const res = await fetch(url, {
+            method: 'DELETE',
+            headers: { Authorization: authHeader, 'Accept': 'application/json' },
+        });
+        if (!res.ok) throw new Error(await res.text());
+        return res.json();
+    }
+};
 
 const SLUG = 'bespoke-monogram-cocktail-napkins';
 
@@ -68,9 +110,8 @@ const productData = {
         'custom barware',
     ],
 
-    // ── Options: 2 Variants + 4 Custom Text Inputs ───────────────
+    // ── Options ───────────────────────────────────────────────────────
     options: [
-        // ─── VARIANT 1: Quantity ─────────────────────────────────
         {
             name: 'Quantity',
             variant: true,
@@ -92,76 +133,53 @@ const productData = {
                 { name: '3000' },
             ],
         },
-
-        // ─── VARIANT 2: Napkin Color ─────────────────────────────
         {
-            name: 'Napkin Color',
+            name: 'Design Style',
             variant: true,
             active: true,
             required: true,
             input_type: 'select',
             values: [
-                { name: 'Ivory' },
-                { name: 'White' },
-                { name: 'Mimosa' },
-                { name: 'Yellow' },
-                { name: 'Black' },
-                { name: 'Classic Pink' },
-                { name: 'Candy Pink' },
-                { name: 'Lavender' },
-                { name: 'Orange' },
-                { name: 'Red' },
-                { name: 'Pastel Blue' },
-                { name: 'Fresh Mint' },
-                { name: 'Fresh Lime' },
-                { name: 'Bermuda Blue' },
-                { name: 'Purple' },
-                { name: 'Navy' },
-                { name: 'Hunter Green' },
-                { name: 'Emerald Green' },
-                { name: 'Burgundy' },
-                { name: 'Cobalt Blue' },
+                { name: 'Design #1' },
+                { name: 'Design #2' },
+                { name: 'Design #3' },
+                { name: 'Design #4' },
+                { name: 'Design #5' },
+                { name: 'Design #6' },
+                { name: 'Design #7' },
+                { name: 'Design #8' },
+                { name: 'Design #9' },
+                { name: 'Design #10' },
+                { name: 'Design #11' },
+                { name: 'Design #12 (Custom Design)' },
             ],
         },
-
-        // ─── TEXT INPUT 1: Beverage Motif (Required) ─────────────
         {
-            name: 'Beverage Motif / Clipart Selection',
-            variant: false,
+            name: 'Font color',
+            variant: true,
             active: true,
             required: true,
-            input_type: 'short_text',
-            description: 'Select or describe the beverage motif or clipart you would like on your napkins.',
+            input_type: 'select',
+            values: [
+                { name: 'Black' },
+                { name: 'Gold' },
+            ],
         },
-
-        // ─── TEXT INPUT 2: Design Layout (Required) ──────────────
         {
-            name: 'Design Layout Preference',
+            name: 'Names or Initials',
             variant: false,
             active: true,
             required: true,
             input_type: 'short_text',
-            description: 'Describe your preferred design layout — e.g. centered monogram, border design, corner motif.',
+            description: 'Enter the names or initials exactly as you would like them engraved.',
         },
-
-        // ─── TEXT INPUT 3: Custom Text (Required) ────────────────
         {
-            name: 'Custom Text (Names, Monogram, Date)',
+            name: 'Event Date',
             variant: false,
             active: true,
             required: true,
             input_type: 'short_text',
-            description: 'Enter the exact text you would like printed — e.g. "S & J  •  June 2026"',
-        },
-
-        // ─── TEXT INPUT 4: Event Date (Required) ─────────────────
-        {
-            name: 'Event Date / Required Delivery Date',
-            variant: false,
-            active: true,
-            required: true,
-            input_type: 'short_text',
-            description: 'Enter your event date and required delivery date so we can ensure timely delivery.',
+            description: 'e.g. October 12, 2026',
         },
     ],
 
@@ -237,11 +255,6 @@ async function uploadProduct() {
     console.log('║  Creating Bespoke Monogram Cocktail Napkins          ║');
     console.log('╚═══════════════════════════════════════════════════════╝\n');
 
-    if (!process.env.NEXT_PUBLIC_SWELL_SECRET_KEY) {
-        console.error('ERROR: NEXT_PUBLIC_SWELL_SECRET_KEY is missing from .env.local');
-        process.exit(1);
-    }
-
     try {
         // ── Upload image ─────────────────────────────────────────────
         const imageFile = await uploadImage();
@@ -260,14 +273,21 @@ async function uploadProduct() {
         const existing = await swell.get('/products', { where: { slug: SLUG } });
 
         if (existing && existing.results && existing.results.length > 0) {
-            console.log(`Product already exists (ID: ${existing.results[0].id}). Updating...`);
-            const updated = await swell.put(`/products/${existing.results[0].id}`, productData);
+            console.log(`Product already exists (ID: ${existing.results[0].id}). Clearing old options explicitly...`);
+            const prod = existing.results[0];
+            if (prod.options && prod.options.length > 0) {
+                for (let i = 0; i < prod.options.length; i++) {
+                    await swell.delete(`/products/${prod.id}/options/${prod.options[i].id}`);
+                }
+            }
+            console.log(`Updating product with newly formatted options...`);
+            const updated = await swell.put(`/products/${prod.id}`, productData);
             console.log(`\n✅ Successfully updated product!`);
             console.log(`   Name     : ${updated.name}`);
             console.log(`   Slug     : ${updated.slug}`);
             console.log(`   Active   : ${updated.active}`);
             console.log(`   Options  : ${updated.options?.length || 0}`);
-            console.log(`   Variants : Quantity (12) × Color (20) = ${12 * 20} combos`);
+            console.log(`   Variants : Quantity (12) × Design Style (12) = ${12 * 12} combos`);
         } else {
             console.log('Creating new product...');
             const created = await swell.post('/products', productData);
@@ -277,7 +297,7 @@ async function uploadProduct() {
             console.log(`   Slug     : ${created.slug}`);
             console.log(`   Active   : ${created.active}`);
             console.log(`   Options  : ${created.options?.length || 0}`);
-            console.log(`   Variants : Quantity (12) × Color (20) = ${12 * 20} combos`);
+            console.log(`   Variants : Quantity (12) × Design Style (12) = ${12 * 12} combos`);
         }
 
         console.log('\n🎉 Done! Product is live in Swell.\n');

@@ -31,6 +31,7 @@ const uploadProduct = async () => {
 
         const productData = {
             name: "Bespoke Mirrored Acrylic Wedding Welcome Sign | Heirloom Gold & Silver Decor",
+            price: 0,
             active: true,
             currency: "USD",
             description: `<p><em>Welcome your guests with a breathtaking, heirloom-quality mirrored acrylic sign, meticulously customized to reflect the timeless elegance of your love story.</em></p>
@@ -45,12 +46,6 @@ const uploadProduct = async () => {
             meta_title: "Bespoke Mirrored Wedding Welcome Sign | Custom Heirloom Decor",
             meta_description: "Elevate your wedding reception with our luxury bespoke mirrored acrylic welcome sign. Handcrafted in antique gold or silver for a timeless, elegant entrance.",
             slug: "bespoke-mirrored-acrylic-wedding-welcome-sign",
-            categories: [
-                { name: "Wedding Reception Decor" },
-                { name: "Bespoke Signage" },
-                { name: "Luxury Wedding Details" },
-                { name: "Heirloom Keepsakes" }
-            ],
             options: [
                 {
                     name: "Material & Size",
@@ -59,11 +54,11 @@ const uploadProduct = async () => {
                     required: true,
                     values: [
                         { name: "Silver Acrylic 12x18\"" },
-                        { name: "Silver Acrylic 18x24\"" },
-                        { name: "Silver Acrylic 24x36\"" },
+                        { name: "Silver Acrylic 18x24\"", price: 30 },
+                        { name: "Silver Acrylic 24x36\"", price: 60 },
                         { name: "Gold Acrylic 12x18\"" },
-                        { name: "Gold Acrylic 18x24\"" },
-                        { name: "Gold Acrylic 24x36\"" }
+                        { name: "Gold Acrylic 18x24\"", price: 30 },
+                        { name: "Gold Acrylic 24x36\"", price: 60 }
                     ]
                 },
                 {
@@ -73,8 +68,8 @@ const uploadProduct = async () => {
                     required: true,
                     values: [
                         { name: "Sign Only" },
-                        { name: "Sign + Metal Easel" },
-                        { name: "Sign + Wooden Easel" }
+                        { name: "Sign + Metal Easel", price: 30 },
+                        { name: "Sign + Wooden Easel", price: 30 }
                     ]
                 },
                 {
@@ -92,37 +87,16 @@ const uploadProduct = async () => {
                     description: "Enter the wedding date (e.g. August 24, 2026)"
                 },
                 {
-                    name: "Design Number",
+                    name: "Design Style",
                     active: true,
+                    variant: true,
                     input_type: "select",
                     required: true,
                     values: [
-                        { name: "1" },
-                        { name: "2" },
-                        { name: "3" },
-                        { name: "4" },
-                        { name: "5" },
-                        { name: "6" }
+                        { name: "Design #1" },
+                        { name: "Design #2" },
+                        { name: "Design #3 (Custom Design)" }
                     ]
-                },
-                {
-                    name: "Acrylic Shape",
-                    active: true,
-                    input_type: "select",
-                    required: true,
-                    values: [
-                        { name: "1" },
-                        { name: "2" },
-                        { name: "3" },
-                        { name: "4" }
-                    ]
-                },
-                {
-                    name: "Font Choice",
-                    active: true,
-                    input_type: "short_text",
-                    required: true,
-                    description: "Enter your preferred font style"
                 },
                 {
                     name: "Text Color",
@@ -151,34 +125,47 @@ const uploadProduct = async () => {
         });
 
         let productId;
+        let result;
         if (existing && existing.results && existing.results.length > 0) {
             console.log("Product already exists, updating...");
-            const result = await swell.put(`/products/${existing.results[0].id}`, productData);
+            result = await swell.put(`/products/${existing.results[0].id}`, productData);
             productId = existing.results[0].id;
-            console.log("✅ Successfully updated product!");
+            if (result.errors) console.error("Swell validation errors:", result.errors);
+            else console.log("✅ Successfully updated product!");
         } else {
             console.log("Creating new product...");
-            const result = await swell.post('/products', productData);
+            result = await swell.post('/products', productData);
             productId = result.id;
-            console.log("✅ Successfully created product! ID:", productId);
+            if (result.errors) console.error("Swell validation errors:", result.errors);
+            else console.log("✅ Successfully created product! ID:", productId);
         }
 
         // Ensure categories exist
         const categoryNames = ["Wedding Reception Decor", "Bespoke Signage", "Luxury Wedding Details", "Heirloom Keepsakes"];
         for (const catName of categoryNames) {
             const catSlug = catName.toLowerCase().replace(/\s+/g, '-');
+            let catId = null;
             const existingCat = await swell.get('/categories', {
                 where: { slug: catSlug }
             });
             if (!existingCat || !existingCat.results || existingCat.results.length === 0) {
-                await swell.post('/categories', {
+                const newCat = await swell.post('/categories', {
                     name: catName,
                     slug: catSlug,
                     active: true
                 });
+                catId = newCat.id;
                 console.log(`✅ Created category: ${catName}`);
             } else {
+                catId = existingCat.results[0].id;
                 console.log(`Category '${catName}' already exists.`);
+            }
+            if (productId && catId) {
+                await swell.post(`/products/${productId}/categories`, {
+                    parent_id: productId,
+                    category_id: catId
+                });
+                console.log(`✅ Linked category: ${catName}`);
             }
         }
 

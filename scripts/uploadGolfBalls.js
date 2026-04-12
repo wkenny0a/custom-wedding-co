@@ -1,12 +1,71 @@
-require('dotenv').config({ path: '.env.local' });
-const swell = require('swell-node').swell;
 const fs = require('fs');
 const path = require('path');
 
-swell.init(
-    process.env.NEXT_PUBLIC_SWELL_STORE_ID,
-    process.env.NEXT_PUBLIC_SWELL_SECRET_KEY
-);
+// Manually parse .env.local
+try {
+    const envContent = fs.readFileSync('.env.local', 'utf8');
+    envContent.split('\n').forEach(line => {
+        const match = line.match(/^\s*([\w]+)\s*=\s*(.*)?\s*$/);
+        if (match) {
+            let val = match[2] || '';
+            if (val.startsWith('"') && val.endsWith('"')) {
+                val = val.slice(1, -1);
+            } else if (val.startsWith("'") && val.endsWith("'")) {
+                val = val.slice(1, -1);
+            }
+            process.env[match[1]] = val;
+        }
+    });
+} catch(e) {}
+
+const storeId = process.env.NEXT_PUBLIC_SWELL_STORE_ID;
+const secretKey = process.env.NEXT_PUBLIC_SWELL_SECRET_KEY;
+const authHeader = 'Basic ' + Buffer.from(storeId + ':' + secretKey).toString('base64');
+
+const swell = {
+    async get(endpoint, params) {
+        let url = `https://api.swell.store${endpoint}`;
+        if (params && params.where) {
+            const query = new URLSearchParams();
+            for (const key in params.where) {
+                query.append(`where[${key}]`, params.where[key]);
+            }
+            url += '?' + query.toString();
+        }
+        const res = await fetch(url, { headers: { Authorization: authHeader, 'Accept': 'application/json' }});
+        if (!res.ok) throw new Error(await res.text());
+        return res.json();
+    },
+    async post(endpoint, body) {
+        const url = `https://api.swell.store${endpoint}`;
+        const res = await fetch(url, {
+            method: 'POST',
+            headers: { Authorization: authHeader, 'Content-Type': 'application/json', 'Accept': 'application/json' },
+            body: JSON.stringify(body)
+        });
+        if (!res.ok) throw new Error(await res.text());
+        return res.json();
+    },
+    async put(endpoint, body) {
+        const url = `https://api.swell.store${endpoint}`;
+        const res = await fetch(url, {
+            method: 'PUT',
+            headers: { Authorization: authHeader, 'Content-Type': 'application/json', 'Accept': 'application/json' },
+            body: JSON.stringify(body)
+        });
+        if (!res.ok) throw new Error(await res.text());
+        return res.json();
+    },
+    async delete(endpoint) {
+        const url = `https://api.swell.store${endpoint}`;
+        const res = await fetch(url, {
+            method: 'DELETE',
+            headers: { Authorization: authHeader, 'Accept': 'application/json' },
+        });
+        if (!res.ok) throw new Error(await res.text());
+        return res.json();
+    }
+};
 
 // ── Categories ────────────────────────────────────────────────────────
 var categories = [
@@ -39,7 +98,7 @@ var productData = {
     name: 'Bespoke Personalized Golf Balls | Luxury Groomsmen Gifts & Heirloom Wedding Favors',
     slug: SLUG,
     active: true,
-    price: 0,
+    price: 24.99,
     currency: 'USD',
     stock_tracking: false, // Made to Order
 
@@ -58,27 +117,27 @@ var productData = {
         '  <ul style="list-style: none; padding: 0; margin: 0 0 2em 0;">',
         '    <li style="padding: 0.8em 0; border-bottom: 1px solid #F2D9D9;">',
         '      <strong style="color: #4A2C2A; letter-spacing: 0.04em;">Handcrafted Exclusivity</strong>',
-        '      <span style="color: #B89A52; margin: 0 0.4em;">\\u2014</span>',
+        '      <span style="color: #B89A52; margin: 0 0.4em;">&mdash;</span>',
         '      Custom-printed with your unique monogram, tailored message, or a meaningful date in elegant typography.',
         '    </li>',
         '    <li style="padding: 0.8em 0; border-bottom: 1px solid #F2D9D9;">',
         '      <strong style="color: #4A2C2A; letter-spacing: 0.04em;">Timeless Presentation</strong>',
-        '      <span style="color: #B89A52; margin: 0 0.4em;">\\u2014</span>',
+        '      <span style="color: #B89A52; margin: 0 0.4em;">&mdash;</span>',
         '      Arrives beautifully packaged in a clear keepsake sleeve, ready to be gifted to your groomsmen or the father of the bride.',
         '    </li>',
         '    <li style="padding: 0.8em 0; border-bottom: 1px solid #F2D9D9;">',
         '      <strong style="color: #4A2C2A; letter-spacing: 0.04em;">Premium Keepsake Quality</strong>',
-        '      <span style="color: #B89A52; margin: 0 0.4em;">\\u2014</span>',
+        '      <span style="color: #B89A52; margin: 0 0.4em;">&mdash;</span>',
         '      Crafted with high-fidelity UV printing, ensuring your intimate design remains a lasting memento long after the final hole.',
         '    </li>',
         '    <li style="padding: 0.8em 0; border-bottom: 1px solid #F2D9D9;">',
         '      <strong style="color: #4A2C2A; letter-spacing: 0.04em;">Bespoke Options</strong>',
-        '      <span style="color: #B89A52; margin: 0 0.4em;">\\u2014</span>',
+        '      <span style="color: #B89A52; margin: 0 0.4em;">&mdash;</span>',
         '      Available in curated sets of 1, 3, or 6, with single or double-sided personalization to perfectly match your vision.',
         '    </li>',
         '    <li style="padding: 0.8em 0;">',
         '      <strong style="color: #4A2C2A; letter-spacing: 0.04em;">A Memorable Detail</strong>',
-        '      <span style="color: #B89A52; margin: 0 0.4em;">\\u2014</span>',
+        '      <span style="color: #B89A52; margin: 0 0.4em;">&mdash;</span>',
         '      The sophisticated companion for a celebratory bachelor weekend or a peaceful morning on the greens before the ring.',
         '    </li>',
         '  </ul>',
@@ -108,43 +167,55 @@ var productData = {
     // ── Options ───────────────────────────────────────────────────────
     options: [
         {
-            name: 'Set Size & Style',
+            name: 'Quantity Tiers (Dropdown)',
+            variant: true,
+            active: true,
+            required: true,
+            input_type: 'select',
+            values: Array.from({ length: 100 }, function(_, i) {
+                var sets = i + 1;
+                var balls = sets * 6;
+                var optName = sets + ' Set (' + balls + ' Golf Balls)';
+                if (sets === 1) return { name: optName };
+                return { name: optName, price: parseFloat(((sets - 1) * 19.99).toFixed(2)) };
+            })
+        },
+        {
+            name: 'Design Style',
             variant: true,
             active: true,
             required: true,
             input_type: 'select',
             values: [
-                { name: '1 Ball - 1 Sided' },
-                { name: '1 Ball - 2 Sided' },
-                { name: '3 Balls - 1 Sided' },
-                { name: '3 Balls - 2 Sided' },
-                { name: '6 Balls - 1 Sided' },
-                { name: '6 Balls - 2 Sided' },
-            ],
+                { name: 'Design #1' },
+                { name: 'Design #2' },
+                { name: 'Design #3' },
+                { name: 'Design #4' },
+                { name: 'Design #5' },
+                { name: 'Design #6' },
+                { name: 'Design #7' },
+                { name: 'Design #8' },
+                { name: 'Design #9' },
+                { name: 'Design #10' },
+                { name: 'Design #11' },
+                { name: 'Design #12 (Custom Design)' },
+            ]
         },
         {
-            name: 'Customization Details (Text, Names, or Roles)',
+            name: 'Names or Initials',
             variant: false,
             active: true,
             required: true,
             input_type: 'short_text',
-            description: 'Please provide the text, names, monogram, or roles you would like printed on the golf balls.',
+            description: 'Enter the names or initials exactly as you would like them engraved.',
         },
         {
             name: 'Event Date',
             variant: false,
             active: true,
-            required: false,
+            required: true,
             input_type: 'short_text',
-            description: 'Optional. Enter the date of the event (e.g., June 14, 2026).',
-        },
-        {
-            name: 'Upload Custom Monogram or Logo',
-            variant: false,
-            active: true,
-            required: false,
-            input_type: 'long_text',
-            description: 'Optional. Please email your custom monogram or logo file to info@marblefy.com with your order number, or paste a link to your file here.',
+            description: 'e.g. October 12, 2026',
         },
     ],
 
@@ -227,8 +298,15 @@ async function run() {
     var product;
 
     if (existing && existing.results && existing.results.length > 0) {
-        console.log('  Product exists (ID: ' + existing.results[0].id + '). Updating...');
-        product = await swell.put('/products/' + existing.results[0].id, productData);
+        var prod = existing.results[0];
+        console.log('  Product exists (ID: ' + prod.id + '). Clearing old options explicitly...');
+        if (prod.options && prod.options.length > 0) {
+            for (var k = 0; k < prod.options.length; k++) {
+                await swell.delete('/products/' + prod.id + '/options/' + prod.options[k].id);
+            }
+        }
+        console.log('  Updating...');
+        product = await swell.put('/products/' + prod.id, productData);
         console.log('  \u2705 Updated!');
     } else {
         product = await swell.post('/products', productData);
@@ -276,8 +354,8 @@ async function run() {
     console.log('\n===================================================');
     console.log(' \ud83c\udf89  Product is LIVE in Swell!');
     console.log('===================================================');
-    console.log('\nVariant options: 6 Set Size & Style combinations');
-    console.log('Custom fields: Customization Details (required), Event Date (optional), Upload Monogram/Logo (optional)');
+    console.log('\nVariant options: 100 Quantity Tiers \u00d7 12 Design Styles = 1200 combinations');
+    console.log('Custom fields: Names or Initials (required), Event Date (required)');
 }
 
 run().catch(function(err) {

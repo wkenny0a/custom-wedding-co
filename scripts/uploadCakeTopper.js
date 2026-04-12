@@ -3,7 +3,6 @@
  *
  * Includes:
  *   - Image upload from generated thumbnail
- *   - 1 variant option: Finish Color (18 values)
  *   - 1 required custom text input: Last Name for Custom Calligraphy
  *   - Rich HTML description
  *   - SEO metadata
@@ -12,7 +11,7 @@
  *
  * Run:  node scripts/uploadCakeTopper.js
  */
-require('dotenv').config({ path: '.env.local' });
+// require('dotenv').config({ path: '.env.local' });
 const swell = require('swell-node').swell;
 const fs = require('fs');
 const path = require('path');
@@ -70,34 +69,7 @@ const productData = {
 
     // ── Options: 1 Variant + 1 Custom Text Input ─────────────────
     options: [
-        // ─── VARIANT 1: Finish Color ────────────────────────────
-        {
-            name: 'Finish Color',
-            variant: true,
-            active: true,
-            required: true,
-            input_type: 'select',
-            values: [
-                { name: 'Gold' },
-                { name: 'Silver' },
-                { name: 'Rose Gold' },
-                { name: 'Natural Wood' },
-                { name: 'Black' },
-                { name: 'White' },
-                { name: 'Gold Mirror' },
-                { name: 'Rose Gold Mirror' },
-                { name: 'Silver Mirror' },
-                { name: 'Copper Mirror' },
-                { name: 'Dusty Rose' },
-                { name: 'Pastel Green' },
-                { name: 'Pastel Lilac' },
-                { name: 'Pastel Mint' },
-                { name: 'Navy Blue' },
-                { name: 'Burgundy' },
-                { name: 'Boho Cream' },
-                { name: 'Emerald Green' },
-            ],
-        },
+
 
         // ─── TEXT INPUT: Last Name for Custom Calligraphy (Required) ──
         {
@@ -213,7 +185,7 @@ async function uploadProduct() {
             console.log(`   Slug     : ${updated.slug}`);
             console.log(`   Active   : ${updated.active}`);
             console.log(`   Options  : ${updated.options?.length || 0}`);
-            console.log(`   Variants : Finish Color (18)`);
+            console.log(`   Variants : None`);
         } else {
             console.log('Creating new product...');
             const created = await swell.post('/products', productData);
@@ -223,7 +195,7 @@ async function uploadProduct() {
             console.log(`   Slug     : ${created.slug}`);
             console.log(`   Active   : ${created.active}`);
             console.log(`   Options  : ${created.options?.length || 0}`);
-            console.log(`   Variants : Finish Color (18)`);
+            console.log(`   Variants : None`);
         }
 
         console.log('\n🎉 Done! Product is live in Swell.\n');

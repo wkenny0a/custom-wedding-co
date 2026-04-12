@@ -115,49 +115,41 @@ const productData = {
     // ── Options ───────────────────────────────────────────────────────
     options: [
         {
-            name: 'Shape',
-            variant: true,
-            active: true,
-            required: true,
-            input_type: 'select',
-            values: [
-                { name: 'Straight-Edged Square (3.5in)' },
-                { name: 'Wavy-Edged Square (3.3in)' },
-                { name: 'Heart-Shaped (3.9in)' },
-                { name: 'Regular Round (4in)' },
-                { name: 'Wavy-Edged Round (4.2in)' },
-            ],
-        },
-        {
             name: 'Design Style',
             variant: true,
             active: true,
             required: true,
             input_type: 'select',
             values: [
-                { name: 'Birth Flower (Jan-Dec)' },
-                { name: 'Custom Typography - Gold' },
-                { name: 'Custom Typography - Black' },
-                { name: 'Botanical Motif - Gold' },
-                { name: 'Botanical Motif - Black' },
-                { name: 'Custom Client Design' },
+                { name: 'Design #1' },
+                { name: 'Design #2' },
+                { name: 'Design #3' },
+                { name: 'Design #4' },
+                { name: 'Design #5' },
+                { name: 'Design #6' },
+                { name: 'Design #7' },
+                { name: 'Design #8' },
+                { name: 'Design #9' },
+                { name: 'Design #10' },
+                { name: 'Design #11' },
+                { name: 'Design #12 (Custom Design)' },
             ],
         },
         {
-            name: 'Personalization Details (Name/Initial/Date)',
+            name: 'Names or Initials',
             variant: false,
             active: true,
             required: true,
             input_type: 'short_text',
-            description: 'Please enter the exact text you would like printed in classic serif typography.',
+            description: 'Enter the names or initials exactly as you would like them engraved.',
         },
         {
-            name: 'Special Instructions / Order Notes',
+            name: 'Event Date',
             variant: false,
             active: true,
-            required: false,
-            input_type: 'long_text',
-            description: 'Optional — any additional details, requests, or notes for your order.',
+            required: true,
+            input_type: 'short_text',
+            description: 'e.g. October 12, 2026',
         },
     ],
 
@@ -291,22 +283,10 @@ async function run() {
     console.log(' 🎉  Bespoke Botanical Ceramic Ring Dish is LIVE in Swell!');
     console.log('═══════════════════════════════════════════════════');
     console.log('\nVariant options:');
-    console.log('  Shape:');
-    console.log('    • Straight-Edged Square (3.5in)');
-    console.log('    • Wavy-Edged Square (3.3in)');
-    console.log('    • Heart-Shaped (3.9in)');
-    console.log('    • Regular Round (4in)');
-    console.log('    • Wavy-Edged Round (4.2in)');
-    console.log('\n  Design Style:');
-    console.log('    • Birth Flower (Jan-Dec)');
-    console.log('    • Custom Typography - Gold');
-    console.log('    • Custom Typography - Black');
-    console.log('    • Botanical Motif - Gold');
-    console.log('    • Botanical Motif - Black');
-    console.log('    • Custom Client Design');
+    console.log('  Design Style: 12 Options');
     console.log('\n  Custom fields:');
-    console.log('    • Personalization Details (Name/Initial/Date) — Required');
-    console.log('    • Special Instructions / Order Notes — Optional');
+    console.log('    • Names or Initials — Required');
+    console.log('    • Event Date — Required');
 }
 
 run().catch(function(err) {

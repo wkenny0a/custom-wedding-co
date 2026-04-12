@@ -344,7 +344,7 @@ export function ProductInfo({ product, onStyleImageSelect }: { product: any, onS
                                     >
                                         {opt.values.map((val: any) => (
                                             <option key={val.id || val.name} value={val.name}>
-                                                {val.name} {val.price ? `— $${val.price.toFixed(2)}` : ''}
+                                                {val.name} {val.price && !val.name.includes('@') ? `— $${val.price.toFixed(2)}` : ''}
                                             </option>
                                         ))}
                                     </select>
@@ -388,7 +388,7 @@ export function ProductInfo({ product, onStyleImageSelect }: { product: any, onS
                                                 : 'border-gold/30 bg-transparent text-espresso hover:border-gold'
                                                 }`}
                                         >
-                                            {val.name} {val.price ? `(+$${val.price})` : ''}
+                                            {val.name} {val.price && !val.name.includes('@') ? `(+$${val.price})` : ''}
                                         </button>
                                     ))}
                                 </div>
@@ -397,11 +397,8 @@ export function ProductInfo({ product, onStyleImageSelect }: { product: any, onS
                     )
                 })}
 
-                {/* ─── Shared Text Fields (date, extra requests, etc.) ─── */}
-                {isMultiBuy
-                    ? sharedTextOptions.map(renderTextField)
-                    : optionASharedOptions.map(renderTextField)
-                }
+                {/* ─── Shared Text Fields (Multi-buy only) ─── */}
+                {isMultiBuy && sharedTextOptions.map(renderTextField)}
 
                 {/* ─── MULTI-BUY: Party Builder (Option B) ─── */}
                 {isMultiBuy ? (
@@ -413,10 +410,8 @@ export function ProductInfo({ product, onStyleImageSelect }: { product: any, onS
                     />
                 ) : (
                     <>
-                        {/* ─── STANDARD / OPTION A: Per-item text fields + Add to Cart ─── */}
-
-                        {/* Per-item text fields (for Option A these reset after each add) */}
-                        {optionAPerItemOptions.map(renderTextField)}
+                        {/* ─── STANDARD / OPTION A: All Text Fields in exact Swell order ─── */}
+                        {textOptions.map(renderTextField)}
 
                         {/* Items Added Toast */}
                         {justAdded && (

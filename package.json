@@ -37,5 +37,22 @@
     "eslint-config-next": "16.1.6",
     "tailwindcss": "^3.4.19",
     "typescript": "^5"
-  }
+  },
+  "description": "This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).",
+  "main": "postcss.config.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wkenny0a/custom-wedding-co.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/wkenny0a/custom-wedding-co/issues"
+  },
+  "homepage": "https://github.com/wkenny0a/custom-wedding-co#readme"
 }

@@ -70,16 +70,6 @@ var productData = {
         '      <span style="color: #B89A52; margin: 0 0.4em;">\u2014</span>',
         '      Carved from solid, high-quality wood with an elegant silhouette to flawlessly support and display your gown.',
         '    </li>',
-        '    <li style="padding: 0.8em 0; border-bottom: 1px solid #F2D9D9;">',
-        '      <strong style="color: #4A2C2A; letter-spacing: 0.04em;">Intimate Detailing</strong>',
-        '      <span style="color: #B89A52; margin: 0 0.4em;">\u2014</span>',
-        '      Optional custom laser-engraved wedding date on the hanger arm for a truly bespoke touch.',
-        '    </li>',
-        '    <li style="padding: 0.8em 0; border-bottom: 1px solid #F2D9D9;">',
-        '      <strong style="color: #4A2C2A; letter-spacing: 0.04em;">Romantic Finishes</strong>',
-        '      <span style="color: #B89A52; margin: 0 0.4em;">\u2014</span>',
-        '      Gracefully adorned with a soft tulle bow or your choice of luxurious, richly toned satin ribbon.',
-        '    </li>',
         '    <li style="padding: 0.8em 0;">',
         '      <strong style="color: #4A2C2A; letter-spacing: 0.04em;">Timeless Elegance</strong>',
         '      <span style="color: #B89A52; margin: 0 0.4em;">\u2014</span>',
@@ -93,7 +83,7 @@ var productData = {
     // ── SEO ───────────────────────────────────────────────────────────
     meta_title: 'Custom Bridal Hanger | Personalized Wedding Dress Heirloom',
     meta_description:
-        'Discover our bespoke personalized bridal hangers. Handcrafted from premium wood with elegant wire script and optional date engraving. The perfect luxury wedding keepsake.',
+        'Discover our bespoke personalized bridal hangers. Handcrafted from premium wood with elegant wire script. The perfect luxury wedding keepsake.',
 
     // ── Tags ──────────────────────────────────────────────────────────
     tags: [
@@ -111,72 +101,7 @@ var productData = {
 
     // ── Options ───────────────────────────────────────────────────────
     options: [
-        {
-            name: 'Wire Color',
-            variant: true,
-            active: true,
-            required: true,
-            input_type: 'select',
-            values: [
-                { name: 'Silver' },
-                { name: 'Gold' },
-                { name: 'Rose Gold' },
-            ],
-        },
-        {
-            name: 'Hanger Finish',
-            variant: true,
-            active: true,
-            required: true,
-            input_type: 'select',
-            values: [
-                { name: 'White' },
-                { name: 'Black' },
-                { name: 'Natural' },
-                { name: 'Walnut' },
-            ],
-        },
-        {
-            name: 'Engraving',
-            variant: true,
-            active: true,
-            required: true,
-            input_type: 'select',
-            values: [
-                { name: 'Without Engraving', price: 0 },         // Base $21.99
-                { name: 'With Engraving', price: 6.00 },         // Base $27.99
-            ],
-        },
-        {
-            name: 'Ribbon Style',
-            variant: true,
-            active: true,
-            required: true,
-            input_type: 'select',
-            values: [
-                { name: 'White Tulle' },
-                { name: 'White Satin' },
-                { name: 'Off-White Satin' },
-                { name: 'Gold Satin' },
-                { name: 'Orange Satin' },
-                { name: 'Silver Satin' },
-                { name: 'Black Satin' },
-                { name: 'Navy Satin' },
-                { name: 'Royal Blue Satin' },
-                { name: 'Dusty Blue Satin' },
-                { name: 'Light Blue Satin' },
-                { name: 'Red Satin' },
-                { name: 'Maroon Satin' },
-                { name: 'Dark Green Satin' },
-                { name: 'Bright Green Satin' },
-                { name: 'Light Pink Satin' },
-                { name: 'Hot Pink Satin' },
-                { name: 'Rose Satin' },
-                { name: 'Purple Satin' },
-                { name: 'Sage Satin' },
-                { name: 'Lavender Satin' },
-            ],
-        },
+
         {
             name: 'Wire Personalization',
             variant: false,
@@ -186,14 +111,6 @@ var productData = {
             description: 'Enter name or phrase. No hyphens. Uppercase letters count as 2 characters. Max 18 characters.',
             // Currently Swell backend doesn't strictly enforce maxlength via API in the same way modern front-ends do,
             // but we can pass constraints depending on storefront implementation or just leave it in the description.
-        },
-        {
-            name: 'Engraved Date',
-            variant: false,
-            active: true, // we set active true; the front-end typically implements "show if With Engraving" based on option name/structure or custom code
-            required: false,
-            input_type: 'short_text',
-            description: '(Only applicable if "With Engraving" is selected) Enter date exactly as you want it engraved.',
         },
     ],
 
@@ -207,7 +124,7 @@ var productData = {
             typography: 'Playfair Display / Cormorant Garamond',
             heading_style: 'Serif, uppercase with letter-spacing',
             layout: 'Clean, minimal, generous whitespace, no harsh shadows',
-            frontend_logic: 'Show "Engraved Date" input only if "Engraving" variant is set to "With Engraving". "Wire Personalization" max length is 18 chars.'
+            frontend_logic: '"Wire Personalization" max length is 18 chars.'
         },
     },
 };
@@ -326,7 +243,7 @@ async function run() {
     console.log('\n===================================================');
     console.log(' \ud83c\udf89  Product is LIVE in Swell!');
     console.log('===================================================');
-    console.log('\nVariant combinations: 3 Wire Colors \u00d7 4 Finishes \u00d7 2 Engraving Options \u00d7 21 Ribbons = 504 variants');
+    console.log('\nVariant combinations: None (Custom text only)');
 }
 
 run().catch(function(err) {

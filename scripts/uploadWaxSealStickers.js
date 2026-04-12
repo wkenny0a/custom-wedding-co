@@ -14,7 +14,7 @@ const uploadProduct = async () => {
         console.log("Uploading Bespoke Handmade Wax Seal Stickers...");
 
         // Read image file and convert to base64 for Swell file upload
-        const imagePath = path.resolve(__dirname, '../product_images/wax_seal_product.png');
+        const imagePath = 'g:\\Other computers\\cloud comp\\marblefy sync\\cwc\\product_images\\wax_seal_product.png';
         let imageFile = null;
         if (fs.existsSync(imagePath)) {
             const imageData = fs.readFileSync(imagePath);
@@ -58,56 +58,9 @@ const uploadProduct = async () => {
                     input_type: "select",
                     required: true,
                     values: [
-                        { name: "#01 White" },
-                        { name: "#02 Pearl White" },
-                        { name: "#03 Milky White" },
-                        { name: "#04 Light Pink" },
-                        { name: "#05 Clean Powder" },
-                        { name: "#06 Water Powder" },
-                        { name: "#07 Penang Orange" },
-                        { name: "#08 Apricot" },
-                        { name: "#09 Rose Gold" },
-                        { name: "#10 Orange Red" },
-                        { name: "#11 Watermelon Red" },
-                        { name: "#12 Big Red" },
-                        { name: "#13 Chinese Red" },
-                        { name: "#14 Wine Red" },
-                        { name: "#15 Purple Red" },
-                        { name: "#16 Brown Red" },
-                        { name: "#17 New Wine Red" },
-                        { name: "#18 Flame Red" },
-                        { name: "#19 Deep Red" },
-                        { name: "#20 Lilac Purple" },
-                        { name: "#21 Pearlescent Purple" },
-                        { name: "#22 Purple" },
-                        { name: "#23 Sauce Purple" },
-                        { name: "#24 Aubergine" },
-                        { name: "#25 Silver" },
-                        { name: "#26 Green Silver" },
-                        { name: "#27 Snow Blue" },
-                        { name: "#28 Light Blue" },
-                        { name: "#29 Tile Blue" },
-                        { name: "#30 Dark Blue" },
-                        { name: "#31 Sky Blue" },
-                        { name: "#32 Aquamarine" },
-                        { name: "#33 Jade" },
-                        { name: "#34 Mint Green" },
-                        { name: "#35 Tender Green" },
-                        { name: "#36 Mustard" },
-                        { name: "#37 Greenish Gold" },
-                        { name: "#38 Pine Green" },
-                        { name: "#39 Grass Green" },
-                        { name: "#40 Duck Green" },
-                        { name: "#41 Pearl Rice" },
-                        { name: "#42 Pure Gold" },
-                        { name: "#43 Golden" },
-                        { name: "#44 Light Yellow" },
-                        { name: "#45 Light Gold" },
-                        { name: "#46 Orange Gold" },
-                        { name: "#47 Champagne Gold" },
-                        { name: "#48 Bronze Gold" },
-                        { name: "#49 Bronze" },
-                        { name: "#50 Black" }
+                        { name: "Gold" },
+                        { name: "Silver" },
+                        { name: "White" }
                     ]
                 },
                 {
@@ -141,25 +94,41 @@ const uploadProduct = async () => {
                     ]
                 },
                 {
-                    name: "Design Selection",
+                    name: "Design Style",
                     active: true,
-                    input_type: "short_text",
+                    input_type: "select",
+                    variant: true,
                     required: true,
-                    description: "Enter Design # (e.g., Design #12)"
+                    values: [
+                        { name: "Design #1" },
+                        { name: "Design #2" },
+                        { name: "Design #3" },
+                        { name: "Design #4" },
+                        { name: "Design #5" },
+                        { name: "Design #6" },
+                        { name: "Design #7" },
+                        { name: "Design #8" },
+                        { name: "Design #9" },
+                        { name: "Design #10" },
+                        { name: "Design #11" },
+                        { name: "Design #12 (Custom Design)" }
+                    ]
                 },
                 {
-                    name: "Personalization Details",
+                    name: "Names or Initials",
                     active: true,
                     input_type: "short_text",
+                    variant: false,
                     required: true,
-                    description: "Enter Initials, Names, or Date for your seal"
+                    description: "Enter the names or initials exactly as you would like them engraved."
                 },
                 {
-                    name: "Custom Logo Upload",
+                    name: "Event Date",
                     active: true,
-                    input_type: "long_text",
-                    required: false,
-                    description: "Upload custom artwork (Optional) — Please email your file to info@customweddingco.com with your order number"
+                    input_type: "short_text",
+                    variant: false,
+                    required: true,
+                    description: "e.g. October 12, 2026"
                 }
             ]
         };
