@@ -1,12 +1,71 @@
-require('dotenv').config({ path: '.env.local' });
-const swell = require('swell-node').swell;
 const fs = require('fs');
 const path = require('path');
 
-swell.init(
-    process.env.NEXT_PUBLIC_SWELL_STORE_ID,
-    process.env.NEXT_PUBLIC_SWELL_SECRET_KEY
-);
+// Manually parse .env.local
+try {
+    const envContent = fs.readFileSync('.env.local', 'utf8');
+    envContent.split('\n').forEach(line => {
+        const match = line.match(/^\s*([\w]+)\s*=\s*(.*)?\s*$/);
+        if (match) {
+            let val = match[2] || '';
+            if (val.startsWith('"') && val.endsWith('"')) {
+                val = val.slice(1, -1);
+            } else if (val.startsWith("'") && val.endsWith("'")) {
+                val = val.slice(1, -1);
+            }
+            process.env[match[1]] = val;
+        }
+    });
+} catch(e) {}
+
+const storeId = process.env.NEXT_PUBLIC_SWELL_STORE_ID;
+const secretKey = process.env.NEXT_PUBLIC_SWELL_SECRET_KEY;
+const authHeader = 'Basic ' + Buffer.from(storeId + ':' + secretKey).toString('base64');
+
+const swell = {
+    async get(endpoint, params) {
+        let url = `https://api.swell.store${endpoint}`;
+        if (params && params.where) {
+            const query = new URLSearchParams();
+            for (const key in params.where) {
+                query.append(`where[${key}]`, params.where[key]);
+            }
+            url += '?' + query.toString();
+        }
+        const res = await fetch(url, { headers: { Authorization: authHeader, 'Accept': 'application/json' }});
+        if (!res.ok) throw new Error(await res.text());
+        return res.json();
+    },
+    async post(endpoint, body) {
+        const url = `https://api.swell.store${endpoint}`;
+        const res = await fetch(url, {
+            method: 'POST',
+            headers: { Authorization: authHeader, 'Content-Type': 'application/json', 'Accept': 'application/json' },
+            body: JSON.stringify(body)
+        });
+        if (!res.ok) throw new Error(await res.text());
+        return res.json();
+    },
+    async put(endpoint, body) {
+        const url = `https://api.swell.store${endpoint}`;
+        const res = await fetch(url, {
+            method: 'PUT',
+            headers: { Authorization: authHeader, 'Content-Type': 'application/json', 'Accept': 'application/json' },
+            body: JSON.stringify(body)
+        });
+        if (!res.ok) throw new Error(await res.text());
+        return res.json();
+    },
+    async delete(endpoint) {
+        const url = `https://api.swell.store${endpoint}`;
+        const res = await fetch(url, {
+            method: 'DELETE',
+            headers: { Authorization: authHeader, 'Accept': 'application/json' },
+        });
+        if (!res.ok) throw new Error(await res.text());
+        return res.json();
+    }
+};
 
 // ── Categories ────────────────────────────────────────────────────────
 var categories = [
@@ -58,27 +117,27 @@ var productData = {
         '  <ul style="list-style: none; padding: 0; margin: 0 0 2em 0;">',
         '    <li style="padding: 0.8em 0; border-bottom: 1px solid #F2D9D9;">',
         '      <strong style="color: #4A2C2A; letter-spacing: 0.04em;">Handcrafted Personalization</strong>',
-        '      <span style="color: #B89A52; margin: 0 0.4em;">\\u2014</span>',
+        '      <span style="color: #B89A52; margin: 0 0.4em;">&mdash;</span>',
         '      Bespoke detailing featuring your choice of elegant names, dates, or curated locations.',
         '    </li>',
         '    <li style="padding: 0.8em 0; border-bottom: 1px solid #F2D9D9;">',
         '      <strong style="color: #4A2C2A; letter-spacing: 0.04em;">Premium Neoprene</strong>',
-        '      <span style="color: #B89A52; margin: 0 0.4em;">\\u2014</span>',
+        '      <span style="color: #B89A52; margin: 0 0.4em;">&mdash;</span>',
         '      High-end, durable material ensures your drinks stay perfectly chilled from the first tee to the final hole.',
         '    </li>',
         '    <li style="padding: 0.8em 0; border-bottom: 1px solid #F2D9D9;">',
         '      <strong style="color: #4A2C2A; letter-spacing: 0.04em;">Tailored Fit</strong>',
-        '      <span style="color: #B89A52; margin: 0 0.4em;">\\u2014</span>',
+        '      <span style="color: #B89A52; margin: 0 0.4em;">&mdash;</span>',
         '      Available in both Standard (12oz traditional) and Slim (12oz seltzer) silhouettes.',
         '    </li>',
         '    <li style="padding: 0.8em 0; border-bottom: 1px solid #F2D9D9;">',
         '      <strong style="color: #4A2C2A; letter-spacing: 0.04em;">Curated Palette</strong>',
-        '      <span style="color: #B89A52; margin: 0 0.4em;">\\u2014</span>',
+        '      <span style="color: #B89A52; margin: 0 0.4em;">&mdash;</span>',
         '      Select from an array of refined cooler and print colors to seamlessly complement your sophisticated party aesthetic.',
         '    </li>',
         '    <li style="padding: 0.8em 0;">',
         '      <strong style="color: #4A2C2A; letter-spacing: 0.04em;">Artisanal Keepsake</strong>',
-        '      <span style="color: #B89A52; margin: 0 0.4em;">\\u2014</span>',
+        '      <span style="color: #B89A52; margin: 0 0.4em;">&mdash;</span>',
         '      A functional, beautifully designed memento your groomsmen will cherish long after the weekend concludes.',
         '    </li>',
         '  </ul>',
@@ -108,87 +167,64 @@ var productData = {
     // ── Options ───────────────────────────────────────────────────────
     options: [
         {
-            name: 'Size',
+            name: 'Design Style',
             variant: true,
             active: true,
             required: true,
             input_type: 'select',
             values: [
-                { name: 'Regular' },
-                { name: 'Slim' },
+                { name: 'Design #1' },
+                { name: 'Design #2' },
+                { name: 'Design #3' },
+                { name: 'Design #4' },
+                { name: 'Design #5' },
+                { name: 'Design #6' },
+                { name: 'Design #7' },
+                { name: 'Design #8' },
+                { name: 'Design #9' },
+                { name: 'Design #10' },
+                { name: 'Design #11' },
+                { name: 'Design #12 (Custom Design)' },
             ],
         },
         {
-            name: 'Cooler Color',
-            variant: true,
-            active: true,
-            required: true,
-            input_type: 'select',
-            values: [
-                { name: 'Off-White' },
-                { name: 'Pearly' },
-                { name: 'Black' },
-                { name: 'Sky' },
-                { name: 'Riviera' },
-                { name: 'Navy' },
-                { name: 'Royal' },
-                { name: 'Teal' },
-                { name: 'Limoncello' },
-                { name: 'Violet' },
-                { name: 'Hot Pink' },
-                { name: 'Orange' },
-                { name: 'Espresso' },
-                { name: 'Blush' },
-                { name: 'Dusty Rose' },
-                { name: 'Red' },
-                { name: 'Forest' },
-                { name: 'Green' },
-                { name: 'Sage' },
-                { name: 'Mint' },
-            ],
-        },
-        {
-            name: 'Print Color',
-            variant: true,
-            active: true,
-            required: true,
-            input_type: 'select',
-            values: [
-                { name: 'White' },
-                { name: 'Ivory' },
-                { name: 'Black' },
-                { name: 'Navy' },
-                { name: 'Royal' },
-                { name: 'Blue' },
-                { name: 'Riviera' },
-                { name: 'Ocean' },
-                { name: 'Teal' },
-                { name: 'Hot Pink' },
-                { name: 'Pink' },
-                { name: 'Burgundy' },
-                { name: 'Roulette' },
-                { name: 'Red' },
-                { name: 'Limoncello' },
-                { name: 'Olive' },
-                { name: 'Forest' },
-                { name: 'Green' },
-                { name: 'Sage' },
-                { name: 'Mint' },
-                { name: 'Espresso' },
-                { name: 'Pepper' },
-                { name: 'Berry' },
-                { name: 'Violet' },
-                { name: 'Orange' },
-                { name: 'Coral' },
-            ],
-        },
-        {
-            name: 'Personalization Details',
+            name: 'Names or Initials',
             variant: false,
             active: true,
             required: true,
             input_type: 'short_text',
-            description: 'Please enter names, locations, dates, or custom sayings here.',
+            description: 'Enter the names or initials exactly as you would like them engraved.',
+        },
+        {
+            name: 'Event Date',
+            variant: false,
+            active: true,
+            required: true,
+            input_type: 'short_text',
+            description: 'e.g. October 12, 2026',
+        },
+        {
+            name: 'Font color',
+            variant: true,
+            active: true,
+            required: true,
+            input_type: 'select',
+            values: [
+                { name: 'Black' },
+                { name: 'White' },
+                { name: 'Gold' },
+            ],
+        },
+        {
+            name: 'Cooler color',
+            variant: true,
+            active: true,
+            required: true,
+            input_type: 'select',
+            values: [
+                { name: 'Black' },
+                { name: 'White' },
+            ],
         },
     ],
 
@@ -220,7 +256,7 @@ var IMAGE_PATH = process.argv[2] || '';
 // ══════════════════════════════════════════════════════════════════════
 async function run() {
     console.log('===================================================');
-    console.log(' Beers & Birdies Can Cooler \u2014 Swell Upload');
+    console.log(' Beers & Birdies Can Cooler — Swell Upload');
     console.log('===================================================\n');
 
     if (!process.env.NEXT_PUBLIC_SWELL_SECRET_KEY) {
@@ -229,7 +265,7 @@ async function run() {
     }
 
     // ── Step 1: Create categories ─────────────────────────────────────
-    console.log('STEP 1 \u00b7 Creating categories...');
+    console.log('STEP 1 · Creating categories...');
     for (var i = 0; i < categories.length; i++) {
         var cat = categories[i];
         var existingCat = await swell.get('/categories', { where: { slug: cat.slug } });
@@ -243,12 +279,12 @@ async function run() {
             description: cat.description,
             active: true,
         });
-        console.log('  \u2705 Created: ' + cat.title);
+        console.log('  ✅ Created: ' + cat.title);
     }
 
     // ── Step 2: Create product ────────────────────────────────────────
-    console.log('\nSTEP 2 \u00b7 Creating product...');
-
+    console.log('\nSTEP 2 · Creating product...');
+    
     // Attach image if path provided
     if (IMAGE_PATH && fs.existsSync(IMAGE_PATH)) {
         var imgBuffer = fs.readFileSync(IMAGE_PATH);
@@ -264,19 +300,20 @@ async function run() {
         }];
         console.log('  Image attached: ' + path.basename(IMAGE_PATH));
     } else if (IMAGE_PATH) {
-        console.log('  \u26a0\ufe0f  Image not found: ' + IMAGE_PATH);
+        console.log('  ⚠️  Image not found: ' + IMAGE_PATH);
     }
 
     var existing = await swell.get('/products', { where: { slug: SLUG } });
     var product;
 
     if (existing && existing.results && existing.results.length > 0) {
-        console.log('  Product exists (ID: ' + existing.results[0].id + '). Updating...');
-        product = await swell.put('/products/' + existing.results[0].id, productData);
-        console.log('  \u2705 Updated!');
+        var prod = existing.results[0];
+        console.log('  Product exists (ID: ' + prod.id + '). Updating...');
+        product = await swell.put('/products/' + prod.id, productData);
+        console.log('  ✅ Updated!');
     } else {
         product = await swell.post('/products', productData);
-        console.log('  \u2705 Created!');
+        console.log('  ✅ Created!');
     }
 
     var pid = product && product.id;
@@ -290,18 +327,18 @@ async function run() {
 
     // Fallback fetch
     if (!pid) {
-        console.log('\n  \u26a0\ufe0f  Fetching by slug...');
+        console.log('\n  ⚠️  Fetching by slug...');
         var fetched = await swell.get('/products', { where: { slug: SLUG } });
         if (fetched && fetched.results && fetched.results.length > 0) {
             product = fetched.results[0];
             pid = product.id;
-            console.log('  \u2705 Found: ' + pid);
+            console.log('  ✅ Found: ' + pid);
         }
     }
 
     // ── Step 3: Link categories ───────────────────────────────────────
     if (pid) {
-        console.log('\nSTEP 3 \u00b7 Linking categories...');
+        console.log('\nSTEP 3 · Linking categories...');
         for (var j = 0; j < CATEGORY_SLUGS.length; j++) {
             var slug = CATEGORY_SLUGS[j];
             var catResult = await swell.get('/categories', { where: { slug: slug } });
@@ -310,21 +347,21 @@ async function run() {
                     parent_id: pid,
                     category_id: catResult.results[0].id,
                 });
-                console.log('  \u2705 Linked: ' + slug);
+                console.log('  ✅ Linked: ' + slug);
             } else {
-                console.log('  \u26a0\ufe0f  Not found: ' + slug);
+                console.log('  ⚠️  Not found: ' + slug);
             }
         }
     }
 
     console.log('\n===================================================');
-    console.log(' \ud83c\udf89  Product is LIVE in Swell!');
+    console.log(' 🎉  Product is LIVE in Swell!');
     console.log('===================================================');
-    console.log('\nVariant options: 2 Sizes \u00d7 20 Cooler Colors \u00d7 26 Print Colors = 1,040 combinations');
-    console.log('Custom fields: Personalization Details (required)');
+    console.log('\nVariant options: 12 Design Styles × 3 Font Colors × 2 Cooler Colors = 72 combinations');
+    console.log('Custom fields: Names or Initials (required), Event Date (required)');
 }
 
 run().catch(function(err) {
-    console.error('\u274c Fatal error:', err.message || err);
+    console.error('❌ Fatal error:', err.message || err);
     if (err.response) console.error('Response:', JSON.stringify(err.response, null, 2));
 });

@@ -1,12 +1,71 @@
-require('dotenv').config({ path: '.env.local' });
-const swell = require('swell-node').swell;
 const fs = require('fs');
 const path = require('path');
 
-swell.init(
-    process.env.NEXT_PUBLIC_SWELL_STORE_ID,
-    process.env.NEXT_PUBLIC_SWELL_SECRET_KEY
-);
+// Manually parse .env.local
+try {
+    const envContent = fs.readFileSync('.env.local', 'utf8');
+    envContent.split('\n').forEach(line => {
+        const match = line.match(/^\s*([\w]+)\s*=\s*(.*)?\s*$/);
+        if (match) {
+            let val = match[2] || '';
+            if (val.startsWith('"') && val.endsWith('"')) {
+                val = val.slice(1, -1);
+            } else if (val.startsWith("'") && val.endsWith("'")) {
+                val = val.slice(1, -1);
+            }
+            process.env[match[1]] = val;
+        }
+    });
+} catch(e) {}
+
+const storeId = process.env.NEXT_PUBLIC_SWELL_STORE_ID;
+const secretKey = process.env.NEXT_PUBLIC_SWELL_SECRET_KEY;
+const authHeader = 'Basic ' + Buffer.from(storeId + ':' + secretKey).toString('base64');
+
+const swell = {
+    async get(endpoint, params) {
+        let url = `https://api.swell.store${endpoint}`;
+        if (params && params.where) {
+            const query = new URLSearchParams();
+            for (const key in params.where) {
+                query.append(`where[${key}]`, params.where[key]);
+            }
+            url += '?' + query.toString();
+        }
+        const res = await fetch(url, { headers: { Authorization: authHeader, 'Accept': 'application/json' }});
+        if (!res.ok) throw new Error(await res.text());
+        return res.json();
+    },
+    async post(endpoint, body) {
+        const url = `https://api.swell.store${endpoint}`;
+        const res = await fetch(url, {
+            method: 'POST',
+            headers: { Authorization: authHeader, 'Content-Type': 'application/json', 'Accept': 'application/json' },
+            body: JSON.stringify(body)
+        });
+        if (!res.ok) throw new Error(await res.text());
+        return res.json();
+    },
+    async put(endpoint, body) {
+        const url = `https://api.swell.store${endpoint}`;
+        const res = await fetch(url, {
+            method: 'PUT',
+            headers: { Authorization: authHeader, 'Content-Type': 'application/json', 'Accept': 'application/json' },
+            body: JSON.stringify(body)
+        });
+        if (!res.ok) throw new Error(await res.text());
+        return res.json();
+    },
+    async delete(endpoint) {
+        const url = `https://api.swell.store${endpoint}`;
+        const res = await fetch(url, {
+            method: 'DELETE',
+            headers: { Authorization: authHeader, 'Accept': 'application/json' },
+        });
+        if (!res.ok) throw new Error(await res.text());
+        return res.json();
+    }
+};
 
 // ── Categories ────────────────────────────────────────────────────────
 var categories = [
@@ -58,27 +117,27 @@ var productData = {
         '  <ul style="list-style: none; padding: 0; margin: 0 0 2em 0;">',
         '    <li style="padding: 0.8em 0; border-bottom: 1px solid #F2D9D9;">',
         '      <strong style="color: #4A2C2A; letter-spacing: 0.04em;">Artisanal Craftsmanship</strong>',
-        '      <span style="color: #B89A52; margin: 0 0.4em;">\\u2014</span>',
+        '      <span style="color: #B89A52; margin: 0 0.4em;">&mdash;</span>',
         '      Crafted from premium stainless steel with a polished, enduring finish designed to last a lifetime.',
         '    </li>',
         '    <li style="padding: 0.8em 0; border-bottom: 1px solid #F2D9D9;">',
         '      <strong style="color: #4A2C2A; letter-spacing: 0.04em;">Bespoke Engraving</strong>',
-        '      <span style="color: #B89A52; margin: 0 0.4em;">\\u2014</span>',
+        '      <span style="color: #B89A52; margin: 0 0.4em;">&mdash;</span>',
         '      Elegantly personalized with classic typography, making each piece entirely one-of-a-kind.',
         '    </li>',
         '    <li style="padding: 0.8em 0; border-bottom: 1px solid #F2D9D9;">',
         '      <strong style="color: #4A2C2A; letter-spacing: 0.04em;">Flawless Reflection</strong>',
-        '      <span style="color: #B89A52; margin: 0 0.4em;">\\u2014</span>',
-        '      Features dual glass mirrors\u2014one standard and one magnifying\u2014for graceful, on-the-go touch-ups.',
+        '      <span style="color: #B89A52; margin: 0 0.4em;">&mdash;</span>',
+        '      Features dual glass mirrors&mdash;one standard and one magnifying&mdash;for graceful, on-the-go touch-ups.',
         '    </li>',
         '    <li style="padding: 0.8em 0; border-bottom: 1px solid #F2D9D9;">',
         '      <strong style="color: #4A2C2A; letter-spacing: 0.04em;">Timeless Palette</strong>',
-        '      <span style="color: #B89A52; margin: 0 0.4em;">\\u2014</span>',
+        '      <span style="color: #B89A52; margin: 0 0.4em;">&mdash;</span>',
         '      Available in a curated selection of refined tones, including Antique Gold, Pale Rose, and Silver.',
         '    </li>',
         '    <li style="padding: 0.8em 0;">',
         '      <strong style="color: #4A2C2A; letter-spacing: 0.04em;">Heirloom Presentation</strong>',
-        '      <span style="color: #B89A52; margin: 0 0.4em;">\\u2014</span>',
+        '      <span style="color: #B89A52; margin: 0 0.4em;">&mdash;</span>',
         '      Delicately nestled in soft textures and premium packaging, ready to be gifted with love and deep appreciation.',
         '    </li>',
         '  </ul>',
@@ -117,48 +176,44 @@ var productData = {
                 { name: 'Gold' },
                 { name: 'Rose Gold' },
                 { name: 'Silver' },
-                { name: 'Black' },
-                { name: 'Pink' },
-                { name: 'Green' },
             ],
         },
         {
-            name: 'Packaging Tier',
+            name: 'Design Style',
             variant: true,
             active: true,
             required: true,
             input_type: 'select',
             values: [
-                { name: 'Mirror Only' },
-                { name: 'Mirror + White Box' },
-                { name: 'Mirror + Gold Box' },
-                { name: 'Mirror + Pink Box' },
-                { name: 'Mirror + Black Box' },
+                { name: 'Design #1' },
+                { name: 'Design #2' },
+                { name: 'Design #3' },
+                { name: 'Design #4' },
+                { name: 'Design #5' },
+                { name: 'Design #6' },
+                { name: 'Design #7' },
+                { name: 'Design #8' },
+                { name: 'Design #9' },
+                { name: 'Design #10' },
+                { name: 'Design #11' },
+                { name: 'Design #12 (Custom Design)' },
             ],
         },
         {
-            name: 'Engraving Text (Top)',
+            name: 'Names or Initials',
             variant: false,
             active: true,
             required: true,
             input_type: 'short_text',
-            description: 'Enter the Name, Initials, or Wedding Role (max 30 characters).',
+            description: 'Enter the names or initials exactly as you would like them engraved.',
         },
         {
-            name: 'Engraving Text (Bottom)',
-            variant: false,
-            active: true,
-            required: false,
-            input_type: 'short_text',
-            description: 'Enter a Date or short custom message (max 50 characters).',
-        },
-        {
-            name: 'Font Style',
+            name: 'Event Date',
             variant: false,
             active: true,
             required: true,
             input_type: 'short_text',
-            description: 'Specify your preferred font style (e.g., Classic Serif or Elegant Script).',
+            description: 'e.g. October 12, 2026',
         },
     ],
 
@@ -190,7 +245,7 @@ var IMAGE_PATH = process.argv[2] || '';
 // ══════════════════════════════════════════════════════════════════════
 async function run() {
     console.log('===================================================');
-    console.log(' Bespoke Engraved Compact Mirror \u2014 Swell Upload');
+    console.log(' Bespoke Engraved Compact Mirror — Swell Upload');
     console.log('===================================================\n');
 
     if (!process.env.NEXT_PUBLIC_SWELL_SECRET_KEY) {
@@ -290,9 +345,9 @@ async function run() {
     console.log('\n===================================================');
     console.log(' \ud83c\udf89  Compact Mirror is LIVE in Swell!');
     console.log('===================================================');
-    console.log('\nMirror Color variants: 6 (Gold, Rose Gold, Silver, Black, Pink, Green)');
-    console.log('Packaging Tier variants: 5 (Mirror Only, +White Box, +Gold Box, +Pink Box, +Black Box)');
-    console.log('Custom fields: Engraving Text (Top) [req], Engraving Text (Bottom) [opt], Font Style [req]');
+    console.log('\nMirror Color variants: 3 (Gold, Rose Gold, Silver)');
+    console.log('Design Style variants: 12');
+    console.log('Custom fields: Names or Initials [req], Event Date [req]');
 }
 
 run().catch(function(err) {
