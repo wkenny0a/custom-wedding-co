@@ -567,6 +567,40 @@ export function ProductInfo({ product, onStyleImageSelect }: { product: any, onS
                     </div>
                 </div>
             )}
+
+            {/* Mobile Sticky Add to Cart Bar */}
+            <div className="fixed bottom-0 left-0 right-0 z-[60] bg-cream border-t border-gold/30 p-4 pb-6 shadow-[0_-10px_20px_-10px_rgba(74,44,42,0.15)] flex items-center justify-between gap-4 md:hidden animate-in slide-in-from-bottom duration-500">
+                <div className="flex flex-col w-1/2">
+                    <span className="font-serif text-sm font-bold text-espresso line-clamp-1" dangerouslySetInnerHTML={{ __html: product.name }}></span>
+                    <span className="font-sans text-xs font-semibold text-gold">{product.priceRange}</span>
+                </div>
+                
+                <div className="flex-shrink-0 w-1/2">
+                    {quantity === 1 || !hasPerItemFieldsForOptionA ? (
+                        <button
+                            onClick={handleAddToCart}
+                            disabled={isAdding}
+                            className="w-full bg-espresso text-cream font-sans font-bold uppercase tracking-widest text-[10px] py-3 hover:bg-espresso-light transition-colors shadow-sm disabled:opacity-50"
+                        >
+                            {isAdding ? 'Adding...' : 'Add To Cart'}
+                        </button>
+                    ) : (
+                        <button
+                            onClick={itemsAdded >= quantity ? () => setIsCartOpen(true) : handleAddAndNext}
+                            disabled={isAdding || itemsAdded >= quantity && isAdding}
+                            className="w-full bg-espresso text-cream font-sans font-bold uppercase tracking-widest text-[10px] py-3 hover:bg-espresso-light transition-colors shadow-sm disabled:opacity-50 flex items-center justify-center gap-1"
+                        >
+                            {isAdding ? (
+                                'Adding...'
+                            ) : itemsAdded >= quantity ? (
+                                'View Cart'
+                            ) : (
+                                `Add Next (${itemsAdded + 1}/${quantity})`
+                            )}
+                        </button>
+                    )}
+                </div>
+            </div>
         </div>
     )
 }
