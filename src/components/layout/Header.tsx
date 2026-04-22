@@ -58,6 +58,7 @@ export function Header() {
                         <nav className="hidden lg:flex items-center gap-8 mr-4">
                             <Link href="/shop/keepsakes" className="font-sans text-[0.8rem] uppercase tracking-widest font-medium hover:text-gold transition-colors">Keepsakes</Link>
                             <Link href="/shop/sentimental-gifts" className="font-sans text-[0.8rem] uppercase tracking-widest font-medium hover:text-gold transition-colors">Gifts</Link>
+                            <Link href="/about" className="font-sans text-[0.8rem] uppercase tracking-widest font-medium hover:text-gold transition-colors">About Us</Link>
                         </nav>
                         <div className="flex items-center gap-4 text-espresso">
                             <button className="hover:text-gold transition-colors">

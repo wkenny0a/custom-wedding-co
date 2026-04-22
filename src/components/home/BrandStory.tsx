@@ -54,7 +54,7 @@ export function BrandStory() {
                             </div>
                         </div>
 
-                        <Button variant="outline" size="md" href="/our-story">
+                        <Button variant="outline" size="md" href="/about">
                             Learn Our Story
                         </Button>
                     </div>
