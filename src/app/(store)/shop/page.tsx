@@ -20,9 +20,9 @@ export default async function ShopPage() {
         name: p.name,
         slug: { current: p.slug },
         price: p.price,
-        // Calculate dummy rating data for UI completeness since Swell doesn't handle reviews natively out of the box
-        rating: 5.0,
-        reviewCount: Math.floor(Math.random() * 50) + 10,
+        // Calculate dummy rating data for UI completeness
+        rating: 4.9,
+        reviewCount: Math.floor(Math.random() * 50) + 40,
         images: p.images || []
     }));
 

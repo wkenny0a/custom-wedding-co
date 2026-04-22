@@ -21,8 +21,8 @@ export default async function CategoryPage({ params }: { params: Promise<{ categ
         name: p.name,
         slug: { current: p.slug },
         price: p.price,
-        rating: 5.0,
-        reviewCount: Math.floor(Math.random() * 50) + 10,
+        rating: 4.9,
+        reviewCount: Math.floor(Math.random() * 50) + 40,
         images: p.images || []
     }));
 

@@ -503,6 +503,22 @@ export function ProductInfo({ product, onStyleImageSelect }: { product: any, onS
                                 </div>
                             )}
                         </div>
+
+                        {/* Proximity Trust Signals */}
+                        <div className="flex items-center justify-between mt-4 pt-4 border-t border-gold/20">
+                            <div className="flex items-center gap-1.5 text-espresso/80">
+                                <ShieldCheck size={15} className="text-gold" />
+                                <span className="font-sans text-[10px] sm:text-xs uppercase tracking-wider font-semibold">Secure<br className="sm:hidden" /> Checkout</span>
+                            </div>
+                            <div className="flex items-center gap-1.5 text-espresso/80">
+                                <Truck size={15} className="text-gold" />
+                                <span className="font-sans text-[10px] sm:text-xs uppercase tracking-wider font-semibold">Secure<br className="sm:hidden" /> Shipping</span>
+                            </div>
+                            <div className="flex items-center gap-1.5 text-espresso/80">
+                                <Check size={15} className="text-gold" />
+                                <span className="font-sans text-[10px] sm:text-xs uppercase tracking-wider font-semibold">Satisfaction<br className="sm:hidden" /> Guarantee</span>
+                            </div>
+                        </div>
                     </>
                 )}
             </div>
