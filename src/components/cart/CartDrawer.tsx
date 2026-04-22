@@ -6,7 +6,7 @@ import Image from 'next/image'
 import { useState } from 'react'
 
 // --- CONFIGURATION ---
-const FREE_SHIPPING_THRESHOLD = 150;
+const FREE_SHIPPING_THRESHOLD = 99;
 const RUSH_PROCESSING_FEE = 15.00;
 
 // TODO: Replace with real Swell Product IDs when available in the dashboard
