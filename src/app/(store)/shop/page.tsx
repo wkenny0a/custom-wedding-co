@@ -1,6 +1,6 @@
 import { Suspense } from 'react'
 import { ShopCatalog } from '@/components/shop/ShopCatalog'
-import { getProducts } from '@/lib/swell'
+import { getProducts, getLowestDisplayPrice } from '@/lib/swell'
 
 import { getProductCategory } from '@/lib/categories'
 
@@ -21,7 +21,7 @@ export default async function ShopPage() {
         _id: p.id,
         name: p.name,
         slug: { current: p.slug },
-        price: p.price,
+        price: getLowestDisplayPrice(p),
         category: { title: getProductCategory(p.slug) },
         // Calculate dummy rating data for UI completeness
         rating: 4.9,

@@ -3,7 +3,7 @@ import { ProductTabs } from '@/components/products/ProductTabs'
 import { RelatedProducts } from '@/components/products/RelatedProducts'
 import { ProductFAQ } from '@/components/products/ProductFAQ'
 import { notFound } from 'next/navigation'
-import { getProducts } from '@/lib/swell'
+import { getProducts, getLowestDisplayPrice } from '@/lib/swell'
 import { client } from '@/sanity/lib/client'
 import { productBySlugQuery } from '@/sanity/lib/queries'
 import { ShieldCheck, Clock, Truck } from 'lucide-react'
@@ -66,7 +66,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
         _id: p.id,
         name: p.name,
         slug: { current: p.slug },
-        price: Number(p.price) || 0,
+        price: getLowestDisplayPrice(p),
         rating: 5.0,
         reviewCount: Math.floor(Math.random() * 50) + 10,
         images: p.images || [],
@@ -77,13 +77,13 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
         notFound()
     }
 
-    // Map Swell product to expected structure
+    const lowestComputedPrice = getLowestDisplayPrice(swellProduct);
     const product = {
         _id: swellProduct.id,
         name: swellProduct.name,
         slug: { current: swellProduct.slug },
         price: Number(swellProduct.price) || 0,
-        priceRange: `$${Number(swellProduct.price || 0).toFixed(2)}`,
+        priceRange: `$${lowestComputedPrice.toFixed(2)}`,
         priceNote: 'per piece',
         badge: sanityProduct?.badge || 'Popular',
         category: { title: getProductCategory(slug) },
