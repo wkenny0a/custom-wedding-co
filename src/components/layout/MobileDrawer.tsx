@@ -42,10 +42,10 @@ export function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
 
                 <nav className="flex-1 overflow-y-auto p-6 flex flex-col gap-6">
                     <Link href="/shop" onClick={onClose} className="font-serif text-2xl text-espresso hover:text-gold transition-colors">Shop All</Link>
-                    <Link href="/shop/stationery-paper-goods" onClick={onClose} className="font-serif text-2xl text-espresso hover:text-gold transition-colors">Stationery & Paper</Link>
-                    <Link href="/shop/welcome-signs-signage" onClick={onClose} className="font-serif text-2xl text-espresso hover:text-gold transition-colors">Signs & Décor</Link>
-                    <Link href="/shop/wedding-keepsakes" onClick={onClose} className="font-serif text-2xl text-espresso hover:text-gold transition-colors">Keepsakes</Link>
-                    <Link href="/shop/favors-gifts" onClick={onClose} className="font-serif text-2xl text-espresso hover:text-gold transition-colors">Favors & Gifts</Link>
+                    <Link href="/shop/bridal-party-gifts" onClick={onClose} className="font-serif text-2xl text-espresso hover:text-gold transition-colors">Bridal Party</Link>
+                    <Link href="/shop/welcome-signs-signage" onClick={onClose} className="font-serif text-2xl text-espresso hover:text-gold transition-colors">Signage & Décor</Link>
+                    <Link href="/shop/tabletop-barware" onClick={onClose} className="font-serif text-2xl text-espresso hover:text-gold transition-colors">Tabletop & Bar</Link>
+                    <Link href="/shop/favors-gifts" onClick={onClose} className="font-serif text-2xl text-espresso hover:text-gold transition-colors">Wedding Favors</Link>
 
                     <div className="mt-8 pt-8 border-t border-gold/20 flex flex-col gap-4">
                         <Link href="/about" onClick={onClose} className="font-sans tracking-wide uppercase text-sm text-gray-600 hover:text-gold">About Us</Link>

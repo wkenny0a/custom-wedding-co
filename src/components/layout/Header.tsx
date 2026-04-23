@@ -32,10 +32,10 @@ export function Header() {
                 <div className="max-w-[1280px] mx-auto px-6 lg:px-12 flex items-center justify-between">
 
                     {/* Left Nav (Desktop) */}
-                    <nav className="hidden lg:flex items-center gap-8 w-1/3">
+                    <nav className="hidden lg:flex items-center gap-5 xl:gap-8 w-1/3">
                         <Link href="/shop" className="font-sans text-[0.8rem] uppercase tracking-widest font-medium hover:text-gold transition-colors">Shop All</Link>
-                        <Link href="/shop/bridal-party-gifts" className="font-sans text-[0.8rem] uppercase tracking-widest font-medium hover:text-gold transition-colors">Bridal Party</Link>
-                        <Link href="/shop/welcome-signs-signage" className="font-sans text-[0.8rem] uppercase tracking-widest font-medium hover:text-gold transition-colors">Signage & Décor</Link>
+                        <Link href="/shop/bridal-party-gifts" className="font-sans text-[0.8rem] uppercase tracking-widest font-medium hover:text-gold transition-colors">Bridal</Link>
+                        <Link href="/shop/welcome-signs-signage" className="font-sans text-[0.8rem] uppercase tracking-widest font-medium hover:text-gold transition-colors">Décor</Link>
                     </nav>
 
                     {/* Mobile Hamburger */}
@@ -54,11 +54,11 @@ export function Header() {
                     </div>
 
                     {/* Right Nav */}
-                    <div className="flex items-center justify-end gap-6 w-1/3">
-                        <nav className="hidden lg:flex items-center gap-8 mr-4">
-                            <Link href="/shop/tabletop-barware" className="font-sans text-[0.8rem] uppercase tracking-widest font-medium hover:text-gold transition-colors">Tabletop & Bar</Link>
-                            <Link href="/shop/favors-gifts" className="font-sans text-[0.8rem] uppercase tracking-widest font-medium hover:text-gold transition-colors">Wedding Favors</Link>
-                            <Link href="/about" className="font-sans text-[0.8rem] uppercase tracking-widest font-medium hover:text-gold transition-colors">About Us</Link>
+                    <div className="flex items-center justify-end gap-5 xl:gap-6 w-1/3">
+                        <nav className="hidden lg:flex items-center gap-5 xl:gap-8 mr-2 xl:mr-4">
+                            <Link href="/shop/tabletop-barware" className="font-sans text-[0.8rem] uppercase tracking-widest font-medium hover:text-gold transition-colors">Tabletop</Link>
+                            <Link href="/shop/favors-gifts" className="font-sans text-[0.8rem] uppercase tracking-widest font-medium hover:text-gold transition-colors">Favors</Link>
+                            <Link href="/about" className="font-sans text-[0.8rem] uppercase tracking-widest font-medium hover:text-gold transition-colors">About</Link>
                         </nav>
                         <div className="flex items-center gap-4 text-espresso">
                             <button className="hover:text-gold transition-colors">
