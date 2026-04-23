@@ -14,10 +14,10 @@ export function ProductTabs({ product }: { product: any }) {
         tabs.push({ id: 'specifications', label: 'Specifications' })
     }
 
-    tabs.push(
-        { id: 'reviews', label: 'Reviews' },
-        { id: 'shipping', label: 'Shipping' }
-    )
+    if (product.slug !== 'personal-product-specialist') {
+        tabs.push({ id: 'reviews', label: 'Reviews' })
+    }
+    tabs.push({ id: 'shipping', label: 'Shipping' })
 
     const reviews = product.content?.reviews || [
         {
