@@ -3,14 +3,14 @@ import Image from 'next/image'
 
 export function CategoryGrid() {
     const categories = [
-        { title: 'Paper Goods', count: 12, slug: 'paper-goods', image: '/images/category_paper.png' },
-        { title: 'Signs', count: 8, slug: 'signs', image: '/images/category_signs.png' },
-        { title: 'Guest Books', count: 5, slug: 'guest-books', image: '/images/category_guest_books.png' },
-        { title: 'Wedding Favors', count: 7, slug: 'wedding-favors', image: '/images/category_favors.png' },
-        { title: 'Bridesmaids\' Gifts', count: 6, slug: 'bridesmaids-gifts', image: '/images/category_bridesmaid.png' },
-        { title: 'Cake Toppers', count: 4, slug: 'cake-toppers', image: '/images/category_cake_toppers.png' },
-        { title: 'Table Décor', count: 9, slug: 'table-decor', image: '/images/category_table_decor.png' },
-        { title: 'Keepsakes', count: 6, slug: 'keepsakes', image: '/images/category_keepsakes.png' },
+        { title: 'Stationery & Paper', count: 3, slug: 'stationery-paper-goods', image: '/images/category_paper.png' },
+        { title: 'Signs & Signage', count: 3, slug: 'welcome-signs-signage', image: '/images/category_signs.png' },
+        { title: 'Wedding Keepsakes', count: 4, slug: 'wedding-keepsakes', image: '/images/category_guest_books.png' },
+        { title: 'Favors & Gifts', count: 9, slug: 'favors-gifts', image: '/images/category_favors.png' },
+        { title: 'Bridal Party Gifts', count: 11, slug: 'bridal-party-gifts', image: '/images/category_bridesmaid.png' },
+        { title: 'Ceremony Details', count: 5, slug: 'ceremony-details', image: '/images/category_cake_toppers.png' },
+        { title: 'Tabletop & Bar', count: 6, slug: 'tabletop-barware', image: '/images/category_table_decor.png' },
+        { title: 'Groomsmen Gifts', count: 5, slug: 'groomsmen-gifts', image: '/images/category_keepsakes.png' },
     ]
 
     return (
