@@ -7,6 +7,7 @@ import { getProducts } from '@/lib/swell'
 import { client } from '@/sanity/lib/client'
 import { productBySlugQuery } from '@/sanity/lib/queries'
 import { ShieldCheck, Clock, Truck } from 'lucide-react'
+import { getProductCategory } from '@/lib/categories'
 
 export const metadata = {
     title: 'Product Details | Custom Wedding Co.',
@@ -88,7 +89,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
         priceRange: `$${Number(swellProduct.price || 0).toFixed(2)}`,
         priceNote: 'per piece',
         badge: sanityProduct?.badge || 'Popular',
-        category: sanityProduct?.category ? { title: sanityProduct.category.title } : { title: 'Personalized' },
+        category: { title: getProductCategory(slug) },
         rating: 5.0,
         reviewCount: 55,
         images: swellProduct.images || [],

@@ -4,13 +4,14 @@ import { useState } from 'react'
 import { StarRating } from '@/components/ui/StarRating'
 
 export function ProductTabs({ product }: { product: any }) {
-    const [activeTab, setActiveTab] = useState('description')
+    const hasSpecs = product.specifications && product.specifications.length > 0;
+    const hasReviews = product.slug !== 'personal-product-specialist';
+    
+    const [activeTab, setActiveTab] = useState(hasSpecs ? 'specifications' : (hasReviews ? 'reviews' : 'shipping'));
 
-    const tabs = [
-        { id: 'description', label: 'Description' },
-    ]
+    const tabs: {id: string, label: string}[] = [];
 
-    if (product.specifications && product.specifications.length > 0) {
+    if (hasSpecs) {
         tabs.push({ id: 'specifications', label: 'Specifications' })
     }
 
@@ -70,25 +71,6 @@ export function ProductTabs({ product }: { product: any }) {
 
             {/* Tab Content */}
             <div className="max-w-3xl mx-auto">
-                {activeTab === 'description' && (
-                    <div className="font-sans text-espresso/80 leading-relaxed text-center flex flex-col gap-6">
-                        <p>
-                            Beautifully handcrafted and fully customized, this piece is designed to tell your unique love story.
-                            Our expert artisans meticulously create every order, ensuring the highest quality materials and attention to detail.
-                        </p>
-                        <p>
-                            Perfect as a keepsake for yourself or a meaningful gift for someone you love.
-                            Each item comes carefully packaged in our signature Custom Wedding Co. unboxing experience, ready to be cherished.
-                        </p>
-                        <ul className="text-left list-disc list-inside mt-4 space-y-2 w-max mx-auto">
-                            <li>100% Custom designed for you</li>
-                            <li>Premium, heirloom-quality materials</li>
-                            <li>Archival-safe inks and finishes</li>
-                            <li>Hand-assembled in our studio</li>
-                        </ul>
-                    </div>
-                )}
-
                 {activeTab === 'specifications' && product.specifications && (
                     <div className="w-full overflow-x-auto">
                         <table className="w-full text-left font-sans text-sm text-espresso border-collapse">

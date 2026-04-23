@@ -262,17 +262,12 @@ export function ProductInfo({ product, onStyleImageSelect }: { product: any, onS
                 <StarRating rating={product.rating} count={product.reviewCount} />
             </div>
 
-            <div className="flex items-baseline gap-3 mb-6">
+            <div className="flex items-baseline gap-3 mb-8">
                 <span className="font-serif text-3xl text-gold">{product.priceRange}</span>
                 {product.priceNote && (
                     <span className="font-sans text-sm text-gray-500 uppercase tracking-wide">{product.priceNote}</span>
                 )}
             </div>
-
-            <div
-                className="font-sans text-espresso/80 text-base leading-relaxed mb-8 prose prose-sm prose-espresso"
-                dangerouslySetInnerHTML={{ __html: product.description || 'A beautifully customized piece for your special day.' }}
-            />
 
             {/* ─── Customization Options ─── */}
             <div className="flex flex-col gap-6 mb-8">
@@ -520,6 +515,30 @@ export function ProductInfo({ product, onStyleImageSelect }: { product: any, onS
                             </div>
                         </div>
                     </>
+                )}
+            </div>
+
+            {/* Product Description */}
+            <div className="font-sans text-espresso/80 text-base leading-relaxed mb-8 pt-6 prose prose-sm prose-espresso border-t border-gold/10">
+                {product.description ? (
+                    <div dangerouslySetInnerHTML={{ __html: product.description }} />
+                ) : (
+                    <div className="flex flex-col gap-4">
+                        <p>
+                            Beautifully handcrafted and fully customized, this piece is designed to tell your unique love story.
+                            Our expert artisans meticulously create every order, ensuring the highest quality materials and attention to detail.
+                        </p>
+                        <p>
+                            Perfect as a keepsake for yourself or a meaningful gift for someone you love.
+                            Each item comes carefully packaged in our signature Custom Wedding Co. unboxing experience, ready to be cherished.
+                        </p>
+                        <ul className="list-disc list-inside mt-2 space-y-1 ml-2">
+                            <li>100% Custom designed for you</li>
+                            <li>Premium, heirloom-quality materials</li>
+                            <li>Archival-safe inks and finishes</li>
+                            <li>Hand-assembled in our studio</li>
+                        </ul>
+                    </div>
                 )}
             </div>
 

@@ -2,6 +2,8 @@ import { Suspense } from 'react'
 import { ShopCatalog } from '@/components/shop/ShopCatalog'
 import { getProducts } from '@/lib/swell'
 
+import { getProductCategory } from '@/lib/categories'
+
 export const dynamic = 'force-dynamic'
 
 export const metadata = {
@@ -20,6 +22,7 @@ export default async function ShopPage() {
         name: p.name,
         slug: { current: p.slug },
         price: p.price,
+        category: { title: getProductCategory(p.slug) },
         // Calculate dummy rating data for UI completeness
         rating: 4.9,
         reviewCount: Math.floor(Math.random() * 50) + 40,
