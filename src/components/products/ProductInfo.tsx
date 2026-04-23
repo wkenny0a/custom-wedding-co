@@ -262,17 +262,12 @@ export function ProductInfo({ product, onStyleImageSelect }: { product: any, onS
                 <StarRating rating={product.rating} count={product.reviewCount} />
             </div>
 
-            <div className="flex items-baseline gap-3 mb-6">
+            <div className="flex items-baseline gap-3 mb-8">
                 <span className="font-serif text-3xl text-gold">{product.priceRange}</span>
                 {product.priceNote && (
                     <span className="font-sans text-sm text-gray-500 uppercase tracking-wide">{product.priceNote}</span>
                 )}
             </div>
-
-            <div
-                className="font-sans text-espresso/80 text-base leading-relaxed mb-8 prose prose-sm prose-espresso"
-                dangerouslySetInnerHTML={{ __html: product.description || 'A beautifully customized piece for your special day.' }}
-            />
 
             {/* ─── Customization Options ─── */}
             <div className="flex flex-col gap-6 mb-8">
@@ -522,6 +517,12 @@ export function ProductInfo({ product, onStyleImageSelect }: { product: any, onS
                     </>
                 )}
             </div>
+
+            {/* Product Description */}
+            <div
+                className="font-sans text-espresso/80 text-base leading-relaxed mb-8 pt-2 prose prose-sm prose-espresso"
+                dangerouslySetInnerHTML={{ __html: product.description || 'A beautifully customized piece for your special day.' }}
+            />
 
             {/* Bundle & Save Section */}
             {product.bundleProducts && product.bundleProducts.length > 0 && (
