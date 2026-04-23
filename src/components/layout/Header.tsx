@@ -34,8 +34,8 @@ export function Header() {
                     {/* Left Nav (Desktop) */}
                     <nav className="hidden lg:flex items-center gap-8 w-1/3">
                         <Link href="/shop" className="font-sans text-[0.8rem] uppercase tracking-widest font-medium hover:text-gold transition-colors">Shop All</Link>
-                        <Link href="/shop/stationery-paper-goods" className="font-sans text-[0.8rem] uppercase tracking-widest font-medium hover:text-gold transition-colors">Stationery</Link>
-                        <Link href="/shop/welcome-signs-signage" className="font-sans text-[0.8rem] uppercase tracking-widest font-medium hover:text-gold transition-colors">Signs & Décor</Link>
+                        <Link href="/shop/bridal-party-gifts" className="font-sans text-[0.8rem] uppercase tracking-widest font-medium hover:text-gold transition-colors">Bridal Party</Link>
+                        <Link href="/shop/welcome-signs-signage" className="font-sans text-[0.8rem] uppercase tracking-widest font-medium hover:text-gold transition-colors">Signage & Décor</Link>
                     </nav>
 
                     {/* Mobile Hamburger */}
@@ -56,8 +56,9 @@ export function Header() {
                     {/* Right Nav */}
                     <div className="flex items-center justify-end gap-6 w-1/3">
                         <nav className="hidden lg:flex items-center gap-8 mr-4">
-                            <Link href="/shop/wedding-keepsakes" className="font-sans text-[0.8rem] uppercase tracking-widest font-medium hover:text-gold transition-colors">Keepsakes</Link>
-                            <Link href="/shop/favors-gifts" className="font-sans text-[0.8rem] uppercase tracking-widest font-medium hover:text-gold transition-colors">Gifts</Link>
+                            <Link href="/shop/tabletop-barware" className="font-sans text-[0.8rem] uppercase tracking-widest font-medium hover:text-gold transition-colors">Tabletop & Bar</Link>
+                            <Link href="/shop/favors-gifts" className="font-sans text-[0.8rem] uppercase tracking-widest font-medium hover:text-gold transition-colors">Wedding Favors</Link>
+                            <Link href="/about" className="font-sans text-[0.8rem] uppercase tracking-widest font-medium hover:text-gold transition-colors">About Us</Link>
                         </nav>
                         <div className="flex items-center gap-4 text-espresso">
                             <button className="hover:text-gold transition-colors">
