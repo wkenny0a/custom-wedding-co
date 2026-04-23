@@ -9,21 +9,21 @@ swell.init(
 const PRODUCT_NAME_HINT = 'Bespoke Folded Wedding Place Cards';
 
 const NEW_QUANTITY_VALUES = [
-  { name: 'Personalized sample', price: 0 },
-  { name: '10', price: 2.00 },
-  { name: '20', price: 12.00 },
-  { name: '30', price: 22.00 },
-  { name: '40', price: 32.00 },
-  { name: '50', price: 42.00 },
-  { name: '60', price: 52.00 },
-  { name: '70', price: 62.00 },
-  { name: '80', price: 72.00 },
-  { name: '90', price: 82.00 },
-  { name: '100', price: 92.00 },
-  { name: '125', price: 102.00 },
-  { name: '150', price: 112.00 },
-  { name: '175', price: 122.00 },
-  { name: '200', price: 132.00 }
+  { name: 'Personalized sample', price: 7.99 },
+  { name: '10', price: 9.99 },
+  { name: '20', price: 19.99 },
+  { name: '30', price: 29.99 },
+  { name: '40', price: 39.99 },
+  { name: '50', price: 49.99 },
+  { name: '60', price: 59.99 },
+  { name: '70', price: 69.99 },
+  { name: '80', price: 79.99 },
+  { name: '90', price: 89.99 },
+  { name: '100', price: 99.99 },
+  { name: '125', price: 109.99 },
+  { name: '150', price: 119.99 },
+  { name: '175', price: 129.99 },
+  { name: '200', price: 139.99 }
 ];
 
 (async () => {
@@ -82,7 +82,7 @@ const NEW_QUANTITY_VALUES = [
     // The safest is putting the user's EXACT numbers in the option. Storefronts usually handle it. 
 
     const updatedProduct = await swell.put(`/products/${product.id}`, {
-      price: 7.99, // Base product price sets the catalog display "From $7.99"
+      price: 0, // Set base to 0 so the variants display their full additive "+ $X.XX" price in the dropdown UI without math conflicts
       options: options
     });
 

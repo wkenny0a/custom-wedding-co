@@ -9,20 +9,20 @@ swell.init(
 // We will use a regex hint that matches "Bespoke Monogram Cocktail Napkins"
 const PRODUCT_NAME_HINT = 'Bespoke Monogram Cocktail Napkins';
 
-// The prices provided map mathematically relative to the lowest tier $19.99 base price
+// The prices provided map absolutely to what the user wants them to say in the dropdown
 const NEW_QUANTITY_VALUES = [
-  { name: '50', price: 0 },
-  { name: '100', price: 10.00 },
-  { name: '150', price: 20.00 },
-  { name: '200', price: 30.00 },
-  { name: '250', price: 40.00 },
-  { name: '300', price: 50.00 },
-  { name: '350', price: 60.00 },
-  { name: '400', price: 70.00 },
-  { name: '500', price: 80.00 },
-  { name: '1000', price: 160.00 },
-  { name: '2000', price: 230.00 },
-  { name: '3000', price: 3480.00 } // User specified 3499.99, difference is 3480
+  { name: '50', price: 19.99 },
+  { name: '100', price: 29.99 },
+  { name: '150', price: 39.99 },
+  { name: '200', price: 49.99 },
+  { name: '250', price: 59.99 },
+  { name: '300', price: 69.99 },
+  { name: '350', price: 79.99 },
+  { name: '400', price: 89.99 },
+  { name: '500', price: 99.99 },
+  { name: '1000', price: 179.99 },
+  { name: '2000', price: 249.99 },
+  { name: '3000', price: 3499.99 }
 ];
 
 (async () => {
@@ -57,7 +57,7 @@ const NEW_QUANTITY_VALUES = [
     }
 
     const updatedProduct = await swell.put(`/products/${product.id}`, {
-      price: 19.99, // Base product price explicitly anchors lowest tier
+      price: 0, // Base product price explicitly anchored to 0 to bypass delta addition logic
       options: options
     });
 
