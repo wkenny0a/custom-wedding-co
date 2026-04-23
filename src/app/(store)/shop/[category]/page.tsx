@@ -1,6 +1,7 @@
 import { Suspense } from 'react'
+import { TopCategoryMenu } from '@/components/layout/TopCategoryMenu'
 import { ShopCatalog } from '@/components/shop/ShopCatalog'
-import { getProducts } from '@/lib/swell'
+import { getProducts, getLowestDisplayPrice } from '@/lib/swell'
 import { getProductCategory, getProductCategories } from '@/lib/categories'
 
 export const dynamic = 'force-dynamic'
@@ -24,16 +25,19 @@ export default async function CategoryPage({ params }: { params: Promise<{ categ
             );
             return productCategorySlugs.includes(category);
         })
-        .map((p: any) => ({
-            _id: p.id,
-            name: p.name,
-            slug: { current: p.slug },
-            price: p.price,
-            category: { title: getProductCategory(p.slug) },
-            rating: 4.9,
-            reviewCount: Math.floor(Math.random() * 50) + 40,
-            images: p.images || []
-        }));
+        .map((p: any) => {
+            const categoryInfo = getProductCategory(p.slug);
+            return {
+                _id: p.id,
+                name: p.name,
+                slug: { current: p.slug },
+                price: getLowestDisplayPrice(p),
+                category: { title: categoryInfo?.title || categoryInfo?.name || 'Personalized' },
+                rating: 4.9,
+                reviewCount: Math.floor(Math.random() * 50) + 40,
+                images: p.images || []
+            }
+        });
 
     return (
         <Suspense fallback={<div className="min-h-screen bg-cream flex items-center justify-center">Loading shop...</div>}>

@@ -91,3 +91,28 @@ export async function getProductBySlug(slug: string) {
         return null;
     }
 }
+
+/**
+ * Calculates the lowest possible display price for UI grids.
+ * Vital for Swell products that rely entirely on sequential additive variant pricing and have a base price of $0.
+ */
+export function getLowestDisplayPrice(product: any): number {
+    const basePrice = Number(product.price) || 0;
+    if (basePrice > 0) return basePrice;
+    
+    if (product.options && Array.isArray(product.options)) {
+        let lowestOptionPrice = Infinity;
+        for (const opt of product.options) {
+            if (opt.variant && opt.values && Array.isArray(opt.values)) {
+                for (const val of opt.values) {
+                    const vp = Number(val.price) || 0;
+                    if (vp > 0 && vp < lowestOptionPrice) {
+                        lowestOptionPrice = vp;
+                    }
+                }
+            }
+        }
+        if (lowestOptionPrice !== Infinity) return lowestOptionPrice;
+    }
+    return 0; // fallback
+}

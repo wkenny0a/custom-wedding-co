@@ -9,7 +9,7 @@ import { Testimonials } from '@/components/home/Testimonials'
 import { BlogInspiration } from '@/components/home/BlogInspiration'
 import { HomeFAQ } from '@/components/home/HomeFAQ'
 import { Newsletter } from '@/components/home/Newsletter'
-import { getProducts } from '@/lib/swell'
+import { getProducts, getLowestDisplayPrice } from '@/lib/swell'
 
 export default async function Home() {
   // Fetch products in the "Homepage" category from Swell
@@ -18,7 +18,7 @@ export default async function Home() {
     _id: p.id,
     name: p.name,
     slug: { current: p.slug },
-    price: p.price || 0,
+    price: getLowestDisplayPrice(p),
     badge: undefined,
     category: p.categories?.[0] ? { title: p.categories[0].name } : undefined,
     rating: 4.9,
