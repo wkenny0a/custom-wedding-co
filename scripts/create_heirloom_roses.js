@@ -80,7 +80,7 @@ const PRODUCT = {
     }
 
     console.log('\n[3/4] Uploading variant images...');
-    const uploadedImages = [];
+    const imagesToUpload = [];
     
     for (const [colorName, imagePath] of Object.entries(IMAGES)) {
       if (!fs.existsSync(imagePath)) {
@@ -88,30 +88,32 @@ const PRODUCT = {
         continue;
       }
       
-      console.log(`  ↑ Uploading ${colorName}...`);
+      console.log(`  ↑ Preparing ${colorName} for batch upload...`);
       const imageBuffer = fs.readFileSync(imagePath);
       const base64Image = imageBuffer.toString('base64');
-      const imageDataUri = `data:image/png;base64,${base64Image}`;
       
+      // Some generators create WEBP headers despite PNG extension. 
+      // It is safer to omit the prefix entirely or use generic content type.
+      // But Swell requires data URL:
+      const imageDataUri = `data:image/png;base64,${base64Image}`;
       const slugifiedFileName = colorName.toLowerCase().replace(/\s+/g, '-');
       
-      // We will upload the image into the product's image array
-      product = await swell.put(`/products/${product.id}`, {
-        images: [
-          ...product.images || [], // keep existing ones or previous dynamically added
-          {
-            file: {
-              data: imageDataUri,
-              filename: `heirloom-rose-${slugifiedFileName}.png`,
-              content_type: 'image/png',
-            },
-            caption: colorName 
-          }
-        ],
+      imagesToUpload.push({
+        file: {
+          data: imageDataUri,
+          filename: `heirloom-rose-${slugifiedFileName}.png`,
+          content_type: 'image/png',
+        },
+        caption: colorName 
       });
-      // Fetch the last successfully appended image ID so we can assign to variant
-      const newImage = product.images[product.images.length - 1];
-      console.log(`  ✓ Image uploaded for ${colorName}: ${newImage?.file?.url || newImage?.url}`);
+    }
+
+    if (imagesToUpload.length > 0) {
+      console.log(`  ↑ Executing single batch PUT to Swell logic...`);
+      product = await swell.put(`/products/${product.id}`, {
+        images: imagesToUpload
+      });
+      console.log(`  ✓ Batch image upload successful! Total images: ${product.images.length}`);
     }
 
     console.log('\n[4/4] Process Complete!');
