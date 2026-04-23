@@ -4,7 +4,6 @@ import { ScrollingBanner } from '@/components/home/ScrollingBanner'
 import { FeaturedProducts } from '@/components/home/FeaturedProducts'
 import { ShopByMoment } from '@/components/home/ShopByMoment'
 import { CategoryGrid } from '@/components/home/CategoryGrid'
-import { ShopTheLook } from '@/components/home/ShopTheLook'
 import { HowItWorks } from '@/components/home/HowItWorks'
 import { BrandStory } from '@/components/home/BrandStory'
 import { Testimonials } from '@/components/home/Testimonials'
@@ -36,7 +35,6 @@ export default async function Home() {
       <FeaturedProducts products={products} />
       <ShopByMoment />
       <CategoryGrid />
-      <ShopTheLook />
       <HowItWorks />
       <BrandStory />
       <Testimonials />
