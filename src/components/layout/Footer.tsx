@@ -27,12 +27,12 @@ export function Footer() {
                 {/* Col 2 - Shop */}
                 <div className="flex flex-col gap-4">
                     <h4 className="font-sans font-bold uppercase tracking-widest text-sm mb-2 text-gold">Shop</h4>
-                    <Link href="/shop/paper-goods" className="font-sans text-sm hover:text-gold transition-colors">Paper Goods</Link>
-                    <Link href="/shop/decor-signage" className="font-sans text-sm hover:text-gold transition-colors">Décor & Signage</Link>
-                    <Link href="/shop/keepsakes" className="font-sans text-sm hover:text-gold transition-colors">Keepsakes</Link>
-                    <Link href="/shop/wearables" className="font-sans text-sm hover:text-gold transition-colors">Wearables</Link>
-                    <Link href="/shop/day-of-essentials" className="font-sans text-sm hover:text-gold transition-colors">Day-Of Essentials</Link>
-                    <Link href="/shop/sentimental-gifts" className="font-sans text-sm hover:text-gold transition-colors">Sentimental Gifts</Link>
+                    <Link href="/shop/welcome-signs-signage" className="font-sans text-sm hover:text-gold transition-colors">Welcome Signs</Link>
+                    <Link href="/shop/stationery-paper-goods" className="font-sans text-sm hover:text-gold transition-colors">Stationery & Paper</Link>
+                    <Link href="/shop/tabletop-barware" className="font-sans text-sm hover:text-gold transition-colors">Tabletop & Barware</Link>
+                    <Link href="/shop/bridal-party-gifts" className="font-sans text-sm hover:text-gold transition-colors">Bridal Party Gifts</Link>
+                    <Link href="/shop/groomsmen-gifts" className="font-sans text-sm hover:text-gold transition-colors">Groomsmen Gifts</Link>
+                    <Link href="/shop/wedding-keepsakes" className="font-sans text-sm hover:text-gold transition-colors">Wedding Keepsakes</Link>
                 </div>
 
                 {/* Col 3 - Help */}
