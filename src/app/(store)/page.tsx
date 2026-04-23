@@ -2,7 +2,6 @@ import { HeroSection } from '@/components/home/HeroSection'
 import { TrustBar } from '@/components/home/TrustBar'
 import { ScrollingBanner } from '@/components/home/ScrollingBanner'
 import { FeaturedProducts } from '@/components/home/FeaturedProducts'
-import { ShopByMoment } from '@/components/home/ShopByMoment'
 import { CategoryGrid } from '@/components/home/CategoryGrid'
 import { HowItWorks } from '@/components/home/HowItWorks'
 import { BrandStory } from '@/components/home/BrandStory'
@@ -33,7 +32,6 @@ export default async function Home() {
       <TrustBar />
       <ScrollingBanner />
       <FeaturedProducts products={products} />
-      <ShopByMoment />
       <CategoryGrid />
       <HowItWorks />
       <BrandStory />
