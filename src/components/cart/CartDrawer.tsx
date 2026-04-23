@@ -73,7 +73,7 @@ export function CartDrawer() {
     let subtotal = cart?.sub_total ?? cart?.subTotal ?? items.reduce((sum: number, item: any) => sum + ((item.price_total ?? item.price ?? 0) * (item.quantity ?? 1)), 0)
     
     if (mockRushAdded) subtotal += RUSH_PROCESSING_FEE;
-    if (mockUpsellAdded) subtotal += 34; // mock heirloom rose set price
+    if (mockUpsellAdded) subtotal += 9.99; // mock heirloom rose set price
 
     // Free Shipping Progress
     const amountAwayFromFreeShipping = Math.max(0, FREE_SHIPPING_THRESHOLD - subtotal)
@@ -224,13 +224,13 @@ export function CartDrawer() {
                             {/* One-Click Upsell Block */}
                             {!mockUpsellAdded && !items.some((i: any) => i.product?.id === UPSELL_PRODUCT_ID) && (
                                 <div className="mt-2 bg-cream-dark/40 p-4 border border-gold/20 flex gap-4 items-center">
-                                    <div className="w-16 h-16 bg-white relative flex-shrink-0 flex items-center justify-center border border-espresso/10">
-                                        <PackagePlus className="w-6 h-6 text-gold" strokeWidth={1} />
+                                    <div className="w-16 h-16 bg-white relative flex-shrink-0 overflow-hidden border border-espresso/10">
+                                        <Image src="https://cdn.swell.store/customweddingco/69e9cbd9bb3d1b001278c2fe/63a65a02da8a99046499dcc4851cb644/heirloom-rose-classic-cream.png" alt="Heirloom Rose Set" fill className="object-cover" />
                                     </div>
                                     <div className="flex-1">
                                         <h4 className="font-serif text-md text-espresso">Everlasting Heirloom Rose Set</h4>
                                         <p className="font-sans text-[11px] text-gray-500 leading-tight mt-0.5">25 museum-quality faux roses with flexible botanical stems</p>
-                                        <span className="font-sans font-medium text-espresso text-xs block mt-1">+$34.00</span>
+                                        <span className="font-sans font-medium text-espresso text-xs block mt-1">+$9.99</span>
                                     </div>
                                     <button 
                                         onClick={handleAddUpsell}
