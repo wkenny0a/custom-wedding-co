@@ -22,15 +22,15 @@ export function HeroSection() {
                     Handcrafted with Love
                 </span>
                 <h1 className="font-display text-cream text-[clamp(2.4rem,5vw,4rem)] leading-tight mb-8 max-w-4xl animate-in slide-in-from-bottom-8 fade-in duration-1000 delay-150">
-                    Your Love Story, Beautifully Told
+                    Heirloom Wedding Details, Custom Crafted For You.
                 </h1>
                 <p className="font-serif text-cream text-lg sm:text-xl md:text-2xl max-w-2xl text-cream/90 mb-12 italic leading-relaxed animate-in slide-in-from-bottom-8 fade-in duration-1000 delay-300">
-                    Fully customized wedding products crafted to honor every couple's unique journey — from your first invitation to your forever keepsake.
+                    Join 10,000+ brides who elevated their day. Artisanal design, delivered in 2 weeks.
                 </p>
 
                 <div className="flex flex-col sm:flex-row gap-6 items-center animate-in slide-in-from-bottom-8 fade-in duration-1000 delay-500">
-                    <Button variant="primary" size="lg" href="/shop">
-                        Shop All Products
+                    <Button variant="secondary" size="lg" href="/shop" className="shadow-[0_0_20px_rgba(184,154,82,0.3)] hover:shadow-[0_0_30px_rgba(184,154,82,0.5)] border border-gold-light hover:-translate-y-0.5 transition-all duration-300">
+                        Design Your Keepsake
                     </Button>
                     <Button variant="outline" size="lg" href="/shop?filter=bestseller" className="border-gold text-cream hover:bg-gold hover:text-espresso">
                         View Bestsellers
