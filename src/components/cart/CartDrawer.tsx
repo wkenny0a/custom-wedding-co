@@ -11,7 +11,7 @@ const RUSH_PROCESSING_FEE = 19.00;
 
 // TODO: Replace with real Swell Product IDs when available in the dashboard
 const RUSH_PROCESSING_PRODUCT_ID = '69e9a9c652ca2a001272aa14'; 
-const UPSELL_PRODUCT_ID = 'mock_upsell_wax_seals_id';
+const UPSELL_PRODUCT_ID = '69e9cbd8bb3d1b001278c282';
 
 export function CartDrawer() {
     const { cart, isCartOpen, setIsCartOpen, updateQuantity, removeFromCart, addToCart, isLoading } = useCart()
@@ -73,7 +73,7 @@ export function CartDrawer() {
     let subtotal = cart?.sub_total ?? cart?.subTotal ?? items.reduce((sum: number, item: any) => sum + ((item.price_total ?? item.price ?? 0) * (item.quantity ?? 1)), 0)
     
     if (mockRushAdded) subtotal += RUSH_PROCESSING_FEE;
-    if (mockUpsellAdded) subtotal += 25; // mock wax seal price
+    if (mockUpsellAdded) subtotal += 34; // mock heirloom rose set price
 
     // Free Shipping Progress
     const amountAwayFromFreeShipping = Math.max(0, FREE_SHIPPING_THRESHOLD - subtotal)
@@ -228,9 +228,9 @@ export function CartDrawer() {
                                         <PackagePlus className="w-6 h-6 text-gold" strokeWidth={1} />
                                     </div>
                                     <div className="flex-1">
-                                        <h4 className="font-serif text-md text-espresso">Hand-Poured Wax Seals</h4>
-                                        <p className="font-sans text-[11px] text-gray-500 leading-tight mt-0.5">Add an elegant finishing touch to your suite</p>
-                                        <span className="font-sans font-medium text-espresso text-xs block mt-1">+$25.00</span>
+                                        <h4 className="font-serif text-md text-espresso">Everlasting Heirloom Rose Set</h4>
+                                        <p className="font-sans text-[11px] text-gray-500 leading-tight mt-0.5">25 museum-quality faux roses with flexible botanical stems</p>
+                                        <span className="font-sans font-medium text-espresso text-xs block mt-1">+$34.00</span>
                                     </div>
                                     <button 
                                         onClick={handleAddUpsell}
