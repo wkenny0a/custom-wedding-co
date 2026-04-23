@@ -7,7 +7,7 @@ import { getProducts } from '@/lib/swell'
 import { client } from '@/sanity/lib/client'
 import { productBySlugQuery } from '@/sanity/lib/queries'
 import { ShieldCheck, Clock, Truck } from 'lucide-react'
-import { getProductCategory } from '@/lib/categories'
+import { getProductCategory, getRelatedProductSlugs } from '@/lib/categories'
 
 export const metadata = {
     title: 'Product Details | Custom Wedding Co.',
@@ -57,11 +57,8 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
     if (sanityRelatedSlugs.length > 0) {
         resolvedRelatedProducts = allSwellProducts.filter((p: any) => sanityRelatedSlugs.includes(p.slug))
     } else {
-        // Fallback: 4 products from the same category (excluding current product)
-        const categoryId = swellProduct?.category_id || swellProduct?.category?.id
-        resolvedRelatedProducts = allSwellProducts
-            .filter((p: any) => p.slug !== slug && (categoryId ? (p.category_id === categoryId || p.category?.id === categoryId) : true))
-            .slice(0, 4)
+        const relatedSlugs = getRelatedProductSlugs(slug);
+        resolvedRelatedProducts = allSwellProducts.filter((p: any) => relatedSlugs.includes(p.slug)).slice(0, 4);
     }
 
     // Format them for the ProductCard component
