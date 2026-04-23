@@ -21,7 +21,7 @@ swell.init(
 
 // ── Image path ──────────────────────────────────────────────────────────────
 const IMAGE_PATH = path.resolve(
-  'C:\\Users\\kennywong\\.gemini\\antigravity\\brain\\89324553-b6fc-4f04-9ef7-ecea3adfccef\\photo_keepsake_product_1776592566470.png'
+  'C:\\Users\\kennywong\\.gemini\\antigravity\\brain\\0e82f879-b9ba-435d-ad88-106db765df51\\bespoke_photo_keepsake_1776919765199.png'
 );
 
 // ── Category definitions ────────────────────────────────────────────────────
