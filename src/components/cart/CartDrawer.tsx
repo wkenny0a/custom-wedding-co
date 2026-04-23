@@ -1,13 +1,13 @@
 'use client'
 
 import { useCart } from '@/context/CartContext'
-import { X, Minus, Plus, ShoppingBag, Trash2, ShieldCheck, HeartHandshake, Sparkles, Zap, PackagePlus } from 'lucide-react'
+import { X, Minus, Plus, ShoppingBag, Trash2, ShieldCheck, HeartHandshake, Sparkles, Zap, PackagePlus, Crown } from 'lucide-react'
 import Image from 'next/image'
 import { useState } from 'react'
 
 // --- CONFIGURATION ---
 const FREE_SHIPPING_THRESHOLD = 99;
-const RUSH_PROCESSING_FEE = 15.00;
+const RUSH_PROCESSING_FEE = 19.00;
 
 // TODO: Replace with real Swell Product IDs when available in the dashboard
 const RUSH_PROCESSING_PRODUCT_ID = 'mock_rush_processing_id'; 
@@ -247,7 +247,7 @@ export function CartDrawer() {
                 {items.length > 0 && (
                     <div className="bg-white border-t border-gold/20 flex flex-col">
                         
-                        {/* Rush Processing Order Bump */}
+                        {/* Concierge Order Bump */}
                         <div className="px-6 py-4 border-b border-espresso/5 flex items-start gap-3 bg-cream/30">
                             <input 
                                 type="checkbox" 
@@ -259,10 +259,10 @@ export function CartDrawer() {
                             />
                             <div className="flex flex-col">
                                 <label htmlFor="rush-processing" className="font-serif text-espresso text-md cursor-pointer select-none flex items-center gap-1.5">
-                                    Rush My Order <Zap className="w-3.5 h-3.5 text-orange" fill="currentColor" />
+                                    Personal Product Specialist <Crown className="w-3.5 h-3.5 text-gold" fill="currentColor" />
                                 </label>
-                                <p className="font-sans text-xs text-espresso/70 mt-0.5">
-                                    Move to the front of the production queue <span className="font-semibold text-espresso">(+${RUSH_PROCESSING_FEE.toFixed(2)})</span>
+                                <p className="font-sans text-[11px] text-espresso/70 mt-0.5 leading-tight">
+                                    1-on-1 dedicated concierge service guiding your heirloom from initial design proofs to final artisan production and shipping. <span className="font-semibold text-espresso block mt-0.5">(+${RUSH_PROCESSING_FEE.toFixed(2)})</span>
                                 </p>
                             </div>
                         </div>
