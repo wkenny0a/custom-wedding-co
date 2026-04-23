@@ -10,7 +10,7 @@ const FREE_SHIPPING_THRESHOLD = 99;
 const RUSH_PROCESSING_FEE = 19.00;
 
 // TODO: Replace with real Swell Product IDs when available in the dashboard
-const RUSH_PROCESSING_PRODUCT_ID = 'mock_rush_processing_id'; 
+const RUSH_PROCESSING_PRODUCT_ID = '69e9a9c652ca2a001272aa14'; 
 const UPSELL_PRODUCT_ID = 'mock_upsell_wax_seals_id';
 
 export function CartDrawer() {
@@ -35,17 +35,20 @@ export function CartDrawer() {
     const handleToggleRushProcessing = async () => {
         setIsActionLoading(true)
         try {
-            // Attempt to add a real product. If it fails, fallback to local state for demo.
-            if (!mockRushAdded) {
+            const existingItem = items.find((i: any) => i.product?.id === RUSH_PROCESSING_PRODUCT_ID)
+            
+            if (existingItem) {
+                // Remove it if it is already in the cart
+                await removeFromCart(existingItem.id)
+                setMockRushAdded(false)
+            } else {
+                // Add it
                 try {
                     await addToCart(RUSH_PROCESSING_PRODUCT_ID, 1)
                 } catch (e) {
-                    console.warn("Rush Processing Product ID not configured in Swell. Using mock state.")
+                    console.warn("Concierge Product ID failed. Using mock state.", e)
                     setMockRushAdded(true)
                 }
-            } else {
-                setMockRushAdded(false)
-                // In a real scenario, we'd find the item in cart and Remove it.
             }
         } finally {
             setIsActionLoading(false)
