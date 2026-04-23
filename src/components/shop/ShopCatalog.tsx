@@ -5,11 +5,8 @@ import { FilterSidebar } from './FilterSidebar'
 import { SortDropdown } from './SortDropdown'
 import { ProductCard } from '../ui/ProductCard'
 import { Filter, X } from 'lucide-react'
+import { WEDDING_CATEGORIES } from '@/lib/categories'
 
-// Dummy Data until Sanity passes props for categories
-const DUMMY_CATEGORIES = [
-    'Paper Goods', 'Décor & Signage', 'Keepsakes', 'Wearables', 'Day-Of Essentials', 'Sentimental Gifts'
-]
 
 interface ShopCatalogProps {
     categoryName?: string;
@@ -44,7 +41,7 @@ export function ShopCatalog({ categoryName, products }: ShopCatalogProps) {
 
                 {/* Desktop Sidebar */}
                 <div className="hidden lg:block sticky top-32">
-                    <FilterSidebar categories={DUMMY_CATEGORIES} />
+                    <FilterSidebar categories={WEDDING_CATEGORIES} />
                 </div>
 
                 {/* Mobile Filter & Sort Controls */}
@@ -87,7 +84,7 @@ export function ShopCatalog({ categoryName, products }: ShopCatalogProps) {
                                 <X size={24} />
                             </button>
                         </div>
-                        <FilterSidebar categories={DUMMY_CATEGORIES} />
+                        <FilterSidebar categories={WEDDING_CATEGORIES} />
                     </div>
                 </div>
             )}
