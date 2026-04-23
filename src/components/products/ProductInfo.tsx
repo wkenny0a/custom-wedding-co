@@ -242,6 +242,21 @@ export function ProductInfo({ product, onStyleImageSelect }: { product: any, onS
         )
     }
 
+    // ── Compute Active Price Display ──
+    const basePriceNum = Number(product.price) || 0;
+    const activeVariantsTotal = variantOptions.reduce((total: number, opt: any) => {
+        const selectedValue = selectedVariants[opt.name];
+        if (selectedValue) {
+            const definedValue = opt.values?.find((v: any) => v.name === selectedValue);
+            if (definedValue && definedValue.price) {
+                return total + Number(definedValue.price);
+            }
+        }
+        return total;
+    }, 0);
+    const activePriceNum = basePriceNum + activeVariantsTotal;
+    const displayPrice = activePriceNum > 0 ? `$${activePriceNum.toFixed(2)}` : product.priceRange;
+
     return (
         <div className="flex flex-col w-full text-left">
             {/* Breadcrumb & Badge */}
@@ -263,7 +278,7 @@ export function ProductInfo({ product, onStyleImageSelect }: { product: any, onS
             </div>
 
             <div className="flex items-baseline gap-3 mb-8">
-                <span className="font-serif text-3xl text-gold">{product.priceRange}</span>
+                <span className="font-serif text-3xl text-gold">{displayPrice}</span>
                 {product.priceNote && (
                     <span className="font-sans text-sm text-gray-500 uppercase tracking-wide">{product.priceNote}</span>
                 )}
@@ -591,7 +606,7 @@ export function ProductInfo({ product, onStyleImageSelect }: { product: any, onS
             <div className="fixed bottom-0 left-0 right-0 z-[60] bg-cream border-t border-gold/30 p-4 pb-6 shadow-[0_-10px_20px_-10px_rgba(74,44,42,0.15)] flex items-center justify-between gap-4 md:hidden animate-in slide-in-from-bottom duration-500">
                 <div className="flex flex-col w-1/2">
                     <span className="font-serif text-sm font-bold text-espresso line-clamp-1" dangerouslySetInnerHTML={{ __html: product.name }}></span>
-                    <span className="font-sans text-xs font-semibold text-gold">{product.priceRange}</span>
+                    <span className="font-sans text-xs font-semibold text-gold">{displayPrice}</span>
                 </div>
                 
                 <div className="flex-shrink-0 w-1/2">
