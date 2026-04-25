@@ -59,6 +59,11 @@ export default function BridesmaidBoxConfigurator({
       await handleInjectBaseBox();
     }
     setCurrentStep(targetStep);
+    
+    // Auto-scroll to the top of the configurator gracefully
+    if (typeof window !== 'undefined') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   };
 
   const nextStep = () => goToStep(Math.min(currentStep + 1, 3));

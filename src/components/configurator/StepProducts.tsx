@@ -193,8 +193,8 @@ export default function StepProducts({
       </div>
 
       {/* Epic 2-Column Quick View Modal for Customizable Products */}
-      {customizingProduct && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md animate-in fade-in duration-300 p-4 sm:p-6 overflow-hidden">
+      {customizingProduct && typeof document !== 'undefined' && require('react-dom').createPortal(
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-md animate-in fade-in duration-300 p-4 sm:p-6 overflow-hidden mt-0">
           <div className="bg-cream w-full max-w-4xl max-h-[95vh] rounded-2xl shadow-2xl relative flex flex-col md:flex-row overflow-hidden">
             
             <button 
@@ -302,7 +302,8 @@ export default function StepProducts({
             </div>
 
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

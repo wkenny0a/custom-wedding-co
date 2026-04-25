@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { BoxColorOption } from './types';
 
 export const BOX_COLORS: BoxColorOption[] = [
@@ -21,6 +21,14 @@ interface StepBoxColorProps {
 }
 
 export default function StepBoxColor({ selectedColor, onSelectColor, onNext }: StepBoxColorProps) {
+  const [imageLoading, setImageLoading] = useState(false);
+
+  useEffect(() => {
+    if (selectedColor) {
+      setImageLoading(true);
+    }
+  }, [selectedColor?.id]);
+
   return (
     <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
       <h3 className="font-serif text-3xl mb-6 text-center">Step 1: Choose Your Box Color</h3>
@@ -30,12 +38,23 @@ export default function StepBoxColor({ selectedColor, onSelectColor, onNext }: S
         {/* Left: Dynamic Graphic Preview */}
         <div className="flex-1 w-full max-w-sm mx-auto relative group">
           <div className="relative w-full aspect-square bg-gray-50 border border-gold-pale/30 rounded-3xl overflow-hidden flex items-center justify-center shadow-xl">
+            {/* Loading Spinner Overlay */}
+            {imageLoading && (
+              <div className="absolute inset-0 z-20 flex items-center justify-center bg-gray-50/50 backdrop-blur-sm">
+                <svg className="animate-spin h-8 w-8 text-gold" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+              </div>
+            )}
+            
             {/* Display the explicit generated physical image for the selected box color */}
             {selectedColor ? (
               <img 
                 src={selectedColor.imageUrl} 
                 alt={`${selectedColor.name} Box`} 
-                className="relative z-10 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
+                onLoad={() => setImageLoading(false)}
+                className={`relative z-10 w-full h-full object-cover transition-all duration-700 group-hover:scale-105 ${imageLoading ? 'opacity-0 scale-95' : 'opacity-100 scale-100'}`} 
               />
             ) : (
               <img 
