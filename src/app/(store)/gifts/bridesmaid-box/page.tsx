@@ -1,5 +1,5 @@
 import BridesmaidBoxConfigurator from '@/components/configurator/BridesmaidBoxConfigurator';
-import { getProducts, getLowestDisplayPrice } from '@/lib/swell';
+import { getProducts, getLowestDisplayPrice, getProductBySlug } from '@/lib/swell';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -8,7 +8,11 @@ export const metadata: Metadata = {
 };
 
 export default async function BridesmaidBoxPage() {
-  const result = await getProducts({ category: 'bridesmaid-box' });
+  const [result, baseBox] = await Promise.all([
+    getProducts({ category: 'bridesmaid-box' }),
+    getProductBySlug('bridesmaid-box')
+  ]);
+  
   const swellProducts = result?.results || [];
 
   const catalogProducts = swellProducts.map((p: any) => {
@@ -37,7 +41,10 @@ export default async function BridesmaidBoxPage() {
           Create a beautifully curated, personalized gift experience for your bridal party.
         </p>
       </div>
-      <BridesmaidBoxConfigurator catalogProducts={catalogProducts} />
+      <BridesmaidBoxConfigurator 
+        catalogProducts={catalogProducts} 
+        baseBoxProduct={baseBox}
+      />
     </div>
   );
 }
