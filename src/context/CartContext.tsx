@@ -8,7 +8,7 @@ interface CartContextType {
     cart: any | null;
     isCartOpen: boolean;
     setIsCartOpen: (isOpen: boolean) => void;
-    addToCart: (productId: string, quantity: number, options?: any[], metadata?: any) => Promise<void>;
+    addToCart: (productId: string, quantity: number, options?: any[], metadata?: any, suppressDrawer?: boolean) => Promise<any>;
     addMultipleToCart: (items: { productId: string; quantity: number; options: any[], metadata?: any }[]) => Promise<void>;
     removeFromCart: (itemId: string) => Promise<void>;
     updateQuantity: (itemId: string, quantity: number) => Promise<void>;
@@ -39,7 +39,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         fetchCart()
     }, [])
 
-    const addToCart = async (productId: string, quantity: number, options: any[] = [], metadata?: any) => {
+    const addToCart = async (productId: string, quantity: number, options: any[] = [], metadata?: any, suppressDrawer: boolean = false) => {
         setIsLoading(true)
         try {
             const itemPayload: any = {
@@ -59,7 +59,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
                 throw new Error(errorMessages || 'Validation error adding item to cart')
             }
             setCart(updatedCart)
-            setIsCartOpen(true) // Open drawer automatically
+            if (!suppressDrawer) {
+                setIsCartOpen(true) // Open drawer automatically if not silenced
+            }
+            return updatedCart;
         } catch (error: any) {
             console.error('Error adding to cart:', error)
             throw error
