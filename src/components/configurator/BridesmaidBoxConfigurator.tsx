@@ -59,10 +59,16 @@ export default function BridesmaidBoxConfigurator({
 
       // 2. Construct payloads for all internal items selected in Step 3
       const internalPayloads = state.selectedProducts.map((p) => {
-        const itemOptions = [];
-        if (p.isCustomizable && p.customName) {
-          itemOptions.push({ name: 'Names or initials', value: p.customName });
+        let itemOptions: any[] = [];
+        
+        // If the product has dynamic custom options mapped from the Quick View modal, pass them exactly
+        if (p.isCustomizable && p.customOptions && p.customOptions.length > 0) {
+          itemOptions = p.customOptions.map(opt => ({
+            name: opt.name,
+            value: opt.value
+          }));
         }
+
         return {
           productId: p.id,
           quantity: 1,
