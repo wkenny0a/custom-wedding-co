@@ -134,7 +134,7 @@ export default function BridesmaidBoxConfigurator({
   };
 
   const nextStep = () => goToStep(Math.min(currentStep + 1, 3));
-  const prevStep = () => goToStep(Math.max(currentStep - 1, 1));
+  const prevStep = () => goToStep(Math.max(currentStep - 1, 0));
 
   const setBoxColor = (color: BoxColorOption) => setState(s => ({ ...s, boxColor: color }));
   const setPersonalizationMessage = (msg: string) => setState(s => ({ ...s, personalizationMessage: msg }));
@@ -368,6 +368,7 @@ export default function BridesmaidBoxConfigurator({
                   selectedColor={state.boxColor}
                   onSelectColor={setBoxColor}
                   onNext={nextStep}
+                  onPrev={prevStep}
                 />
               )}
 
