@@ -29,6 +29,8 @@ export default function StepPersonalization({
   onPrev 
 }: StepPersonalizationProps) {
 
+  const [previewIndex, setPreviewIndex] = useState(0);
+
   const [localMessages, setLocalMessages] = useState<string[]>(() => {
     if (!message) return Array(quantity).fill(presetMessage);
     const parts = message.includes(' | ') ? message.split(' | ').map(p => p.replace(/^Box \d+: /, '')) : [message];
@@ -79,15 +81,41 @@ export default function StepPersonalization({
           <div 
             className="w-full aspect-square rounded-2xl shadow-xl relative flex items-center justify-center text-center overflow-hidden border border-gold-pale/30 group-hover:shadow-2xl transition-all duration-700 bg-white"
           >
+            {quantity > 1 && (
+              <>
+                <button 
+                  onClick={() => setPreviewIndex(prev => prev > 0 ? prev - 1 : quantity - 1)}
+                  className="absolute left-4 z-30 w-8 h-8 flex items-center justify-center rounded-full bg-slate-50 border border-gold-pale/30 text-espresso/50 hover:text-espresso hover:border-gold transition-colors shadow-sm"
+                >
+                  ‹
+                </button>
+                <button 
+                  onClick={() => setPreviewIndex(prev => prev < quantity - 1 ? prev + 1 : 0)}
+                  className="absolute right-4 z-30 w-8 h-8 flex items-center justify-center rounded-full bg-slate-50 border border-gold-pale/30 text-espresso/50 hover:text-espresso hover:border-gold transition-colors shadow-sm"
+                >
+                  ›
+                </button>
+              </>
+            )}
+            
             {/* Typography layer */}
-            <div className="relative z-20 w-3/4 mb-16 transition-colors duration-700 text-espresso">
-              <h4 className="font-serif text-3xl md:text-5xl leading-tight font-medium">
-                {localMessages[0] || 'Your message here...'}
+            <div className="relative z-20 w-3/4 mb-16 transition-colors duration-700 text-espresso" key={`preview-${previewIndex}`}>
+              <h4 className="font-serif text-3xl md:text-5xl leading-tight font-medium animate-in fade-in duration-500">
+                {localMessages[previewIndex] || 'Your message here...'}
               </h4>
                <p className="mt-8 text-xs tracking-[0.2em] uppercase text-espresso-light">
-                 {quantity > 1 ? 'Previewing Box 1' : 'Typography Preview'}
+                 {quantity > 1 ? `Previewing Box ${previewIndex + 1} of ${quantity}` : 'Typography Preview'}
                </p>
             </div>
+            
+            {/* Dot Indicators */}
+            {quantity > 1 && (
+              <div className="absolute bottom-6 flex gap-2 z-30">
+                 {Array.from({ length: quantity }).map((_, i) => (
+                   <div key={i} className={`h-1.5 rounded-full transition-all duration-500 ${previewIndex === i ? 'w-4 bg-gold' : 'w-1.5 bg-gold-pale/40'}`} />
+                 ))}
+              </div>
+            )}
           </div>
 
           {/* Emotional Proof Quote */}
@@ -113,6 +141,7 @@ export default function StepPersonalization({
                 <textarea
                   rows={quantity > 2 ? 2 : 4}
                   value={msg}
+                  onFocus={() => setPreviewIndex(idx)}
                   onChange={(e) => updateMessage(idx, e.target.value)}
                   onBlur={() => handleBlur(localMessages)}
                   className="w-full bg-transparent border-b border-espresso/30 py-3 focus:outline-none focus:border-gold transition-colors duration-500 text-xl font-serif resize-none"

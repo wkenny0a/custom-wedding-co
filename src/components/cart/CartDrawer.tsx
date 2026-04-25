@@ -280,8 +280,8 @@ export function CartDrawer() {
                             </div>
 
                             <a
-                                href={cart?.checkoutUrl || cart?.checkout_url || '#'}
-                                className={`w-full bg-espresso text-cream font-sans font-bold uppercase tracking-widest text-sm py-4 mt-2 text-center hover:bg-espresso-light transition-all duration-500 shadow-md hover:shadow-lg ${!(cart?.checkoutUrl || cart?.checkout_url) ? 'opacity-50 pointer-events-none' : ''}`}
+                                href="/checkout"
+                                className="w-full bg-espresso text-cream font-sans font-bold uppercase tracking-widest text-sm py-4 mt-2 text-center hover:bg-espresso-light transition-all duration-500 shadow-md hover:shadow-lg block"
                             >
                                 Secure Checkout
                             </a>
