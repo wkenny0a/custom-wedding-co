@@ -8,6 +8,7 @@ interface StepProductsProps {
   onRemoveProduct: (productId: string) => void;
   onPrev: () => void;
   onSubmit: () => void;
+  isSubmitting?: boolean;
 }
 
 export default function StepProducts({
@@ -16,23 +17,29 @@ export default function StepProducts({
   onAddProduct,
   onRemoveProduct,
   onPrev,
-  onSubmit
+  onSubmit,
+  isSubmitting = false
 }: StepProductsProps) {
   
-  // Local state for modal
   const [customizingProduct, setCustomizingProduct] = useState<ProductItem | null>(null);
-  
-  // Dictionary holding current choices: { "Box Color": "Navy Blue", "Name": "Carly" }
   const [customOptions, setCustomOptions] = useState<Record<string, string>>({});
+  
+  // Carousel State
+  const [currentImageIndex, setCurrentImageIndex] = useState<number>(0);
 
   useEffect(() => {
-    // When a new product is opened, initialize the options state
-    if (customizingProduct && customizingProduct.swellData?.options) {
-      const initial: Record<string, string> = {};
-      customizingProduct.swellData.options.forEach((opt: any) => {
-        initial[opt.name] = ''; // Start empty
-      });
-      setCustomOptions(initial);
+    if (customizingProduct) {
+      // Reset image index
+      setCurrentImageIndex(0);
+
+      // Initialize option mapping
+      if (customizingProduct.swellData?.options) {
+        const initial: Record<string, string> = {};
+        customizingProduct.swellData.options.forEach((opt: any) => {
+          initial[opt.name] = ''; // Start empty
+        });
+        setCustomOptions(initial);
+      }
     }
   }, [customizingProduct]);
 
@@ -50,7 +57,6 @@ export default function StepProducts({
 
   const confirmCustomProduct = () => {
     if (customizingProduct) {
-      // Map the dictionary state into expected Swell Array format
       const optionsArray = Object.keys(customOptions).map(key => ({
         name: key,
         value: customOptions[key]
@@ -67,11 +73,34 @@ export default function StepProducts({
   const isSelected = (productId: string) => selectedProducts.some(p => p.id === productId);
   const getSelectedProduct = (productId: string) => selectedProducts.find(p => p.id === productId);
 
-  // Check if all options in the modal are filled out
   const isCustomizationComplete = () => {
     if (!customizingProduct || !customizingProduct.swellData?.options) return true;
     return customizingProduct.swellData.options.every((opt: any) => !!customOptions[opt.name]?.trim());
   };
+
+  // Carousel Logic
+  const getModalImages = () => {
+    if (!customizingProduct) return [];
+    const swellImages = customizingProduct.swellData?.images || [];
+    if (swellImages.length > 0) {
+      return swellImages.map((img: any) => img.file?.url).filter((url?: string) => !!url);
+    }
+    return [customizingProduct.image || '/images/box_closed.png'];
+  };
+
+  const modalImages = getModalImages();
+  const activeModalImageUrl = modalImages[currentImageIndex] || '/images/box_closed.png';
+
+  const nextImage = () => setCurrentImageIndex(prev => (prev + 1) % modalImages.length);
+  const prevImage = () => setCurrentImageIndex(prev => (prev - 1 + modalImages.length) % modalImages.length);
+
+  // Reusable loading spinner SVG
+  const SpinnerIcon = () => (
+    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-current inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+    </svg>
+  );
 
   return (
     <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
@@ -91,7 +120,7 @@ export default function StepProducts({
           const selected = !!selectedItem;
 
           return (
-            <div key={product.id} className="bg-white/80 rounded-xl overflow-hidden shadow-sm border border-gold-pale/30 transition-transform duration-500 hover:-translate-y-1">
+            <div key={product.id} className={`bg-white/80 rounded-xl overflow-hidden shadow-sm border transition-all duration-500 hover:-translate-y-1 ${selected ? 'border-gold shadow-md' : 'border-gold-pale/30'}`}>
               <div val="image-container" className="h-48 bg-gray-100 relative overflow-hidden group">
                 <img src={product.image || '/images/box_closed.png'} alt={product.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
                 <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors duration-500" />
@@ -100,7 +129,7 @@ export default function StepProducts({
                 <div>
                   <div className="flex justify-between items-start mb-1">
                     <h4 className="font-serif font-semibold text-lg leading-tight">{product.name}</h4>
-                    <span className="font-sans text-sm ml-2">${product.price}</span>
+                    <span className="font-sans text-sm ml-2">${product.price.toFixed(2)}</span>
                   </div>
                   {product.isCustomizable && (
                     <span className="text-xs text-gold uppercase tracking-widest block mt-1">Customizable</span>
@@ -115,8 +144,11 @@ export default function StepProducts({
                 </div>
                 
                 <button
+                  disabled={isSubmitting}
                   onClick={() => selected ? onRemoveProduct(product.id) : handleAddClick(product)}
                   className={`py-3 w-full text-sm uppercase tracking-wider transition-colors duration-300 border mt-auto ${
+                     isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
+                  } ${
                     selected 
                       ? 'border-espresso text-espresso hover:bg-espresso hover:text-cream' 
                       : 'border-transparent bg-cream-dark text-espresso hover:bg-gold hover:text-white'
@@ -133,7 +165,8 @@ export default function StepProducts({
       <div className="flex justify-between border-t border-gold-pale/50 pt-8 items-center">
         <button
           onClick={onPrev}
-          className="uppercase tracking-widest text-sm text-espresso-light hover:text-espresso transition-colors duration-300 py-4"
+          disabled={isSubmitting}
+          className={`uppercase tracking-widest text-sm transition-colors duration-300 py-4 ${isSubmitting ? 'text-gray-300 cursor-not-allowed' : 'text-espresso-light hover:text-espresso'}`}
         >
           &larr; Back
         </button>
@@ -144,9 +177,13 @@ export default function StepProducts({
           </div>
           <button
             onClick={onSubmit}
-            className="px-6 md:px-8 py-4 uppercase tracking-widest text-sm bg-espresso text-cream hover:bg-espresso-light transition-colors duration-500"
+            disabled={isSubmitting}
+            className={`px-6 md:px-8 py-4 uppercase tracking-widest text-sm transition-all duration-500 flex items-center justify-center ${
+              isSubmitting ? 'bg-espresso-light text-cream/70 cursor-not-allowed' : 'bg-espresso text-cream hover:bg-espresso-light shadow-md'
+            }`}
           >
-            Review Cart & Checkout
+            {isSubmitting && <SpinnerIcon />}
+            {isSubmitting ? 'Syncing...' : 'Review Cart & Checkout'}
           </button>
         </div>
       </div>
@@ -158,19 +195,46 @@ export default function StepProducts({
             
             <button 
               onClick={() => setCustomizingProduct(null)}
-              className="absolute top-4 right-4 z-20 w-8 h-8 flex items-center justify-center rounded-full bg-white/80 hover:bg-white text-espresso transition-colors"
+              disabled={isSubmitting}
+              className="absolute top-4 right-4 z-20 w-8 h-8 flex items-center justify-center rounded-full bg-white/80 hover:bg-white text-espresso transition-colors disabled:opacity-50"
             >
               &#x2715;
             </button>
 
-            {/* Left Column: Huge Image Preview */}
-            <div className="w-full md:w-1/2 h-64 md:h-auto bg-gray-100 flex-shrink-0 relative">
+            {/* Left Column: Interactive Swell Carousel */}
+            <div className="w-full md:w-1/2 h-64 md:h-auto bg-gray-100 flex-shrink-0 relative group">
                <img 
-                 src={customizingProduct.image || '/images/box_closed.png'} 
+                 src={activeModalImageUrl} 
                  alt={customizingProduct.name} 
-                 className="w-full h-full object-cover"
+                 className="w-full h-full object-cover transition-opacity duration-300"
                />
-               <div className="absolute inset-0 border-r border-gold-pale/30 hidden md:block" />
+               
+               {/* Gallery Controls (Only appear if > 1 image exists) */}
+               {modalImages.length > 1 && (
+                 <>
+                   <button 
+                     onClick={prevImage}
+                     className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/80 hover:bg-white rounded-full flex items-center justify-center text-espresso shadow-lg transition-transform hover:scale-105 opacity-0 group-hover:opacity-100"
+                   >
+                     &larr;
+                   </button>
+                   <button 
+                     onClick={nextImage}
+                     className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/80 hover:bg-white rounded-full flex items-center justify-center text-espresso shadow-lg transition-transform hover:scale-105 opacity-0 group-hover:opacity-100"
+                   >
+                     &rarr;
+                   </button>
+                   
+                   {/* Dots Indicator */}
+                   <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-2">
+                     {modalImages.map((_, i) => (
+                       <div key={i} className={`w-2 h-2 rounded-full transition-colors ${i === currentImageIndex ? 'bg-gold' : 'bg-white/50'}`} />
+                     ))}
+                   </div>
+                 </>
+               )}
+
+               <div className="absolute inset-0 border-r border-gold-pale/30 hidden md:block pointer-events-none" />
             </div>
 
             {/* Right Column: Dynamic Form UI */}
@@ -191,7 +255,8 @@ export default function StepProducts({
                       <select 
                         value={customOptions[opt.name] || ''}
                         onChange={(e) => handleOptionChange(opt.name, e.target.value)}
-                        className="w-full bg-white border border-gold-pale p-3 focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold transition-colors"
+                        disabled={isSubmitting}
+                        className="w-full bg-white border border-gold-pale p-3 focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold transition-colors disabled:opacity-50"
                       >
                         <option value="" disabled>Select {opt.name}</option>
                         {opt.values.map((v: any) => (
@@ -203,8 +268,9 @@ export default function StepProducts({
                         type="text"
                         value={customOptions[opt.name] || ''}
                         onChange={(e) => handleOptionChange(opt.name, e.target.value)}
+                        disabled={isSubmitting}
                         placeholder={`Enter ${opt.name}`}
-                        className="w-full bg-white border border-gold-pale p-3 focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold transition-colors placeholder:text-gray-300"
+                        className="w-full bg-white border border-gold-pale p-3 focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold transition-colors placeholder:text-gray-300 disabled:opacity-50"
                       />
                     )}
                   </div>
@@ -218,14 +284,15 @@ export default function StepProducts({
               <div className="mt-10 pt-6 border-t border-gold-pale/30">
                 <button 
                   onClick={confirmCustomProduct}
-                  disabled={!isCustomizationComplete()}
-                  className={`w-full py-4 uppercase tracking-widest text-sm transition-all duration-300 ${
-                    isCustomizationComplete() 
+                  disabled={!isCustomizationComplete() || isSubmitting}
+                  className={`w-full py-4 uppercase tracking-widest text-sm transition-all duration-300 flex items-center justify-center ${
+                    (isCustomizationComplete() && !isSubmitting)
                       ? 'bg-espresso text-cream hover:bg-espresso-light shadow-md hover:-translate-y-0.5' 
                       : 'bg-gray-200 text-gray-400 cursor-not-allowed'
                   }`}
                 >
-                  {isCustomizationComplete() ? 'Confirm Customization' : 'Complete All Fields'}
+                  {isSubmitting && <SpinnerIcon />}
+                  {isCustomizationComplete() ? (isSubmitting ? 'Saving...' : 'Confirm Customization') : 'Complete All Fields'}
                 </button>
               </div>
             </div>

@@ -16,19 +16,14 @@ export default async function BridesmaidBoxPage() {
   const swellProducts = result?.results || [];
 
   const catalogProducts = swellProducts.map((p: any) => {
-    // Check if the product has "Names or initials" modifier
     const options = p.options || [];
-    const nameOption = options.find((opt: any) => 
-      opt.name?.toLowerCase().includes('name') || 
-      opt.name?.toLowerCase().includes('initial')
-    );
 
     return {
       id: p.id,
       name: p.name,
       price: getLowestDisplayPrice(p),
       image: p.images?.[0]?.file?.url || '', // Fallback to placeholder if not found can be handled in UI
-      isCustomizable: !!nameOption,
+      isCustomizable: options.length > 0,
       swellData: p
     };
   });

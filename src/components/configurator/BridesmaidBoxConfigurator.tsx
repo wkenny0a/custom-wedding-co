@@ -203,6 +203,7 @@ export default function BridesmaidBoxConfigurator({
             onRemoveProduct={removeProduct}
             onPrev={prevStep}
             onSubmit={handleSubmit}
+            isSubmitting={isSubmitting}
           />
         )}
       </div>
