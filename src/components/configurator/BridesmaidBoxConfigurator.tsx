@@ -5,12 +5,22 @@ import { BoxColorOption, ProductItem, ConfiguratorState } from './types';
 import StepBoxColor from './StepBoxColor';
 import StepPersonalization from './StepPersonalization';
 import StepProducts from './StepProducts';
+import { useCart } from '@/context/CartContext';
 
-export default function BridesmaidBoxConfigurator({ catalogProducts = [] }: { catalogProducts?: ProductItem[] }) {
+export default function BridesmaidBoxConfigurator({ 
+  catalogProducts = [],
+  baseBoxProduct = null
+}: { 
+  catalogProducts?: ProductItem[],
+  baseBoxProduct?: any
+}) {
   const [currentStep, setCurrentStep] = useState<number>(1);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { addMultipleToCart } = useCart();
+  
   const [state, setState] = useState<ConfiguratorState>({
     boxColor: null,
-    personalizationMessage: 'Will you be my bridesmaid, Carly?', // Default sample setup
+    personalizationMessage: '', // Start empty
     includeShreddedPaper: false,
     includeBowTie: false,
     selectedProducts: [],
@@ -26,9 +36,49 @@ export default function BridesmaidBoxConfigurator({ catalogProducts = [] }: { ca
   const addProduct = (product: ProductItem) => setState(s => ({ ...s, selectedProducts: [...s.selectedProducts, product] }));
   const removeProduct = (productId: string) => setState(s => ({ ...s, selectedProducts: s.selectedProducts.filter(p => p.id !== productId) }));
 
-  const handleSubmit = () => {
-    // Logic to add the composite item to Snipcart or Swell Cart
-    alert(`Configurator Submitted!\nBox Color: ${state.boxColor?.name}\nMessage: ${state.personalizationMessage}\nShredded Paper: ${state.includeShreddedPaper ? 'Yes' : 'No'}\nBow Tie Ribbon: ${state.includeBowTie ? 'Yes' : 'No'}\nItems: ${state.selectedProducts.length}`);
+  const handleSubmit = async () => {
+    if (!baseBoxProduct) {
+      alert("Error: Base bridesmaid-box product not found in the store system.");
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      // 1. Construct the Base Box Cart object
+      const baseOptions = [];
+      if (state.boxColor) baseOptions.push({ name: 'Box Color', value: state.boxColor.name });
+      if (state.includeShreddedPaper) baseOptions.push({ name: 'Matching Shredded Paper', value: 'Yes' });
+      if (state.includeBowTie) baseOptions.push({ name: 'Exterior Bow Tie Ribbon', value: 'Yes' });
+      if (state.personalizationMessage.trim()) baseOptions.push({ name: 'Inner Lid Message', value: state.personalizationMessage });
+
+      const basePayload = {
+        productId: baseBoxProduct.id,
+        quantity: 1,
+        options: baseOptions
+      };
+
+      // 2. Construct payloads for all internal items selected in Step 3
+      const internalPayloads = state.selectedProducts.map((p) => {
+        const itemOptions = [];
+        if (p.isCustomizable && p.customName) {
+          itemOptions.push({ name: 'Names or initials', value: p.customName });
+        }
+        return {
+          productId: p.id,
+          quantity: 1,
+          options: itemOptions
+        };
+      });
+
+      // 3. Fire everything directly into the Swell cart
+      await addMultipleToCart([basePayload, ...internalPayloads]);
+      
+      // Cart drawer will auto-open upon success via CartContext
+    } catch (error: any) {
+      alert(`Could not add to cart: ${error.message || 'Validation Failed'}`);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   // Progress Bar
