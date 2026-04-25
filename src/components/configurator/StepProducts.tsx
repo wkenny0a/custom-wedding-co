@@ -146,7 +146,7 @@ export default function StepProducts({
             onClick={onSubmit}
             className="px-6 md:px-8 py-4 uppercase tracking-widest text-sm bg-espresso text-cream hover:bg-espresso-light transition-colors duration-500"
           >
-            Review & Add To Cart
+            Review Cart & Checkout
           </button>
         </div>
       </div>

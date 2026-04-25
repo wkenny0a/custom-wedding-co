@@ -16,75 +16,104 @@ export default function BridesmaidBoxConfigurator({
 }) {
   const [currentStep, setCurrentStep] = useState<number>(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { addMultipleToCart } = useCart();
+  const { addToCart, addMultipleToCart, removeFromCart, setIsCartOpen } = useCart();
   
   const [state, setState] = useState<ConfiguratorState>({
     boxColor: null,
-    personalizationMessage: '', // Start empty
+    personalizationMessage: '',
     includeShreddedPaper: false,
     includeBowTie: false,
     selectedProducts: [],
+    baseBoxCartItemId: undefined
   });
 
-  const nextStep = () => setCurrentStep(prev => Math.min(prev + 1, 3));
-  const prevStep = () => setCurrentStep(prev => Math.max(prev - 1, 1));
-
-  const setBoxColor = (color: BoxColorOption) => setState(s => ({ ...s, boxColor: color }));
-  const setPersonalizationMessage = (msg: string) => setState(s => ({ ...s, personalizationMessage: msg }));
-  const setIncludeShreddedPaper = (include: boolean) => setState(s => ({ ...s, includeShreddedPaper: include }));
-  const setIncludeBowTie = (include: boolean) => setState(s => ({ ...s, includeBowTie: include }));
-  const addProduct = (product: ProductItem) => setState(s => ({ ...s, selectedProducts: [...s.selectedProducts, product] }));
-  const removeProduct = (productId: string) => setState(s => ({ ...s, selectedProducts: s.selectedProducts.filter(p => p.id !== productId) }));
-
-  const handleSubmit = async () => {
-    if (!baseBoxProduct) {
-      alert("Error: Base bridesmaid-box product not found in the store system.");
-      return;
-    }
-
+  const handleInjectBaseBox = async () => {
+    if (!baseBoxProduct) return;
     setIsSubmitting(true);
     try {
-      // 1. Construct the Base Box Cart object
+      // If they already created a box during this session and went backward, delete the old one
+      if (state.baseBoxCartItemId) {
+         try { await removeFromCart(state.baseBoxCartItemId); } catch(e) {}
+      }
+      
       const baseOptions = [];
       if (state.boxColor) baseOptions.push({ name: 'Box Color', value: state.boxColor.name });
       if (state.includeShreddedPaper) baseOptions.push({ name: 'Matching Shredded Paper', value: 'Yes' });
       if (state.includeBowTie) baseOptions.push({ name: 'Exterior Bow Tie Ribbon', value: 'Yes' });
       if (state.personalizationMessage.trim()) baseOptions.push({ name: 'Inner Lid Message', value: state.personalizationMessage });
 
-      const basePayload = {
-        productId: baseBoxProduct.id,
-        quantity: 1,
-        options: baseOptions
-      };
-
-      // 2. Construct payloads for all internal items selected in Step 3
-      const internalPayloads = state.selectedProducts.map((p) => {
-        let itemOptions: any[] = [];
-        
-        // If the product has dynamic custom options mapped from the Quick View modal, pass them exactly
-        if (p.isCustomizable && p.customOptions && p.customOptions.length > 0) {
-          itemOptions = p.customOptions.map(opt => ({
-            name: opt.name,
-            value: opt.value
-          }));
-        }
-
-        return {
-          productId: p.id,
-          quantity: 1,
-          options: itemOptions
-        };
-      });
-
-      // 3. Fire everything directly into the Swell cart
-      await addMultipleToCart([basePayload, ...internalPayloads]);
+      const updatedCart = await addToCart(baseBoxProduct.id, 1, baseOptions, null, true); // suppressDrawer = true
       
-      // Cart drawer will auto-open upon success via CartContext
-    } catch (error: any) {
-      alert(`Could not add to cart: ${error.message || 'Validation Failed'}`);
+      if (updatedCart && updatedCart.items && updatedCart.items.length > 0) {
+        // Swell typically appends new distinct items to the end of the cart arrays
+        const newestItem = updatedCart.items[updatedCart.items.length - 1];
+        setState(s => ({ ...s, baseBoxCartItemId: newestItem.id }));
+      }
+    } catch (error) {
+      console.error("Failed to inject base box silently:", error);
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const goToStep = async (targetStep: number) => {
+    if (targetStep === 3 && currentStep < 3) {
+      await handleInjectBaseBox();
+    }
+    setCurrentStep(targetStep);
+  };
+
+  const nextStep = () => goToStep(Math.min(currentStep + 1, 3));
+  const prevStep = () => goToStep(Math.max(currentStep - 1, 1));
+
+  const setBoxColor = (color: BoxColorOption) => setState(s => ({ ...s, boxColor: color }));
+  const setPersonalizationMessage = (msg: string) => setState(s => ({ ...s, personalizationMessage: msg }));
+  const setIncludeShreddedPaper = (include: boolean) => setState(s => ({ ...s, includeShreddedPaper: include }));
+  const setIncludeBowTie = (include: boolean) => setState(s => ({ ...s, includeBowTie: include }));
+  const addProduct = async (product: ProductItem) => {
+    setIsSubmitting(true);
+    try {
+      let itemOptions: any[] = [];
+      if (product.isCustomizable && product.customOptions && product.customOptions.length > 0) {
+        itemOptions = product.customOptions.map(opt => ({
+          name: opt.name,
+          value: opt.value
+        }));
+      }
+
+      // Add to cart silently
+      const updatedCart = await addToCart(product.id, 1, itemOptions, null, true);
+      const newestItem = updatedCart?.items?.[updatedCart.items.length - 1];
+      
+      const newProduct = { ...product, cartItemId: newestItem?.id };
+      setState(s => ({ ...s, selectedProducts: [...s.selectedProducts, newProduct] }));
+    } catch (error) {
+      console.error("Cart addition failed:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const removeProduct = async (productId: string) => {
+    const productToRemove = state.selectedProducts.find(p => p.id === productId);
+    if (!productToRemove) return;
+
+    setIsSubmitting(true);
+    try {
+      if (productToRemove.cartItemId) {
+        await removeFromCart(productToRemove.cartItemId);
+      }
+      setState(s => ({ ...s, selectedProducts: s.selectedProducts.filter(p => p.id !== productId) }));
+    } catch (error) {
+      console.error("Cart removal failed:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleSubmit = () => {
+    // Everything is already in the live cart! Just instantly open the visual Drawer.
+    setIsCartOpen(true);
   };
 
   // Progress Bar
@@ -114,7 +143,7 @@ export default function BridesmaidBoxConfigurator({
             <React.Fragment key={step.num}>
               <div 
                 className="flex flex-col items-center cursor-pointer group"
-                onClick={() => step.num <= currentStep && setCurrentStep(step.num)}
+                onClick={() => step.num <= currentStep && goToStep(step.num)}
               >
                 <div 
                   className={`w-10 h-10 rounded-full flex items-center justify-center font-serif text-lg transition-colors duration-500 ${

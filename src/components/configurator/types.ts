@@ -13,6 +13,7 @@ export interface ProductItem {
   isCustomizable: boolean;
   customOptions?: { name: string, value: string }[];
   swellData?: any;
+  cartItemId?: string;
 }
 
 export interface ConfiguratorState {
@@ -21,4 +22,5 @@ export interface ConfiguratorState {
   includeShreddedPaper: boolean;
   includeBowTie: boolean;
   selectedProducts: ProductItem[];
+  baseBoxCartItemId?: string;
 }
