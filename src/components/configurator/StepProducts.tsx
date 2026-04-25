@@ -9,6 +9,7 @@ interface StepProductsProps {
   onPrev: () => void;
   onSubmit: () => void;
   isSubmitting?: boolean;
+  emptyCategoryText?: string;
 }
 
 export default function StepProducts({
@@ -18,7 +19,8 @@ export default function StepProducts({
   onRemoveProduct,
   onPrev,
   onSubmit,
-  isSubmitting = false
+  isSubmitting = false,
+  emptyCategoryText = 'No products found.'
 }: StepProductsProps) {
   
   const [customizingProduct, setCustomizingProduct] = useState<ProductItem | null>(null);
@@ -116,7 +118,7 @@ export default function StepProducts({
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
         {catalogProducts.length === 0 && (
           <div className="col-span-1 md:col-span-2 lg:col-span-3 text-center py-12 text-espresso-light">
-            <p>No products found in the "bridesmaid-box" category.</p>
+            <p>{emptyCategoryText}</p>
           </div>
         )}
         {catalogProducts.map((product) => {

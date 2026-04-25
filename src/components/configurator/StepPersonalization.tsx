@@ -3,6 +3,7 @@ import { BoxColorOption } from './types';
 
 interface StepPersonalizationProps {
   message: string;
+  presetMessage?: string;
   onChangeMessage: (message: string) => void;
   includeShreddedPaper: boolean;
   onToggleShreddedPaper: (include: boolean) => void;
@@ -15,6 +16,7 @@ interface StepPersonalizationProps {
 
 export default function StepPersonalization({ 
   message, 
+  presetMessage = 'Will you be my bridesmaid, Carly?',
   onChangeMessage,
   includeShreddedPaper,
   onToggleShreddedPaper,
@@ -25,7 +27,7 @@ export default function StepPersonalization({
   onPrev 
 }: StepPersonalizationProps) {
   
-  const [localMessage, setLocalMessage] = useState(message || 'Will you be my bridesmaid, Carly?');
+  const [localMessage, setLocalMessage] = useState(message || presetMessage);
 
   const handleBlur = () => {
     onChangeMessage(localMessage);
@@ -72,7 +74,7 @@ export default function StepPersonalization({
               onChange={(e) => setLocalMessage(e.target.value)}
               onBlur={handleBlur}
               className="w-full bg-transparent border-b border-espresso/30 py-3 focus:outline-none focus:border-gold transition-colors duration-500 text-xl font-serif resize-none"
-              placeholder="Will you be my bridesmaid, Carly?"
+              placeholder={presetMessage}
             />
           </div>
           
