@@ -1,0 +1,95 @@
+import React from 'react';
+import { BoxColorOption } from './types';
+
+// 10 Aesthetic brand-aligned colors for the boxes
+export const BOX_COLORS: BoxColorOption[] = [
+  { id: 'c1', name: 'Classic Cream', hexCode: '#F7EFE3' },
+  { id: 'c2', name: 'Soft Blush', hexCode: '#F2D9D9' },
+  { id: 'c3', name: 'Pale Gold', hexCode: '#EFE3C2' },
+  { id: 'c4', name: 'Espresso Brown', hexCode: '#4A2C2A' },
+  { id: 'c5', name: 'Sage Green', hexCode: '#A3B19B' },
+  { id: 'c6', name: 'Dusty Blue', hexCode: '#A9BACC' },
+  { id: 'c7', name: 'Navy Blue', hexCode: '#2B3A4A' },
+  { id: 'c8', name: 'Rose Gold', hexCode: '#D4AF37' },
+  { id: 'c9', name: 'Lavender', hexCode: '#D8D4E3' },
+  { id: 'c10', name: 'Matte Black', hexCode: '#1A1A1A' },
+];
+
+interface StepBoxColorProps {
+  selectedColor: BoxColorOption | null;
+  onSelectColor: (color: BoxColorOption) => void;
+  onNext: () => void;
+}
+
+export default function StepBoxColor({ selectedColor, onSelectColor, onNext }: StepBoxColorProps) {
+  return (
+    <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
+      <h3 className="font-serif text-3xl mb-6 text-center">Step 1: Choose Your Box Color</h3>
+      
+      <div className="flex flex-col md:flex-row gap-12 items-center md:items-start mb-8">
+        
+        {/* Left: Dynamic Graphic Preview */}
+        <div className="flex-1 w-full max-w-sm mx-auto relative group">
+          <div className="relative w-full aspect-square bg-white border border-gold-pale/30 rounded-3xl overflow-hidden flex items-center justify-center shadow-xl">
+            {/* Base Color Background */}
+            <div 
+              className="absolute inset-0 transition-colors duration-700 ease-in-out" 
+              style={{ backgroundColor: selectedColor ? selectedColor.hexCode : '#ffffff' }}
+            />
+            {/* AI Generated Graphic layers over color using blend mode */}
+            <img 
+              src="/images/box_closed.png" 
+              alt="Box Preview" 
+              className="relative z-10 w-[85%] h-[85%] object-contain mix-blend-multiply opacity-90 transition-transform duration-700 group-hover:scale-105 pointer-events-none" 
+            />
+          </div>
+          {selectedColor && (
+            <div className="text-center mt-6 text-espresso-light font-serif text-lg italic absolute w-full -bottom-10 transition-opacity duration-500">
+              Selected: {selectedColor.name}
+            </div>
+          )}
+        </div>
+
+        {/* Right: Choices Grid */}
+        <div className="flex-1 w-full pt-4 md:pt-0">
+          <p className="text-xs uppercase tracking-widest text-gray-400 mb-6 font-medium text-center md:text-left">Select a base color</p>
+          <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            {BOX_COLORS.map((color) => (
+              <button
+                key={color.id}
+                onClick={() => onSelectColor(color)}
+                className={`flex flex-col items-center gap-2 p-3 border rounded-xl transition-all duration-500 hover:-translate-y-1 ${
+                  selectedColor?.id === color.id
+                    ? 'border-gold shadow-md bg-white/60'
+                    : 'border-transparent hover:border-gold-pale hover:bg-white/30'
+                }`}
+              >
+                <div 
+                  className={`w-14 h-14 md:w-16 md:h-16 rounded-full shadow-inner border border-black/5 transition-transform duration-500 ${
+                    selectedColor?.id === color.id ? 'scale-110' : ''
+                  }`}
+                  style={{ backgroundColor: color.hexCode }}
+                />
+                <span className="font-sans text-xs font-medium text-center leading-tight">{color.name}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="flex justify-center border-t border-gold-pale/50 pt-8 mt-12">
+        <button
+          onClick={onNext}
+          disabled={!selectedColor}
+          className={`px-8 py-4 uppercase tracking-widest text-sm transition-all duration-500 ${
+            selectedColor
+              ? 'bg-espresso text-cream hover:bg-espresso-light'
+              : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+          }`}
+        >
+          Next Step
+        </button>
+      </div>
+    </div>
+  );
+}

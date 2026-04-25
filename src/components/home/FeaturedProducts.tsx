@@ -8,7 +8,7 @@ export function FeaturedProducts({ products = [] }: { products?: any[] }) {
         name: 'Custom Luxury Wedding Vow Books',
         slug: { current: 'custom-vow-books' },
         price: 35,
-        priceNote: 'per pair',
+        priceNote: undefined,
         badge: i === 0 ? 'Bestseller' : i === 2 ? 'Trending' : undefined,
         category: { title: 'Sentimental Gifts' },
         rating: 4.9,

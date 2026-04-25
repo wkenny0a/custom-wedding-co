@@ -225,7 +225,7 @@ export function CartDrawer() {
                             {!mockUpsellAdded && !items.some((i: any) => i.product?.id === UPSELL_PRODUCT_ID) && (
                                 <div className="mt-2 bg-cream-dark/40 p-4 border border-gold/20 flex gap-4 items-center">
                                     <div className="w-16 h-16 bg-white relative flex-shrink-0 overflow-hidden border border-espresso/10">
-                                        <Image src="https://cdn.swell.store/customweddingco/69e9cbd9bb3d1b001278c2fe/63a65a02da8a99046499dcc4851cb644/heirloom-rose-classic-cream.png" alt="Heirloom Rose Set" fill className="object-cover" />
+                                        <Image src="https://cdn.swell.store/customweddingco/69ea40d08a8d0f0012a7ec2e/f15db5b27a760f4da5bf0d3ba6b75970/roses-classic-cream.jpg" alt="Heirloom Rose Set" fill className="object-cover" />
                                     </div>
                                     <div className="flex-1">
                                         <h4 className="font-serif text-md text-espresso">Everlasting Heirloom Rose Set</h4>
