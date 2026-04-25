@@ -45,31 +45,16 @@ export default function StepPersonalization({
           
           <p className="relative z-10 text-xs text-center text-gray-400 uppercase tracking-widest mb-6">Preview</p>
           
-          {/* Mock Box lid with AI Graphic */}
+          {/* Clean White Typography Preview */}
           <div 
             className="w-full aspect-square rounded-2xl shadow-xl relative flex items-center justify-center text-center overflow-hidden border border-gold-pale/30 group-hover:shadow-2xl transition-all duration-700 bg-white"
           >
-            {/* Color layer inherited from Step 1 */}
-            <div 
-              className="absolute inset-0 transition-colors duration-700 ease-in-out" 
-              style={{ backgroundColor: selectedColor ? selectedColor.hexCode : '#ffffff' }}
-            />
-            
-            {/* Open Box Graphic */}
-            <img 
-              src="/images/box_open.png" 
-              alt="Open Box Preview" 
-              className="absolute inset-0 z-10 w-full h-[110%] object-cover mix-blend-multiply opacity-90 transition-transform duration-700 group-hover:scale-105 pointer-events-none" 
-            />
-
-            {/* Typography layer placed naturally where the inner lid would be */}
-            <div className="relative z-20 w-3/4 mb-16 transition-colors duration-700"
-               style={{ color: ['#4A2C2A', '#2B3A4A', '#1A1A1A'].includes(selectedColor?.hexCode || '') ? '#F7EFE3' : '#4A2C2A' }}
-            >
-              <h4 className="font-serif text-3xl md:text-5xl leading-tight drop-shadow-sm font-medium">
+            {/* Typography layer */}
+            <div className="relative z-20 w-3/4 mb-16 transition-colors duration-700 text-espresso">
+              <h4 className="font-serif text-3xl md:text-5xl leading-tight font-medium">
                 {localMessage || 'Your message here...'}
               </h4>
-               <p className="mt-4 text-xs tracking-[0.2em] uppercase opacity-70">Gold Foil Preview</p>
+               <p className="mt-8 text-xs tracking-[0.2em] uppercase text-espresso-light">Typography Preview</p>
             </div>
           </div>
         </div>
