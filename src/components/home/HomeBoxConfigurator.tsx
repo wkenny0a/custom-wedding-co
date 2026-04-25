@@ -15,7 +15,7 @@ export function HomeBoxConfigurator() {
           {/* Background Image Panel */}
           <div className="absolute inset-0 z-0">
             <Image 
-              src="/images/home/bridesmaid_box_lifestyle.png"
+              src="https://cdn.swell.store/customweddingco/69ecc27fef6ed90012760a26/3971a5504e31bafda2f79407f8183cd9/bridesmaid_box_lifestyle.png"
               alt="Design Your Bridesmaid Box"
               fill
               className="object-cover transition-transform duration-1000 ease-[cubic-bezier(0.25,0.46,0.45,0.94)] group-hover:scale-105"
@@ -57,7 +57,7 @@ export function HomeBoxConfigurator() {
           {/* Background Image Panel */}
           <div className="absolute inset-0 z-0">
             <Image 
-              src="/images/home/groom_box_lifestyle.png"
+              src="https://cdn.swell.store/customweddingco/69ecc280ef6ed90012760a49/be6b87d359d9e0f14530ffa101940731/groom_box_lifestyle.png"
               alt="Design Your Groom Box"
               fill
               className="object-cover transition-transform duration-1000 ease-[cubic-bezier(0.25,0.46,0.45,0.94)] group-hover:scale-105"
