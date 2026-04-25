@@ -36,7 +36,11 @@ export default function StepProducts({
       if (customizingProduct.swellData?.options) {
         const initial: Record<string, string> = {};
         customizingProduct.swellData.options.forEach((opt: any) => {
-          initial[opt.name] = ''; // Start empty
+          if (opt.values && opt.values.length > 0) {
+            initial[opt.name] = opt.values[0].name; // Automatic pre-selection for Dropdowns
+          } else {
+            initial[opt.name] = ''; // Text-inputs remain empty
+          }
         });
         setCustomOptions(initial);
       }

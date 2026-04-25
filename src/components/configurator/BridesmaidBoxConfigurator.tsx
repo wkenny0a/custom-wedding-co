@@ -16,7 +16,7 @@ export default function BridesmaidBoxConfigurator({
 }) {
   const [currentStep, setCurrentStep] = useState<number>(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { addToCart, addMultipleToCart, removeFromCart, setIsCartOpen } = useCart();
+  const { addToCart, addMultipleToCart, removeFromCart, setIsCartOpen, cart } = useCart();
   
   const [state, setState] = useState<ConfiguratorState>({
     boxColor: null,
@@ -31,7 +31,6 @@ export default function BridesmaidBoxConfigurator({
     if (!baseBoxProduct) return;
     setIsSubmitting(true);
     try {
-      // If they already created a box during this session and went backward, delete the old one
       if (state.baseBoxCartItemId) {
          try { await removeFromCart(state.baseBoxCartItemId); } catch(e) {}
       }
@@ -42,10 +41,9 @@ export default function BridesmaidBoxConfigurator({
       if (state.includeBowTie) baseOptions.push({ name: 'Exterior Bow Tie Ribbon', value: 'Yes' });
       if (state.personalizationMessage.trim()) baseOptions.push({ name: 'Inner Lid Message', value: state.personalizationMessage });
 
-      const updatedCart = await addToCart(baseBoxProduct.id, 1, baseOptions, null, true); // suppressDrawer = true
+      const updatedCart = await addToCart(baseBoxProduct.id, 1, baseOptions, null, true);
       
       if (updatedCart && updatedCart.items && updatedCart.items.length > 0) {
-        // Swell typically appends new distinct items to the end of the cart arrays
         const newestItem = updatedCart.items[updatedCart.items.length - 1];
         setState(s => ({ ...s, baseBoxCartItemId: newestItem.id }));
       }
@@ -81,7 +79,6 @@ export default function BridesmaidBoxConfigurator({
         }));
       }
 
-      // Add to cart silently
       const updatedCart = await addToCart(product.id, 1, itemOptions, null, true);
       const newestItem = updatedCart?.items?.[updatedCart.items.length - 1];
       
@@ -112,8 +109,12 @@ export default function BridesmaidBoxConfigurator({
   };
 
   const handleSubmit = () => {
-    // Everything is already in the live cart! Just instantly open the visual Drawer.
-    setIsCartOpen(true);
+    const checkoutLink = cart?.checkoutUrl || cart?.checkout_url;
+    if (checkoutLink) {
+       window.location.href = checkoutLink;
+    } else {
+       setIsCartOpen(true);
+    }
   };
 
   // Progress Bar
