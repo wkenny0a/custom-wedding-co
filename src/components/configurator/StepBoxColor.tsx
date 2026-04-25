@@ -22,9 +22,10 @@ interface StepBoxColorProps {
   selectedColor: BoxColorOption | null;
   onSelectColor: (color: BoxColorOption) => void;
   onNext: () => void;
+  onPrev?: () => void;
 }
 
-export default function StepBoxColor({ selectedColor, onSelectColor, onNext }: StepBoxColorProps) {
+export default function StepBoxColor({ selectedColor, onSelectColor, onNext, onPrev }: StepBoxColorProps) {
   const [imageLoading, setImageLoading] = useState(false);
 
   useEffect(() => {
@@ -107,7 +108,15 @@ export default function StepBoxColor({ selectedColor, onSelectColor, onNext }: S
         </div>
       </div>
 
-      <div className="flex justify-center border-t border-gold-pale/50 pt-8 mt-12">
+      <div className="flex justify-between border-t border-gold-pale/50 pt-8 mt-12 items-center">
+        {onPrev ? (
+          <button
+            onClick={onPrev}
+            className="uppercase tracking-widest text-sm text-espresso-light hover:text-espresso transition-colors duration-300 py-4"
+          >
+            &larr; Back
+          </button>
+        ) : <div />}
         <button
           onClick={onNext}
           disabled={!selectedColor}
