@@ -34,13 +34,7 @@ export default async function BridesmaidBoxPage() {
   });
 
   return (
-    <div className="w-full py-8 md:py-16">
-      <div className="text-center mb-12">
-        <h2 className="font-serif text-4xl md:text-5xl mb-4">Design Your Bridesmaid Box</h2>
-        <p className="text-espresso-light/80 text-lg max-w-2xl mx-auto">
-          Create a beautifully curated, personalized gift experience for your bridal party.
-        </p>
-      </div>
+    <div className="w-full py-6 md:py-10">
       <BridesmaidBoxConfigurator 
         catalogProducts={catalogProducts} 
         baseBoxProduct={baseBox}
