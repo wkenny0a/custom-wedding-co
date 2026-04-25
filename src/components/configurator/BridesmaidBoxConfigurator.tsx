@@ -9,10 +9,16 @@ import { useCart } from '@/context/CartContext';
 
 export default function BridesmaidBoxConfigurator({ 
   catalogProducts = [],
-  baseBoxProduct = null
+  baseBoxProduct = null,
+  title = "Design Your Bridesmaid Box",
+  presetMessage = "Will you be my bridesmaid, Carly?",
+  emptyCategoryText = 'No products found in the "bridesmaid-box" category.'
 }: { 
   catalogProducts?: ProductItem[],
-  baseBoxProduct?: any
+  baseBoxProduct?: any,
+  title?: string,
+  presetMessage?: string,
+  emptyCategoryText?: string
 }) {
   const [currentStep, setCurrentStep] = useState<number>(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -135,7 +141,7 @@ export default function BridesmaidBoxConfigurator({
       {/* Step 1 Introduction Header */}
       {currentStep === 1 && (
         <div className="text-center mb-10 animate-in fade-in duration-700">
-          <h2 className="font-serif text-4xl md:text-5xl mb-4">Design Your Bridesmaid Box</h2>
+          <h2 className="font-serif text-4xl md:text-5xl mb-4">{title}</h2>
           <p className="text-espresso-light/80 text-lg max-w-2xl mx-auto">
             Create a beautifully curated, personalized gift experience for your bridal party.
           </p>
@@ -190,6 +196,7 @@ export default function BridesmaidBoxConfigurator({
         {currentStep === 2 && (
           <StepPersonalization 
             message={state.personalizationMessage} 
+            presetMessage={presetMessage}
             onChangeMessage={setPersonalizationMessage}
             includeShreddedPaper={state.includeShreddedPaper}
             onToggleShreddedPaper={setIncludeShreddedPaper}
@@ -210,6 +217,7 @@ export default function BridesmaidBoxConfigurator({
             onPrev={prevStep}
             onSubmit={handleSubmit}
             isSubmitting={isSubmitting}
+            emptyCategoryText={emptyCategoryText}
           />
         )}
       </div>
