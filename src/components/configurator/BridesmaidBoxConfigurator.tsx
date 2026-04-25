@@ -190,7 +190,18 @@ export default function BridesmaidBoxConfigurator({
     { num: 3, label: 'Fill Box' },
   ];
 
-  const quantityOptions = [1, 2, 3, 4, 5, 6];
+  const [isCustomQuantity, setIsCustomQuantity] = useState(false);
+
+  // Deep Volume Discount Logic
+  const getDiscount = (q: number) => {
+    if (q >= 5) return 45;
+    if (q === 4) return 35;
+    if (q === 3) return 25;
+    if (q === 2) return 15;
+    return 0;
+  };
+
+  const discountAmount = getDiscount(boxQuantity);
 
   return (
     <div className="w-full">
@@ -229,26 +240,44 @@ export default function BridesmaidBoxConfigurator({
             <div className="max-w-lg mx-auto mb-10">
               <div className="text-center mb-6">
                 <h3 className="font-serif text-2xl mb-1">👰 How many bridesmaids are you gifting?</h3>
-                <p className="text-sm text-espresso-light/70">Most brides order 3–5 boxes. Buy 3+ and save 5%!</p>
+                <p className="text-sm text-espresso-light/70">The more you buy, the more you save! Get up to 45% off.</p>
               </div>
               <div className="grid grid-cols-3 sm:grid-cols-6 gap-3">
-                {quantityOptions.map(q => (
+                {[1, 2, 3, 4, 5].map(q => (
                   <button
                     key={q}
-                    onClick={() => setBoxQuantity(q)}
-                    className={`py-4 rounded-xl text-xl font-serif border-2 transition-all duration-300 hover:-translate-y-1 ${boxQuantity === q
+                    onClick={() => { setBoxQuantity(q); setIsCustomQuantity(false); }}
+                    className={`py-4 rounded-xl text-xl font-serif border-2 transition-all duration-300 hover:-translate-y-1 ${!isCustomQuantity && boxQuantity === q
                       ? 'border-gold bg-gold/10 text-espresso shadow-md scale-105'
                       : 'border-gold-pale/40 text-espresso-light hover:border-gold hover:bg-white/60'
                       }`}
                   >
                     {q}
-                    {q === 5 && <span className="block text-[9px] uppercase tracking-wider text-gold font-sans mt-0.5">Popular</span>}
                   </button>
                 ))}
+                
+                {/* Expandable Infinite Volume Toggle */}
+                {isCustomQuantity ? (
+                   <input
+                     type="number"
+                     min="6"
+                     value={boxQuantity >= 6 ? boxQuantity : 6}
+                     onChange={(e) => setBoxQuantity(parseInt(e.target.value) || 6)}
+                     className="py-4 w-full rounded-xl text-xl font-serif border-2 border-gold bg-gold/10 text-center text-espresso shadow-md focus:outline-none scale-105 transition-all duration-300"
+                   />
+                ) : (
+                   <button
+                     onClick={() => { setBoxQuantity(6); setIsCustomQuantity(true); }}
+                     className="py-4 rounded-xl text-xl font-serif border-2 border-gold-pale/40 text-espresso-light hover:border-gold hover:bg-white/60 transition-all duration-300"
+                   >
+                     6+
+                   </button>
+                )}
               </div>
-              {boxQuantity >= 3 && (
+              
+              {discountAmount > 0 && (
                 <div className="mt-4 text-center bg-gold/10 border border-gold/30 rounded-xl py-3 px-4 text-sm font-sans text-espresso animate-in fade-in duration-300">
-                  🎉 You qualify for <strong>5% off</strong> — discount applied at checkout!
+                  🎉 You qualify for a <strong>{discountAmount}% volume discount</strong> — applied heavily at checkout!
                 </div>
               )}
             </div>
@@ -293,9 +322,9 @@ export default function BridesmaidBoxConfigurator({
                     ? `Building ${boxQuantity} boxes — one design for your whole bridal party.`
                     : 'Create a beautifully curated, personalized gift for your bridesmaid.'}
                 </p>
-                {boxQuantity >= 3 && (
+                {discountAmount > 0 && (
                   <div className="mt-3 inline-flex items-center gap-2 bg-gold/10 border border-gold/30 rounded-full px-4 py-1.5 text-xs font-sans text-espresso">
-                    🎉 5% multi-box discount applied
+                    🎉 {discountAmount}% multi-box discount applied
                   </div>
                 )}
               </div>
