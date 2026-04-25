@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { BoxColorOption } from './types';
 
 interface StepPersonalizationProps {
   message: string;
   presetMessage?: string;
+  quantity?: number;
   onChangeMessage: (message: string) => void;
   includeShreddedPaper: boolean;
   onToggleShreddedPaper: (include: boolean) => void;
@@ -17,6 +18,7 @@ interface StepPersonalizationProps {
 export default function StepPersonalization({ 
   message, 
   presetMessage = 'Will you be my bridesmaid, Carly?',
+  quantity = 1,
   onChangeMessage,
   includeShreddedPaper,
   onToggleShreddedPaper,
@@ -26,12 +28,38 @@ export default function StepPersonalization({
   onNext, 
   onPrev 
 }: StepPersonalizationProps) {
-  
-  const [localMessage, setLocalMessage] = useState(message || presetMessage);
 
-  const handleBlur = () => {
-    onChangeMessage(localMessage);
+  const [localMessages, setLocalMessages] = useState<string[]>(() => {
+    if (!message) return Array(quantity).fill(presetMessage);
+    const parts = message.includes(' | ') ? message.split(' | ').map(p => p.replace(/^Box \d+: /, '')) : [message];
+    while (parts.length < quantity) parts.push(presetMessage);
+    return parts.slice(0, quantity);
+  });
+
+  useEffect(() => {
+    setLocalMessages(prev => {
+      if (prev.length === quantity) return prev;
+      const next = [...prev];
+      while (next.length < quantity) next.push(presetMessage);
+      return next.slice(0, quantity);
+    });
+  }, [quantity, presetMessage]);
+
+  const handleBlur = (newMessages: string[]) => {
+    if (quantity === 1) {
+      onChangeMessage(newMessages[0]);
+    } else {
+      const formatted = newMessages.map((msg, i) => `Box ${i + 1}: ${msg}`).join(' | ');
+      onChangeMessage(formatted);
+    }
   };
+
+  const updateMessage = (index: number, val: string) => {
+    const next = [...localMessages];
+    next[index] = val;
+    setLocalMessages(next);
+  };
+
 
   return (
     <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
@@ -54,9 +82,11 @@ export default function StepPersonalization({
             {/* Typography layer */}
             <div className="relative z-20 w-3/4 mb-16 transition-colors duration-700 text-espresso">
               <h4 className="font-serif text-3xl md:text-5xl leading-tight font-medium">
-                {localMessage || 'Your message here...'}
+                {localMessages[0] || 'Your message here...'}
               </h4>
-               <p className="mt-8 text-xs tracking-[0.2em] uppercase text-espresso-light">Typography Preview</p>
+               <p className="mt-8 text-xs tracking-[0.2em] uppercase text-espresso-light">
+                 {quantity > 1 ? 'Previewing Box 1' : 'Typography Preview'}
+               </p>
             </div>
           </div>
 
@@ -74,19 +104,22 @@ export default function StepPersonalization({
 
         {/* Input Panel */}
         <div className="flex-1 w-full">
-          <div className="mb-6">
-            <label htmlFor="message" className="block text-sm uppercase tracking-wider mb-3 font-medium">
-              Inner Lid Message
-            </label>
-            <textarea
-              id="message"
-              rows={4}
-              value={localMessage}
-              onChange={(e) => setLocalMessage(e.target.value)}
-              onBlur={handleBlur}
-              className="w-full bg-transparent border-b border-espresso/30 py-3 focus:outline-none focus:border-gold transition-colors duration-500 text-xl font-serif resize-none"
-              placeholder={presetMessage}
-            />
+          <div className="mb-6 flex flex-col gap-6">
+            {localMessages.map((msg, idx) => (
+              <div key={idx}>
+                <label className="block text-sm uppercase tracking-wider mb-2 font-medium">
+                  {quantity > 1 ? `Box ${idx + 1} Inner Lid Message` : 'Inner Lid Message'}
+                </label>
+                <textarea
+                  rows={quantity > 2 ? 2 : 4}
+                  value={msg}
+                  onChange={(e) => updateMessage(idx, e.target.value)}
+                  onBlur={() => handleBlur(localMessages)}
+                  className="w-full bg-transparent border-b border-espresso/30 py-3 focus:outline-none focus:border-gold transition-colors duration-500 text-xl font-serif resize-none"
+                  placeholder={presetMessage}
+                />
+              </div>
+            ))}
           </div>
           
           <div className="bg-blush/20 p-4 rounded-lg border border-blush text-sm text-espresso-light mb-8">
@@ -170,12 +203,12 @@ export default function StepPersonalization({
         </button>
         <button
           onClick={() => {
-            onChangeMessage(localMessage);
+            handleBlur(localMessages);
             onNext();
           }}
-          disabled={!localMessage.trim()}
+          disabled={localMessages.some(m => !m.trim())}
           className={`px-8 py-4 uppercase tracking-widest text-sm transition-all duration-500 ${
-            localMessage.trim()
+            localMessages.every(m => m.trim())
               ? 'bg-espresso text-cream hover:bg-espresso-light'
               : 'bg-gray-200 text-gray-400 cursor-not-allowed'
           }`}

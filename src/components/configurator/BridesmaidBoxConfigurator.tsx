@@ -344,6 +344,7 @@ export default function BridesmaidBoxConfigurator({
 
               {currentStep === 2 && (
                 <StepPersonalization
+                  quantity={boxQuantity}
                   message={state.personalizationMessage}
                   presetMessage={presetMessage}
                   onChangeMessage={setPersonalizationMessage}
