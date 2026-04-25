@@ -3,16 +3,16 @@ import { BoxColorOption } from './types';
 
 // 10 Aesthetic brand-aligned colors for the boxes
 export const BOX_COLORS: BoxColorOption[] = [
-  { id: 'c1', name: 'Classic Cream', hexCode: '#F7EFE3' },
-  { id: 'c2', name: 'Soft Blush', hexCode: '#F2D9D9' },
-  { id: 'c3', name: 'Pale Gold', hexCode: '#EFE3C2' },
-  { id: 'c4', name: 'Espresso Brown', hexCode: '#4A2C2A' },
-  { id: 'c5', name: 'Sage Green', hexCode: '#A3B19B' },
-  { id: 'c6', name: 'Dusty Blue', hexCode: '#A9BACC' },
-  { id: 'c7', name: 'Navy Blue', hexCode: '#2B3A4A' },
-  { id: 'c8', name: 'Rose Gold', hexCode: '#D4AF37' },
-  { id: 'c9', name: 'Lavender', hexCode: '#D8D4E3' },
-  { id: 'c10', name: 'Matte Black', hexCode: '#1A1A1A' },
+  { id: 'c1', name: 'Navy Blue', hexCode: '#3b5998' },
+  { id: 'c2', name: 'Sky Blue', hexCode: '#88d8ed' },
+  { id: 'c3', name: 'Vibrant Red', hexCode: '#e32636' },
+  { id: 'c4', name: 'Premium Cream', hexCode: '#f3f1ea' },
+  { id: 'c5', name: 'Light Pink', hexCode: '#f5c4c9' },
+  { id: 'c6', name: 'Orange', hexCode: '#e64a19' },
+  { id: 'c7', name: 'Yellow', hexCode: '#ffd54f' },
+  { id: 'c8', name: 'Matte Black', hexCode: '#212121' },
+  { id: 'c9', name: 'Champagne Gold', hexCode: '#d1b777' },
+  { id: 'c10', name: 'Forest Green', hexCode: '#2e4333' }
 ];
 
 interface StepBoxColorProps {
