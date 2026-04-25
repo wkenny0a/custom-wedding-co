@@ -33,8 +33,8 @@ export default async function CategoryPage({ params }: { params: Promise<{ categ
                 slug: { current: p.slug },
                 price: getLowestDisplayPrice(p),
                 category: { title: categoryInfo?.title || categoryInfo?.name || 'Personalized' },
-                rating: 4.9,
-                reviewCount: Math.floor(Math.random() * 50) + 40,
+                rating: [4.6, 4.7, 4.8, 4.9, 4.8, 4.7, 4.9, 4.8][p.slug.length % 8],
+                reviewCount: ((p.slug.charCodeAt(0) * 7 + p.slug.length * 13) % 176) + 12,
                 images: p.images || []
             }
         });

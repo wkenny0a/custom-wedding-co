@@ -103,9 +103,16 @@ export function getLowestDisplayPrice(product: any): number {
     if (product.options && Array.isArray(product.options)) {
         let lowestOptionPrice = Infinity;
         for (const opt of product.options) {
-            if (opt.variant && opt.values && Array.isArray(opt.values)) {
+            if (opt.values && Array.isArray(opt.values)) {
                 for (const val of opt.values) {
-                    const vp = Number(val.price) || 0;
+                    let vp = Number(val.price) || 0;
+                    // Fallback for options where price is accidentally embedded in the name (e.g. migrated data)
+                    if (vp === 0 && val.name && typeof val.name === 'string') {
+                        const match = val.name.match(/@\s*\$([0-9.]+)/);
+                        if (match && match[1]) {
+                            vp = Number(match[1]);
+                        }
+                    }
                     if (vp > 0 && vp < lowestOptionPrice) {
                         lowestOptionPrice = vp;
                     }
