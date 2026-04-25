@@ -1,18 +1,17 @@
 import React from 'react';
 import { BoxColorOption } from './types';
 
-// 10 Aesthetic brand-aligned colors for the boxes
 export const BOX_COLORS: BoxColorOption[] = [
-  { id: 'c1', name: 'Navy Blue', hexCode: '#3b5998' },
-  { id: 'c2', name: 'Sky Blue', hexCode: '#88d8ed' },
-  { id: 'c3', name: 'Vibrant Red', hexCode: '#e32636' },
-  { id: 'c4', name: 'Premium Cream', hexCode: '#f3f1ea' },
-  { id: 'c5', name: 'Light Pink', hexCode: '#f5c4c9' },
-  { id: 'c6', name: 'Orange', hexCode: '#e64a19' },
-  { id: 'c7', name: 'Yellow', hexCode: '#ffd54f' },
-  { id: 'c8', name: 'Matte Black', hexCode: '#212121' },
-  { id: 'c9', name: 'Champagne Gold', hexCode: '#d1b777' },
-  { id: 'c10', name: 'Forest Green', hexCode: '#2e4333' }
+  { id: 'c1', name: 'Navy Blue', hexCode: '#3b5998', imageUrl: '/images/boxes/box_closed_navy_blue.png' },
+  { id: 'c2', name: 'Sky Blue', hexCode: '#88d8ed', imageUrl: '/images/boxes/box_closed_sky_blue.png' },
+  { id: 'c3', name: 'Vibrant Red', hexCode: '#e32636', imageUrl: '/images/boxes/box_closed_vibrant_red.png' },
+  { id: 'c4', name: 'Premium Cream', hexCode: '#f3f1ea', imageUrl: '/images/boxes/box_closed_premium_cream.png' },
+  { id: 'c5', name: 'Light Pink', hexCode: '#f5c4c9', imageUrl: '/images/boxes/box_closed_light_pink.png' },
+  { id: 'c6', name: 'Orange', hexCode: '#e64a19', imageUrl: '/images/boxes/box_closed_orange.png' },
+  { id: 'c7', name: 'Yellow', hexCode: '#ffd54f', imageUrl: '/images/boxes/box_closed_yellow.png' },
+  { id: 'c8', name: 'Matte Black', hexCode: '#212121', imageUrl: '/images/boxes/box_closed_matte_black.png' },
+  { id: 'c9', name: 'Champagne Gold', hexCode: '#d1b777', imageUrl: '/images/boxes/box_closed_champagne_gold.png' },
+  { id: 'c10', name: 'Forest Green', hexCode: '#2e4333', imageUrl: '/images/boxes/box_closed_forest_green.png' }
 ];
 
 interface StepBoxColorProps {
@@ -30,18 +29,21 @@ export default function StepBoxColor({ selectedColor, onSelectColor, onNext }: S
         
         {/* Left: Dynamic Graphic Preview */}
         <div className="flex-1 w-full max-w-sm mx-auto relative group">
-          <div className="relative w-full aspect-square bg-white border border-gold-pale/30 rounded-3xl overflow-hidden flex items-center justify-center shadow-xl">
-            {/* Base Color Background */}
-            <div 
-              className="absolute inset-0 transition-colors duration-700 ease-in-out" 
-              style={{ backgroundColor: selectedColor ? selectedColor.hexCode : '#ffffff' }}
-            />
-            {/* AI Generated Graphic layers over color using blend mode */}
-            <img 
-              src="/images/box_closed.png" 
-              alt="Box Preview" 
-              className="relative z-10 w-[85%] h-[85%] object-contain mix-blend-multiply opacity-90 transition-transform duration-700 group-hover:scale-105 pointer-events-none" 
-            />
+          <div className="relative w-full aspect-square bg-gray-50 border border-gold-pale/30 rounded-3xl overflow-hidden flex items-center justify-center shadow-xl">
+            {/* Display the explicit generated physical image for the selected box color */}
+            {selectedColor ? (
+              <img 
+                src={selectedColor.imageUrl} 
+                alt={`${selectedColor.name} Box`} 
+                className="relative z-10 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
+              />
+            ) : (
+              <img 
+                src="/images/box_closed.png" 
+                alt="Select a Box Color" 
+                className="relative z-10 w-[85%] h-[85%] object-contain opacity-50 transition-transform duration-700 group-hover:scale-105 pointer-events-none" 
+              />
+            )}
           </div>
           {selectedColor && (
             <div className="text-center mt-6 text-espresso-light font-serif text-lg italic absolute w-full -bottom-10 transition-opacity duration-500">
