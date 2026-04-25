@@ -97,6 +97,16 @@ export default function BridesmaidBoxConfigurator({
   return (
     <div className="w-full max-w-5xl mx-auto bg-white/40 backdrop-blur-md border border-gold-pale/20 shadow-xl rounded-3xl p-6 md:p-12">
       
+      {/* Step 1 Introduction Header */}
+      {currentStep === 1 && (
+        <div className="text-center mb-10 animate-in fade-in duration-700">
+          <h2 className="font-serif text-4xl md:text-5xl mb-4">Design Your Bridesmaid Box</h2>
+          <p className="text-espresso-light/80 text-lg max-w-2xl mx-auto">
+            Create a beautifully curated, personalized gift experience for your bridal party.
+          </p>
+        </div>
+      )}
+
       {/* Stepper Navigation */}
       <div className="flex justify-center mb-12">
         <div className="flex items-center gap-2 md:gap-4 w-full max-w-2xl">
