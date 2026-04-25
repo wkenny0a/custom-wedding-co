@@ -11,7 +11,7 @@ export interface ProductItem {
   price: number;
   image: string;
   isCustomizable: boolean;
-  customName?: string;
+  customOptions?: { name: string, value: string }[];
   swellData?: any;
 }
 
