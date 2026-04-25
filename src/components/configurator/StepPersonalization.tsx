@@ -59,6 +59,17 @@ export default function StepPersonalization({
                <p className="mt-8 text-xs tracking-[0.2em] uppercase text-espresso-light">Typography Preview</p>
             </div>
           </div>
+
+          {/* Emotional Proof Quote */}
+          <div className="mt-4 bg-cream/80 border border-gold/20 rounded-xl px-5 py-4 flex gap-3 items-start">
+            <span className="text-gold text-2xl leading-none mt-0.5">❝</span>
+            <div>
+              <p className="font-serif text-sm text-espresso leading-relaxed italic">
+                When she opened the lid and saw 'Will You Be My Bridesmaid, Sarah?' in gold foil — she burst into tears. Worth every penny.
+              </p>
+              <span className="font-sans text-[11px] text-gray-400 mt-2 block">— Jessica M., Bride · May 2024 ★★★★★</span>
+            </div>
+          </div>
         </div>
 
         {/* Input Panel */}
@@ -105,11 +116,11 @@ export default function StepPersonalization({
                 </div>
                 <div className="flex-1">
                   <div className="flex justify-between items-center mb-1">
-                    <h5 className="font-serif text-lg font-medium tracking-wide">Matching Shredded Paper</h5>
-                    <span className="text-sm font-medium">+$4.99</span>
+                    <h5 className="font-serif text-lg font-medium tracking-wide">Colour-Matched Crinkle Paper</h5>
+                    <span className="text-sm font-medium text-gold">+$4.99</span>
                   </div>
                   <p className="text-sm text-espresso-light/80">
-                    Elevate the unboxing experience with premium crinkle cut paper that perfectly matches your chosen box color.
+                    The detail that frames everything inside. Premium crinkle paper, perfectly colour-matched to your box — the first thing she sees when the lid opens.
                   </p>
                 </div>
               </div>
@@ -136,11 +147,11 @@ export default function StepPersonalization({
                 </div>
                 <div className="flex-1">
                   <div className="flex justify-between items-center mb-1">
-                    <h5 className="font-serif text-lg font-medium tracking-wide">Exterior Bow Tie Ribbon</h5>
-                    <span className="text-sm font-medium">+$2.99</span>
+                    <h5 className="font-serif text-lg font-medium tracking-wide">Hand-Tied Satin Ribbon</h5>
+                    <span className="text-sm font-medium text-gold">+$3.99</span>
                   </div>
                   <p className="text-sm text-espresso-light/80">
-                    Finish the box with a beautifully hand-tied satin bow tie on the exterior.
+                    The very first thing she sees when it arrives at her door. A beautifully hand-tied satin bow on the exterior — because presentation is everything.
                   </p>
                 </div>
               </div>
@@ -169,7 +180,7 @@ export default function StepPersonalization({
               : 'bg-gray-200 text-gray-400 cursor-not-allowed'
           }`}
         >
-          Next Step
+          I Love It — Next ›
         </button>
       </div>
     </div>

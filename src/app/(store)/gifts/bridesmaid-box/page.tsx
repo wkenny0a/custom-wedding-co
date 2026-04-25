@@ -3,8 +3,8 @@ import { getProducts, getLowestDisplayPrice, getProductBySlug } from '@/lib/swel
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Build Your Bridesmaid Box | Custom Wedding Co.',
-  description: 'Design the perfect personalized bridesmaid box.',
+  title: 'Build Your Bridesmaid Box | The Box That Makes Her Cry Happy Tears | Custom Wedding Co.',
+  description: 'Design the perfect personalized bridesmaid gift box in 3 steps. Choose your box color, add a heartfelt inner lid message, and curate luxury items. Free personalization · Ships in 5–7 days.',
 };
 
 export default async function BridesmaidBoxPage() {

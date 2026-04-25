@@ -3,6 +3,7 @@ export interface BoxColorOption {
   name: string;
   hexCode: string;
   imageUrl?: string;
+  mostPopular?: boolean;
 }
 
 export interface ProductItem {

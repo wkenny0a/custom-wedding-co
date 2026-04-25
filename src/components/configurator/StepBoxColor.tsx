@@ -5,7 +5,7 @@ export const BOX_COLORS: BoxColorOption[] = [
   { id: 'c1', name: 'Navy Blue', hexCode: '#3b5998', imageUrl: '/images/boxes/box_closed_navy_blue.png' },
   { id: 'c2', name: 'Sky Blue', hexCode: '#88d8ed', imageUrl: '/images/boxes/box_closed_sky_blue.png' },
   { id: 'c3', name: 'Vibrant Red', hexCode: '#e32636', imageUrl: '/images/boxes/box_closed_vibrant_red.png' },
-  { id: 'c4', name: 'Premium Cream', hexCode: '#f3f1ea', imageUrl: '/images/boxes/box_closed_premium_cream.png' },
+  { id: 'c4', name: 'Premium Cream', hexCode: '#f3f1ea', imageUrl: '/images/boxes/box_closed_premium_cream.png', mostPopular: true },
   { id: 'c5', name: 'Light Pink', hexCode: '#f5c4c9', imageUrl: '/images/boxes/box_closed_light_pink.png' },
   { id: 'c6', name: 'Orange', hexCode: '#e64a19', imageUrl: '/images/boxes/box_closed_orange.png' },
   { id: 'c7', name: 'Yellow', hexCode: '#ffd54f', imageUrl: '/images/boxes/box_closed_yellow.png' },
@@ -13,6 +13,10 @@ export const BOX_COLORS: BoxColorOption[] = [
   { id: 'c9', name: 'Champagne Gold', hexCode: '#d1b777', imageUrl: '/images/boxes/box_closed_champagne_gold.png' },
   { id: 'c10', name: 'Forest Green', hexCode: '#2e4333', imageUrl: '/images/boxes/box_closed_forest_green.png' }
 ];
+
+export interface BoxColorOptionExtended extends BoxColorOption {
+  mostPopular?: boolean;
+}
 
 interface StepBoxColorProps {
   selectedColor: BoxColorOption | null;
@@ -79,13 +83,18 @@ export default function StepBoxColor({ selectedColor, onSelectColor, onNext }: S
               <button
                 key={color.id}
                 onClick={() => onSelectColor(color)}
-                className={`flex flex-col items-center gap-2 p-3 border rounded-xl transition-all duration-500 hover:-translate-y-1 ${
+                className={`flex flex-col items-center gap-2 p-3 border rounded-xl transition-all duration-500 hover:-translate-y-1 relative ${
                   selectedColor?.id === color.id
                     ? 'border-gold shadow-md bg-white/60'
                     : 'border-transparent hover:border-gold-pale hover:bg-white/30'
                 }`}
               >
-                <div 
+                {color.mostPopular && (
+                  <div className="absolute -top-2 left-1/2 -translate-x-1/2 bg-gold text-white text-[8px] font-sans uppercase tracking-wider px-2 py-0.5 rounded-full whitespace-nowrap z-10">
+                    ⭐ Most Loved
+                  </div>
+                )}
+                <div
                   className={`w-14 h-14 md:w-16 md:h-16 rounded-full shadow-inner border border-black/5 transition-transform duration-500 ${
                     selectedColor?.id === color.id ? 'scale-110' : ''
                   }`}
@@ -108,7 +117,7 @@ export default function StepBoxColor({ selectedColor, onSelectColor, onNext }: S
               : 'bg-gray-200 text-gray-400 cursor-not-allowed'
           }`}
         >
-          Next Step
+          I Love This Color — Next ›
         </button>
       </div>
     </div>
