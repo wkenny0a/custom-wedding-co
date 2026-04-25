@@ -72,14 +72,38 @@ export default function BridesmaidBoxConfigurator({
   baseBoxProduct = null,
   title = "Design Your Bridesmaid Box",
   presetMessage = "Will you be my bridesmaid, Carly?",
-  emptyCategoryText = 'No products found in the "bridesmaid-box" category.'
+  emptyCategoryText = 'No products found in the "bridesmaid-box" category.',
+  theme = 'bridesmaid'
 }: {
   catalogProducts?: ProductItem[],
   baseBoxProduct?: any,
   title?: string,
   presetMessage?: string,
-  emptyCategoryText?: string
+  emptyCategoryText?: string,
+  theme?: 'bridesmaid' | 'groomsman'
 }) {
+  const t = theme === 'groomsman' ? {
+    emoji: '🤵',
+    heroSub: 'The Box That Makes Him Say "Let\'s Go"',
+    heroDesc: '4,200+ grooms have used this builder to create the moment their guys said "I\'m in." Build yours in 3 easy steps.',
+    quantityQuestion: 'How many groomsmen are you gifting?',
+    statsCount: '847 grooms',
+    ugcSubtitle: "Here's what some of our grooms received ↓",
+    partyName: 'groomsman party',
+    singularName: 'groomsman',
+    reviewHeader: 'What Our Customers Say'
+  } : {
+    emoji: '👰',
+    heroSub: 'The Box That Makes Her Cry Happy Tears',
+    heroDesc: '4,200+ brides have used this builder to create the moment their girls said "I\'m in." Build yours in 3 easy steps.',
+    quantityQuestion: 'How many bridesmaids are you gifting?',
+    statsCount: '847 brides',
+    ugcSubtitle: "Here's what some of our brides received ↓",
+    partyName: 'bridal party',
+    singularName: 'bridesmaid',
+    reviewHeader: 'What Our Brides Say'
+  };
+
   const [currentStep, setCurrentStep] = useState<number>(0); // 0 = landing/quantity selector
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [boxQuantity, setBoxQuantity] = useState<number>(1);
@@ -211,7 +235,7 @@ export default function BridesmaidBoxConfigurator({
         <div className="max-w-5xl mx-auto flex flex-wrap items-center justify-center gap-4 sm:gap-8 text-xs font-sans tracking-wide">
           <div className="flex items-center gap-2">
             <StarRating count={5} />
-            <span className="text-cream/90">4.9 from <strong>847 brides</strong></span>
+            <span className="text-cream/90">4.9 from <strong>{t.statsCount}</strong></span>
           </div>
           <div className="hidden sm:block w-px h-4 bg-cream/20" />
           <span className="text-cream/90">🎁 <strong>3,200+</strong> boxes crafted & delivered</span>
@@ -229,17 +253,17 @@ export default function BridesmaidBoxConfigurator({
         {currentStep === 0 && (
           <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
             <div className="text-center mb-10">
-              <span className="text-xs uppercase tracking-[0.2em] text-gold font-semibold block mb-4">The Box That Makes Her Cry Happy Tears</span>
+              <span className="text-xs uppercase tracking-[0.2em] text-gold font-semibold block mb-4">{t.heroSub}</span>
               <h2 className="font-serif text-4xl md:text-5xl mb-4">{title}</h2>
               <p className="text-espresso-light/80 text-lg max-w-2xl mx-auto">
-                4,200+ brides have used this builder to create the moment their girls said "I'm in." Build yours in 3 easy steps.
+                {t.heroDesc}
               </p>
             </div>
 
             {/* Quantity Selector */}
             <div className="max-w-lg mx-auto mb-10">
               <div className="text-center mb-6">
-                <h3 className="font-serif text-2xl mb-1">👰 How many bridesmaids are you gifting?</h3>
+                <h3 className="font-serif text-2xl mb-1">{t.emoji} {t.quantityQuestion}</h3>
                 <p className="text-sm text-espresso-light/70">The more you buy, the more you save! Get up to 45% off.</p>
               </div>
               <div className="grid grid-cols-3 sm:grid-cols-6 gap-3">
@@ -284,7 +308,7 @@ export default function BridesmaidBoxConfigurator({
 
             {/* UGC Preview Strip */}
             <div className="mb-10">
-              <p className="text-center text-xs uppercase tracking-widest text-gray-400 mb-5">Here's what some of our brides received ↓</p>
+              <p className="text-center text-xs uppercase tracking-widest text-gray-400 mb-5">{t.ugcSubtitle}</p>
               <div className="grid grid-cols-3 gap-3 max-w-2xl mx-auto">
                 {[
                   { bg: 'bg-stone-100', emoji: '🤍', label: 'Premium Cream' },
@@ -319,8 +343,8 @@ export default function BridesmaidBoxConfigurator({
                 <h2 className="font-serif text-4xl md:text-5xl mb-4">{title}</h2>
                 <p className="text-espresso-light/80 text-lg max-w-2xl mx-auto">
                   {boxQuantity > 1
-                    ? `Building ${boxQuantity} boxes — one design for your whole bridal party.`
-                    : 'Create a beautifully curated, personalized gift for your bridesmaid.'}
+                    ? `Building ${boxQuantity} boxes — one design for your whole ${t.partyName}.`
+                    : `Create a beautifully curated, personalized gift for your ${t.singularName}.`}
                 </p>
                 {discountAmount > 0 && (
                   <div className="mt-3 inline-flex items-center gap-2 bg-gold/10 border border-gold/30 rounded-full px-4 py-1.5 text-xs font-sans text-espresso">
@@ -411,7 +435,7 @@ export default function BridesmaidBoxConfigurator({
 
         {/* Reviews */}
         <div className="text-center mb-10">
-          <span className="text-xs uppercase tracking-[0.2em] text-gold font-semibold block mb-3">What Our Brides Say</span>
+          <span className="text-xs uppercase tracking-[0.2em] text-gold font-semibold block mb-3">{t.reviewHeader}</span>
           <h3 className="font-serif text-3xl md:text-4xl text-espresso">Real Reactions. Real Tears.</h3>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
