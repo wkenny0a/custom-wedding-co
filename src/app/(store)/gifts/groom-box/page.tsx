@@ -31,6 +31,7 @@ export default async function GroomBoxPage() {
   return (
     <div className="w-full py-6 md:py-10">
       <BridesmaidBoxConfigurator 
+        theme="groomsman"
         catalogProducts={catalogProducts} 
         baseBoxProduct={baseBox}
         title="Design Your Groom Box"
