@@ -2,6 +2,7 @@ export interface BoxColorOption {
   id: string;
   name: string;
   hexCode: string;
+  imageUrl?: string;
 }
 
 export interface ProductItem {
