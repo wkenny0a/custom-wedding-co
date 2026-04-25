@@ -10,6 +10,7 @@ interface StepProductsProps {
   onSubmit: () => void;
   isSubmitting?: boolean;
   emptyCategoryText?: string;
+  quantity?: number;
 }
 
 export default function StepProducts({
@@ -20,8 +21,10 @@ export default function StepProducts({
   onPrev,
   onSubmit,
   isSubmitting = false,
-  emptyCategoryText = 'No products found.'
+  emptyCategoryText = 'No products found.',
+  quantity: rawQuantity
 }: StepProductsProps) {
+  const quantity = rawQuantity ?? 1;
   
   const [customizingProduct, setCustomizingProduct] = useState<ProductItem | null>(null);
   const [customOptions, setCustomOptions] = useState<Record<string, string>>({});
@@ -111,8 +114,11 @@ export default function StepProducts({
   return (
     <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
       <h3 className="font-serif text-3xl mb-2 text-center">Step 3: Fill Your Box</h3>
-      <p className="text-center text-espresso-light mb-8 max-w-lg mx-auto">
-        Select bespoke items to include. We recommend 3-5 items for the perfect presentation.
+      <p className="text-center text-espresso-light mb-2 max-w-lg mx-auto">
+        Select bespoke items to include.
+      </p>
+      <p className="text-center text-xs text-gold uppercase tracking-widest mb-8 font-semibold">
+        ✦ Brides typically choose 4 items for the perfect unboxing experience
       </p>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
@@ -124,11 +130,22 @@ export default function StepProducts({
         {catalogProducts.map((product) => {
           const selectedItem = getSelectedProduct(product.id);
           const selected = !!selectedItem;
+          const isBestseller = catalogProducts.indexOf(product) < 2;
 
           return (
             <div key={product.id} className={`bg-white/80 rounded-xl overflow-hidden shadow-sm border transition-all duration-500 hover:-translate-y-1 ${selected ? 'border-gold shadow-md' : 'border-gold-pale/30'}`}>
-              <div val="image-container" className="h-48 bg-gray-100 relative overflow-hidden group">
+              <div className="h-48 bg-gray-100 relative overflow-hidden group">
                 <img src={product.image || '/images/box_closed.png'} alt={product.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                {isBestseller && !selected && (
+                  <div className="absolute top-3 left-3 bg-gold text-white text-[10px] font-sans uppercase tracking-widest px-2.5 py-1 rounded-full shadow-md">
+                    💛 Best Seller
+                  </div>
+                )}
+                {selected && (
+                  <div className="absolute top-3 left-3 bg-espresso text-cream text-[10px] font-sans uppercase tracking-widest px-2.5 py-1 rounded-full shadow-md">
+                    ✓ Added
+                  </div>
+                )}
                 <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors duration-500" />
               </div>
               <div className="p-5 flex flex-col justify-between flex-1 min-h-[140px] gap-4">
@@ -168,7 +185,8 @@ export default function StepProducts({
         })}
       </div>
 
-      <div className="flex justify-between border-t border-gold-pale/50 pt-8 items-center">
+      {/* Live Running Total + Checkout Row */}
+      <div className="flex flex-col sm:flex-row justify-between items-center border-t border-gold-pale/50 pt-8 gap-4">
         <button
           onClick={onPrev}
           disabled={isSubmitting}
@@ -176,22 +194,43 @@ export default function StepProducts({
         >
           &larr; Back
         </button>
-        <div className="flex items-center gap-4 md:gap-6">
-          <div className="text-right hidden sm:block">
-            <span className="block text-xs uppercase tracking-widest text-gray-400">Total Items</span>
-            <span className="font-serif text-xl">{selectedProducts.length}</span>
+
+        {/* Live Total Panel */}
+        <div className="flex items-center gap-6 bg-cream-dark/40 border border-gold/20 rounded-xl px-6 py-3">
+          <div className="text-center">
+            <span className="block text-[10px] uppercase tracking-widest text-gray-400 font-sans">Items</span>
+            <span className="font-serif text-xl text-espresso">{selectedProducts.length}</span>
           </div>
-          <button
-            onClick={onSubmit}
-            disabled={isSubmitting}
-            className={`px-6 md:px-8 py-4 uppercase tracking-widest text-sm transition-all duration-500 flex items-center justify-center ${
-              isSubmitting ? 'bg-espresso-light text-cream/70 cursor-not-allowed' : 'bg-espresso text-cream hover:bg-espresso-light shadow-md'
-            }`}
-          >
-            {isSubmitting && <SpinnerIcon />}
-            {isSubmitting ? 'Syncing...' : 'Review Cart & Checkout'}
-          </button>
+          <div className="w-px h-8 bg-gold/20" />
+          <div className="text-center">
+            <span className="block text-[10px] uppercase tracking-widest text-gray-400 font-sans">Box Total</span>
+            <span className="font-serif text-xl text-espresso">
+              ${(selectedProducts.reduce((sum, p) => sum + p.price, 0) * quantity).toFixed(2)}
+            </span>
+          </div>
+          {quantity > 1 && (
+            <>
+              <div className="w-px h-8 bg-gold/20" />
+              <div className="text-center">
+                <span className="block text-[10px] uppercase tracking-widest text-gray-400 font-sans">{quantity} Boxes</span>
+                <span className="font-serif text-xl text-espresso">
+                  ${(selectedProducts.reduce((sum, p) => sum + p.price, 0) * quantity).toFixed(2)}
+                </span>
+              </div>
+            </>
+          )}
         </div>
+
+        <button
+          onClick={onSubmit}
+          disabled={isSubmitting || selectedProducts.length === 0}
+          className={`px-6 md:px-8 py-4 uppercase tracking-widest text-sm transition-all duration-500 flex items-center justify-center ${
+            (isSubmitting || selectedProducts.length === 0) ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-espresso text-cream hover:bg-espresso-light shadow-md hover:-translate-y-0.5'
+          }`}
+        >
+          {isSubmitting && <SpinnerIcon />}
+          {isSubmitting ? 'Preparing Your Order...' : 'Review My Box & Checkout →'}
+        </button>
       </div>
 
       {/* Epic 2-Column Quick View Modal for Customizable Products */}
