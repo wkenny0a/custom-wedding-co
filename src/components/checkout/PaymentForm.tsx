@@ -3,97 +3,90 @@
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useCheckout } from './CheckoutProvider';
+import { useCart } from '@/context/CartContext';
 import swell from '@/lib/swell';
 
 export default function PaymentForm() {
   const { step, setStep, submitOrder, isWorking, contact } = useCheckout();
+  const { cart } = useCart();
   const router = useRouter();
-  const mountedRef = useRef(false);
-  const [isPaymentReady, setIsPaymentReady] = useState(false);
+
+  const paypalMountedRef = useRef(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
-  const [stripeToken, setStripeToken] = useState<any>(null);
+  const [paypalStatus, setPaypalStatus] = useState<'idle' | 'loading' | 'ready' | 'approved' | 'error'>('idle');
 
   const isLocked = step < 4;
 
-  // Mount Stripe Elements when step reaches 4
+  // Mount PayPal button when step reaches 4
   useEffect(() => {
-    if (step !== 4 || mountedRef.current) return;
-    mountedRef.current = true;
+    if (step !== 4 || paypalMountedRef.current) return;
+    paypalMountedRef.current = true;
+    setPaypalStatus('loading');
 
-    const mountElements = async () => {
+    const mountPayPal = async () => {
       try {
+        // swell.payment.createElements() renders a PayPal button into #paypal-button-container
         await (swell as any).payment.createElements({
-          elementType: 'card',
-          options: {
-            style: {
-              base: {
-                fontFamily: '"Cormorant Garamond", Georgia, serif',
-                fontSize: '16px',
-                color: '#3b1f14',
-                '::placeholder': { color: '#b8a99a' },
-              },
-            },
+          elementType: 'paypal',
+          elementId: 'paypal-button-container',
+          onSuccess: async (result: any) => {
+            // Called after user approves in PayPal popup
+            setPaypalStatus('approved');
+            setIsSubmitting(true);
+            try {
+              // Update billing with PayPal result
+              await swell.cart.update({ billing: { paypal: result } } as any);
+              // Submit the order
+              const orderId = await submitOrder();
+              if (orderId) {
+                router.push(`/checkout/success?order_id=${orderId}`);
+              } else {
+                setErrorMsg('Order could not be placed. Please try again.');
+                setPaypalStatus('error');
+              }
+            } catch (err: any) {
+              setErrorMsg(err?.message || 'Something went wrong. Please try again.');
+              setPaypalStatus('error');
+            } finally {
+              setIsSubmitting(false);
+            }
           },
-          onChange: (event: any) => {
-            setIsPaymentReady(event.complete && !event.error);
-            if (event.error) setErrorMsg(event.error.message);
-            else setErrorMsg('');
+          onError: (err: any) => {
+            console.error('PayPal error:', err);
+            setErrorMsg(err?.message || 'PayPal encountered an error. Please try again.');
+            setPaypalStatus('error');
+          },
+          onCancel: () => {
+            setPaypalStatus('ready');
+            setErrorMsg('');
           },
         });
-      } catch (e) {
-        console.warn('Stripe Elements mount failed — may be in test mode without live keys:', e);
-        // Allow submission without elements in dev/test mode
-        setIsPaymentReady(true);
+        setPaypalStatus('ready');
+      } catch (e: any) {
+        console.error('PayPal Elements mount failed:', e);
+        setPaypalStatus('error');
+        setErrorMsg('PayPal could not be loaded. Please use the fallback checkout link below.');
       }
     };
 
-    mountElements();
-  }, [step]);
+    // Small delay to ensure DOM node #paypal-button-container is rendered
+    const timer = setTimeout(mountPayPal, 150);
+    return () => clearTimeout(timer);
+  }, [step, submitOrder, router]);
 
-  const handlePlaceOrder = async () => {
-    setIsSubmitting(true);
-    setErrorMsg('');
-
-    try {
-      // Tokenize card via swell.payment.tokenize()
-      try {
-        const tokenResult = await (swell as any).payment.tokenize({
-          card: { element: '#card-element' },
-          billing: {
-            name: `${contact.firstName} ${contact.lastName}`,
-            email: contact.email,
-          },
-        });
-        if (tokenResult?.error) {
-          setErrorMsg(tokenResult.error.message || 'Payment failed. Please check your card details.');
-          setIsSubmitting(false);
-          return;
-        }
-        setStripeToken(tokenResult);
-
-        // Update cart billing with tokenized card
-        await swell.cart.update({ billing: { card: tokenResult } } as any);
-      } catch (payErr: any) {
-        console.warn('Tokenization error (may be expected in test mode):', payErr);
-      }
-
-      // Submit order
-      const orderId = await submitOrder();
-      if (orderId) {
-        router.push(`/checkout/success?order_id=${orderId}`);
-      } else {
-        setErrorMsg('Something went wrong placing your order. Please try again.');
-      }
-    } catch (err: any) {
-      setErrorMsg(err?.message || 'An unexpected error occurred. Please try again.');
-    } finally {
-      setIsSubmitting(false);
+  // Reset mount flag if user navigates away from step 4 and comes back
+  useEffect(() => {
+    if (step < 4) {
+      paypalMountedRef.current = false;
+      setPaypalStatus('idle');
+      setErrorMsg('');
     }
-  };
+  }, [step]);
 
   return (
     <div className={`bg-white/60 backdrop-blur-sm border border-gold-pale/30 rounded-2xl overflow-hidden transition-opacity duration-300 ${isLocked ? 'opacity-50 pointer-events-none' : ''}`}>
+
       {/* Header */}
       <div className="flex items-center gap-3 px-6 py-4 border-b border-gold-pale/20">
         <div className={`w-7 h-7 rounded-full flex items-center justify-center font-sans text-sm font-bold transition-colors ${isLocked ? 'bg-cream-dark text-gray-400' : 'bg-gold text-white'}`}>
@@ -104,37 +97,81 @@ export default function PaymentForm() {
           <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
           </svg>
-          256-bit SSL
+          Secured by PayPal
         </div>
       </div>
 
       {step === 4 && (
         <div className="px-6 py-6 space-y-6">
-          {/* Stripe Card Element mount point */}
-          <div>
-            <label className="block text-xs font-sans uppercase tracking-widest text-espresso/60 mb-3">
-              Card Details
-            </label>
-            <div
-              id="card-element"
-              className="w-full bg-white border border-gold-pale/40 rounded-lg px-4 py-4 min-h-[52px] focus-within:border-gold focus-within:ring-2 focus-within:ring-gold/20 transition-all"
-            >
-              {/* Stripe Elements mounts here via swell.payment.createElements() */}
-              {/* In dev/test mode without live keys, show a notice */}
-              <p className="text-sm font-sans text-espresso/40 italic">
-                Card form will appear here when connected to Stripe via Swell dashboard.
-              </p>
-            </div>
+
+          {/* Review summary before payment */}
+          <div className="bg-cream/40 border border-gold-pale/20 rounded-xl px-5 py-4 text-sm font-sans text-espresso/70 space-y-1.5">
+            <p className="font-semibold text-espresso text-xs uppercase tracking-wider mb-2">Review Before Paying</p>
+            <p>📧 {contact.email}</p>
+            <p>💳 You'll be redirected to PayPal to complete payment securely</p>
+            <p>✦ Order confirmation will be emailed immediately after</p>
           </div>
 
-          {/* Card brand logos */}
-          <div className="flex items-center gap-3">
-            <span className="text-[10px] font-sans uppercase tracking-wider text-espresso/40">Accepted:</span>
-            {['Visa', 'MC', 'Amex', 'Discover'].map(brand => (
-              <div key={brand} className="bg-white border border-gray-100 rounded px-2 py-1 text-[9px] font-sans font-bold text-gray-500 shadow-sm">
-                {brand}
+          {/* PayPal Button Zone */}
+          <div>
+            <p className="text-xs font-sans uppercase tracking-widest text-espresso/50 mb-3 text-center">
+              Click below to pay securely with PayPal
+            </p>
+
+            {/* Loading skeleton */}
+            {paypalStatus === 'loading' && (
+              <div className="w-full h-[50px] bg-[#0070ba]/10 rounded-lg flex items-center justify-center gap-2 animate-pulse">
+                <Spinner />
+                <span className="text-sm font-sans text-[#0070ba]/60">Loading PayPal…</span>
               </div>
-            ))}
+            )}
+
+            {/* Approved state */}
+            {paypalStatus === 'approved' && (
+              <div className="w-full h-[50px] bg-green-50 border border-green-200 rounded-lg flex items-center justify-center gap-2">
+                <span className="text-green-700 font-sans text-sm font-semibold">
+                  ✓ PayPal Approved — Placing Your Order…
+                </span>
+                <Spinner />
+              </div>
+            )}
+
+            {/* PayPal button container — Swell mounts here */}
+            <div
+              id="paypal-button-container"
+              className={`w-full min-h-[50px] rounded-lg overflow-hidden transition-opacity duration-300 ${(paypalStatus === 'loading' || paypalStatus === 'approved') ? 'opacity-0 h-0 overflow-hidden' : 'opacity-100'}`}
+            />
+
+            {/* Fallback if PayPal button fails to mount */}
+            {paypalStatus === 'error' && (
+              <div className="space-y-3">
+                <div className="bg-amber-50 border border-amber-200 rounded-lg px-4 py-3 text-sm font-sans text-amber-800">
+                  ⚠ PayPal button could not load in this environment.
+                </div>
+                {cart?.checkoutUrl && (
+                  <a
+                    href={cart.checkoutUrl}
+                    className="w-full block bg-[#0070ba] text-white font-sans font-bold text-sm py-4 rounded-lg text-center hover:bg-[#005ea6] transition-colors shadow-md"
+                  >
+                    Continue to Swell Checkout →
+                  </a>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* PayPal trust line */}
+          <div className="flex flex-col items-center gap-2 pt-2">
+            <div className="flex items-center gap-3 text-[10px] font-sans text-espresso/40 uppercase tracking-wider">
+              <span>🔒 SSL Encrypted</span>
+              <span>·</span>
+              <span>💳 PayPal Buyer Protection</span>
+              <span>·</span>
+              <span>✦ No account required</span>
+            </div>
+            <p className="text-[10px] font-sans text-espresso/30 text-center max-w-xs">
+              You'll be redirected to PayPal to complete payment. Your card details are never shared with us.
+            </p>
           </div>
 
           {/* Error message */}
@@ -144,34 +181,17 @@ export default function PaymentForm() {
             </div>
           )}
 
-          {/* Back + Place Order */}
-          <div className="flex gap-3 pt-2">
+          {/* Back button */}
+          <div className="pt-2 border-t border-gold-pale/20">
             <button
               type="button"
               onClick={() => setStep(3)}
-              disabled={isSubmitting}
-              className="px-5 py-3 border border-gold-pale/40 font-sans text-sm text-espresso/60 hover:text-espresso hover:border-espresso/30 transition-colors rounded-lg"
+              disabled={isSubmitting || paypalStatus === 'approved'}
+              className="text-sm font-sans text-espresso/50 hover:text-espresso transition-colors uppercase tracking-wider"
             >
-              ← Back
-            </button>
-            <button
-              type="button"
-              onClick={handlePlaceOrder}
-              disabled={isSubmitting || isWorking}
-              className={`flex-1 py-4 font-sans font-bold text-sm uppercase tracking-widest transition-all duration-300 rounded-lg flex items-center justify-center gap-2 shadow-md ${(isSubmitting || isWorking) ? 'bg-espresso/40 text-cream/60 cursor-not-allowed' : 'bg-espresso text-cream hover:bg-espresso-light hover:shadow-lg hover:-translate-y-0.5'}`}
-            >
-              {(isSubmitting || isWorking) ? (
-                <><Spinner />Placing Your Order…</>
-              ) : (
-                <>🔒 Place Order</>
-              )}
+              ← Back to Shipping
             </button>
           </div>
-
-          {/* Micro trust line */}
-          <p className="text-[11px] font-sans text-espresso/40 text-center">
-            By placing your order you agree to our Terms of Service. Your payment is processed securely by Stripe — we never store your card details.
-          </p>
         </div>
       )}
     </div>

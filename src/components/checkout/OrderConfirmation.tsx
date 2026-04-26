@@ -92,13 +92,13 @@ export default function OrderConfirmation() {
         <h3 className="font-serif text-2xl text-espresso mb-6">Complete Your Wedding Look</h3>
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <Link
-            href="/shop/bridal"
+            href="/gifts"
             className="px-6 py-3 bg-white border border-gold-pale/40 text-espresso font-sans text-sm uppercase tracking-widest hover:bg-cream-dark/30 transition-colors rounded-lg"
           >
             Bridal Party Gifts
           </Link>
           <Link
-            href="/shop/stationery"
+            href="/shop"
             className="px-6 py-3 bg-white border border-gold-pale/40 text-espresso font-sans text-sm uppercase tracking-widest hover:bg-cream-dark/30 transition-colors rounded-lg"
           >
             Wedding Stationery

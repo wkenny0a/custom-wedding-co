@@ -20,6 +20,7 @@ export interface ProductItem {
 export interface ConfiguratorState {
   boxColor: BoxColorOption | null;
   personalizationMessage: string;
+  personNames: string[];
   includeShreddedPaper: boolean;
   includeBowTie: boolean;
   selectedProducts: ProductItem[];
