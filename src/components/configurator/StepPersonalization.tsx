@@ -113,27 +113,28 @@ export default function StepPersonalization({
         Enter each bridesmaid's name and the secret message she'll find printed inside the lid when she opens her box.
       </p>
 
-      <div className="flex flex-col md:flex-row gap-10 items-start mb-12">
+      <div className="flex flex-col md:flex-row gap-6 md:gap-10 items-start mb-12">
 
         {/* ── Left: Live Preview Panel ─────────────────────────────── */}
-        <div className="w-full md:w-5/12 flex-shrink-0 bg-white/60 p-8 rounded-2xl shadow-sm border border-gold-pale/30 relative overflow-hidden group sticky top-4">
+        {/* Mobile: compact inline bar · Desktop: full sticky sidebar */}
+        <div className="w-full md:w-5/12 flex-shrink-0 bg-white/60 p-4 md:p-8 rounded-2xl shadow-sm border border-gold-pale/30 relative overflow-hidden group md:sticky md:top-4">
           <div className="absolute inset-0 bg-gradient-to-br from-transparent to-black/5 z-0" />
           
-          <p className="relative z-10 text-xs text-center text-gray-400 uppercase tracking-widest mb-6">Live Preview</p>
+          <p className="relative z-10 text-xs text-center text-gray-400 uppercase tracking-widest mb-3 md:mb-6">Live Preview</p>
           
-          {/* Typography Preview Box */}
-          <div className="w-full aspect-square rounded-2xl shadow-xl relative flex items-center justify-center text-center overflow-hidden border border-gold-pale/30 group-hover:shadow-2xl transition-all duration-700 bg-white">
+          {/* Typography Preview Box — compact on mobile, square on desktop */}
+          <div className="w-full aspect-[2/1] md:aspect-square rounded-2xl shadow-xl relative flex items-center justify-center text-center overflow-hidden border border-gold-pale/30 group-hover:shadow-2xl transition-all duration-700 bg-white">
             {quantity > 1 && (
               <>
                 <button 
                   onClick={() => setPreviewIndex(prev => prev > 0 ? prev - 1 : quantity - 1)}
-                  className="absolute left-3 z-30 w-8 h-8 flex items-center justify-center rounded-full bg-slate-50 border border-gold-pale/30 text-espresso/50 hover:text-espresso hover:border-gold transition-colors shadow-sm"
+                  className="absolute left-2 md:left-3 z-30 w-7 h-7 md:w-8 md:h-8 flex items-center justify-center rounded-full bg-slate-50 border border-gold-pale/30 text-espresso/50 hover:text-espresso hover:border-gold transition-colors shadow-sm"
                 >
                   ‹
                 </button>
                 <button 
                   onClick={() => setPreviewIndex(prev => prev < quantity - 1 ? prev + 1 : 0)}
-                  className="absolute right-3 z-30 w-8 h-8 flex items-center justify-center rounded-full bg-slate-50 border border-gold-pale/30 text-espresso/50 hover:text-espresso hover:border-gold transition-colors shadow-sm"
+                  className="absolute right-2 md:right-3 z-30 w-7 h-7 md:w-8 md:h-8 flex items-center justify-center rounded-full bg-slate-50 border border-gold-pale/30 text-espresso/50 hover:text-espresso hover:border-gold transition-colors shadow-sm"
                 >
                   ›
                 </button>
@@ -141,18 +142,18 @@ export default function StepPersonalization({
             )}
             
             {/* Typography layer */}
-            <div className="relative z-20 w-3/4 mb-16 transition-colors duration-700 text-espresso" key={`preview-${previewIndex}`}>
-              <h4 className="font-serif text-3xl md:text-4xl leading-tight font-medium animate-in fade-in duration-500">
+            <div className="relative z-20 w-3/4 mb-8 md:mb-16 transition-colors duration-700 text-espresso" key={`preview-${previewIndex}`}>
+              <h4 className="font-serif text-xl md:text-4xl leading-tight font-medium animate-in fade-in duration-500">
                 {localMessages[previewIndex] || 'Your message here...'}
               </h4>
-              <p className="mt-6 text-xs tracking-[0.2em] uppercase text-espresso-light">
+              <p className="mt-3 md:mt-6 text-[10px] md:text-xs tracking-[0.2em] uppercase text-espresso-light">
                 {previewSubtitle}
               </p>
             </div>
             
             {/* Dot Indicators */}
             {quantity > 1 && (
-              <div className="absolute bottom-6 flex gap-2 z-30">
+              <div className="absolute bottom-3 md:bottom-6 flex gap-2 z-30">
                 {Array.from({ length: quantity }).map((_, i) => (
                   <button
                     key={i}
@@ -164,8 +165,8 @@ export default function StepPersonalization({
             )}
           </div>
 
-          {/* Emotional Quote */}
-          <div className="mt-4 bg-cream/80 border border-gold/20 rounded-xl px-5 py-4 flex gap-3 items-start">
+          {/* Emotional Quote — hidden on mobile to save space */}
+          <div className="hidden md:flex mt-4 bg-cream/80 border border-gold/20 rounded-xl px-5 py-4 gap-3 items-start">
             <span className="text-gold text-2xl leading-none mt-0.5">❝</span>
             <div>
               <p className="font-serif text-sm text-espresso leading-relaxed italic">
