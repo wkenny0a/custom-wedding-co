@@ -429,6 +429,7 @@ export default function BridesmaidBoxConfigurator({
                   emptyCategoryText={emptyCategoryText}
                   quantity={boxQuantity}
                   personNames={state.personNames}
+                  discountPercent={discountAmount}
                 />
               )}
             </div>
