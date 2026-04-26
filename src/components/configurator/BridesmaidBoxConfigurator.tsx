@@ -108,7 +108,7 @@ export default function BridesmaidBoxConfigurator({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [boxQuantity, setBoxQuantity] = useState<number>(1);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
-  const { addToCart, addMultipleToCart, removeFromCart, setIsCartOpen, cart } = useCart();
+  const { addToCart, addMultipleToCart, removeFromCart, setIsCartOpen, cart, applyCoupon } = useCart();
 
   const [state, setState] = useState<ConfiguratorState>({
     boxColor: null,
@@ -175,7 +175,7 @@ export default function BridesmaidBoxConfigurator({
       if (product.isCustomizable && product.customOptions && product.customOptions.length > 0) {
         itemOptions = product.customOptions.map(opt => ({ name: opt.name, value: opt.value }));
       }
-      const updatedCart = await addToCart(product.id, 1, itemOptions, null, true);
+      const updatedCart = await addToCart(product.id, boxQuantity, itemOptions, null, true);
       const newestItem = updatedCart?.items?.[updatedCart.items.length - 1];
       const newProduct = { ...product, cartItemId: newestItem?.id };
       setState(s => ({ ...s, selectedProducts: [...s.selectedProducts, newProduct] }));
@@ -202,7 +202,33 @@ export default function BridesmaidBoxConfigurator({
     }
   };
 
-  const handleSubmit = () => {
+  // Coupon code mapping for volume discounts
+  const getCouponCode = (q: number) => {
+    if (q >= 5) return 'BRIDE45';
+    if (q === 4) return 'BRIDE35';
+    if (q === 3) return 'BRIDE25';
+    if (q === 2) return 'BRIDE15';
+    return null;
+  };
+
+  const handleSubmit = async () => {
+    setIsSubmitting(true);
+    try {
+      // Auto-apply volume discount coupon
+      const couponCode = getCouponCode(boxQuantity);
+      if (couponCode) {
+        try {
+          await applyCoupon(couponCode);
+        } catch (e) {
+          console.warn('Coupon auto-apply failed (may not exist yet):', couponCode, e);
+        }
+      }
+    } catch (e) {
+      console.error('Error during checkout prep:', e);
+    } finally {
+      setIsSubmitting(false);
+    }
+
     const checkoutLink = cart?.checkoutUrl || cart?.checkout_url;
     if (checkoutLink) {
       window.location.href = checkoutLink;
