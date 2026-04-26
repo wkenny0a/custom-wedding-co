@@ -12,6 +12,7 @@ interface CartContextType {
     addMultipleToCart: (items: { productId: string; quantity: number; options: any[], metadata?: any }[]) => Promise<void>;
     removeFromCart: (itemId: string) => Promise<void>;
     updateQuantity: (itemId: string, quantity: number) => Promise<void>;
+    applyCoupon: (code: string) => Promise<any>;
     isLoading: boolean;
 }
 
@@ -130,6 +131,19 @@ export function CartProvider({ children }: { children: ReactNode }) {
         }
     }
 
+    const applyCoupon = async (code: string) => {
+        setIsLoading(true)
+        try {
+            const updatedCart = await swell.cart.applyCoupon(code)
+            setCart(updatedCart)
+            return updatedCart
+        } catch (error) {
+            console.error('Error applying coupon:', error)
+        } finally {
+            setIsLoading(false)
+        }
+    }
+
     return (
         <CartContext.Provider
             value={{
@@ -140,6 +154,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
                 addMultipleToCart,
                 removeFromCart,
                 updateQuantity,
+                applyCoupon,
                 isLoading
             }}
         >
