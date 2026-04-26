@@ -113,6 +113,7 @@ export default function BridesmaidBoxConfigurator({
   const [state, setState] = useState<ConfiguratorState>({
     boxColor: null,
     personalizationMessage: '',
+    personNames: [],
     includeShreddedPaper: false,
     includeBowTie: false,
     selectedProducts: [],
@@ -132,6 +133,7 @@ export default function BridesmaidBoxConfigurator({
       if (state.includeShreddedPaper) baseOptions.push({ name: 'Matching Shredded Paper', value: 'Yes' });
       if (state.includeBowTie) baseOptions.push({ name: 'Exterior Bow Tie Ribbon', value: 'Yes' });
       if (state.personalizationMessage.trim()) baseOptions.push({ name: 'Inner Lid Message', value: state.personalizationMessage });
+      if (state.personNames.length > 0) baseOptions.push({ name: 'Bridesmaid Names', value: state.personNames.join(', ') });
       if (boxQuantity > 1) baseOptions.push({ name: 'Quantity', value: String(boxQuantity) });
 
       const updatedCart = await addToCart(baseBoxProduct.id, boxQuantity, baseOptions, null, true);
@@ -162,6 +164,7 @@ export default function BridesmaidBoxConfigurator({
 
   const setBoxColor = (color: BoxColorOption) => setState(s => ({ ...s, boxColor: color }));
   const setPersonalizationMessage = (msg: string) => setState(s => ({ ...s, personalizationMessage: msg }));
+  const setPersonNames = (names: string[]) => setState(s => ({ ...s, personNames: names }));
   const setIncludeShreddedPaper = (include: boolean) => setState(s => ({ ...s, includeShreddedPaper: include }));
   const setIncludeBowTie = (include: boolean) => setState(s => ({ ...s, includeBowTie: include }));
 
@@ -401,6 +404,8 @@ export default function BridesmaidBoxConfigurator({
                   quantity={boxQuantity}
                   message={state.personalizationMessage}
                   presetMessage={presetMessage}
+                  personNames={state.personNames}
+                  onChangeNames={setPersonNames}
                   onChangeMessage={setPersonalizationMessage}
                   includeShreddedPaper={state.includeShreddedPaper}
                   onToggleShreddedPaper={setIncludeShreddedPaper}
@@ -423,6 +428,7 @@ export default function BridesmaidBoxConfigurator({
                   isSubmitting={isSubmitting}
                   emptyCategoryText={emptyCategoryText}
                   quantity={boxQuantity}
+                  personNames={state.personNames}
                 />
               )}
             </div>
