@@ -12,6 +12,7 @@ interface StepProductsProps {
   emptyCategoryText?: string;
   quantity?: number;
   personNames?: string[];
+  discountPercent?: number;
 }
 
 export default function StepProducts({
@@ -24,9 +25,11 @@ export default function StepProducts({
   isSubmitting = false,
   emptyCategoryText = 'No products found.',
   quantity: rawQuantity,
-  personNames = []
+  personNames = [],
+  discountPercent = 0
 }: StepProductsProps) {
   const quantity = rawQuantity ?? 1;
+  const hasDiscount = discountPercent > 0;
 
   // Modal state — now info-only (no customization inputs)
   const [viewingProduct, setViewingProduct] = useState<ProductItem | null>(null);
@@ -164,7 +167,16 @@ export default function StepProducts({
                 <div>
                   <div className="flex justify-between items-start mb-1">
                     <h4 className="font-serif font-semibold text-lg leading-tight">{product.name}</h4>
-                    <span className="font-sans text-sm ml-2 flex-shrink-0">${product.price.toFixed(2)}</span>
+                    <div className="ml-2 flex-shrink-0 text-right">
+                      {hasDiscount ? (
+                        <>
+                          <span className="font-sans text-xs text-espresso/40 line-through block">${product.price.toFixed(2)}</span>
+                          <span className="font-sans text-sm text-gold font-semibold">${(product.price * (1 - discountPercent / 100)).toFixed(2)}</span>
+                        </>
+                      ) : (
+                        <span className="font-sans text-sm">${product.price.toFixed(2)}</span>
+                      )}
+                    </div>
                   </div>
 
                   {/* Show applied personalization after adding */}
@@ -234,18 +246,31 @@ export default function StepProducts({
           </div>
           <div className="w-px h-8 bg-gold/20" />
           <div className="text-center">
-            <span className="block text-[10px] uppercase tracking-widest text-gray-400 font-sans">Box Total</span>
-            <span className="font-serif text-xl text-espresso">
-              ${(selectedProducts.reduce((sum, p) => sum + p.price, 0) * quantity).toFixed(2)}
+            <span className="block text-[10px] uppercase tracking-widest text-gray-400 font-sans">
+              {hasDiscount ? `${discountPercent}% Off Total` : 'Box Total'}
             </span>
+            {hasDiscount ? (
+              <div className="flex flex-col items-center">
+                <span className="font-sans text-xs text-espresso/40 line-through">
+                  ${(selectedProducts.reduce((sum, p) => sum + p.price, 0) * quantity).toFixed(2)}
+                </span>
+                <span className="font-serif text-xl text-gold font-semibold">
+                  ${(selectedProducts.reduce((sum, p) => sum + p.price, 0) * quantity * (1 - discountPercent / 100)).toFixed(2)}
+                </span>
+              </div>
+            ) : (
+              <span className="font-serif text-xl text-espresso">
+                ${(selectedProducts.reduce((sum, p) => sum + p.price, 0) * quantity).toFixed(2)}
+              </span>
+            )}
           </div>
-          {quantity > 1 && (
+          {hasDiscount && (
             <>
               <div className="w-px h-8 bg-gold/20" />
               <div className="text-center">
-                <span className="block text-[10px] uppercase tracking-widest text-gray-400 font-sans">{quantity} Boxes</span>
-                <span className="font-serif text-xl text-espresso">
-                  ${(selectedProducts.reduce((sum, p) => sum + p.price, 0) * quantity).toFixed(2)}
+                <span className="block text-[10px] uppercase tracking-widest text-gold font-sans font-semibold">You Save</span>
+                <span className="font-serif text-xl text-gold">
+                  ${(selectedProducts.reduce((sum, p) => sum + p.price, 0) * quantity * discountPercent / 100).toFixed(2)}
                 </span>
               </div>
             </>
