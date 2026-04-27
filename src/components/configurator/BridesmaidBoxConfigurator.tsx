@@ -142,6 +142,16 @@ export default function BridesmaidBoxConfigurator({
         const newestItem = updatedCart.items[updatedCart.items.length - 1];
         setState(s => ({ ...s, baseBoxCartItemId: newestItem.id }));
       }
+
+      // Auto-apply volume discount coupon as soon as cart is populated
+      const couponCode = getCouponCode(boxQuantity);
+      if (couponCode) {
+        try {
+          await applyCoupon(couponCode);
+        } catch (e) {
+          console.warn('Coupon auto-apply skipped:', couponCode, e);
+        }
+      }
     } catch (error) {
       console.error("Failed to inject base box silently:", error);
     } finally {
@@ -202,33 +212,17 @@ export default function BridesmaidBoxConfigurator({
     }
   };
 
-  // Coupon code mapping for volume discounts
+  // Coupon code mapping — theme-aware (BRIDE vs GROOM prefixes)
   const getCouponCode = (q: number) => {
-    if (q >= 5) return 'BRIDE45';
-    if (q === 4) return 'BRIDE35';
-    if (q === 3) return 'BRIDE25';
-    if (q === 2) return 'BRIDE15';
+    const prefix = theme === 'groomsman' ? 'GROOM' : 'BRIDE';
+    if (q >= 5) return `${prefix}45`;
+    if (q === 4) return `${prefix}35`;
+    if (q === 3) return `${prefix}25`;
+    if (q === 2) return `${prefix}15`;
     return null;
   };
 
   const handleSubmit = async () => {
-    setIsSubmitting(true);
-    try {
-      // Auto-apply volume discount coupon
-      const couponCode = getCouponCode(boxQuantity);
-      if (couponCode) {
-        try {
-          await applyCoupon(couponCode);
-        } catch (e) {
-          console.warn('Coupon auto-apply failed (may not exist yet):', couponCode, e);
-        }
-      }
-    } catch (e) {
-      console.error('Error during checkout prep:', e);
-    } finally {
-      setIsSubmitting(false);
-    }
-
     const checkoutLink = cart?.checkoutUrl || cart?.checkout_url;
     if (checkoutLink) {
       window.location.href = checkoutLink;
