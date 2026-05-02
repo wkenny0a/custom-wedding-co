@@ -42,42 +42,25 @@ export default function StepWelcomeProducts({
   // ── Modal state ───────────────────────────────────────────────────────────
   const [viewingProduct, setViewingProduct] = useState<ProductItem | null>(null);
   const [currentImageIndex, setCurrentImageIndex] = useState<number>(0);
-  const [customOptions, setCustomOptions] = useState<Record<string, string>>({});
 
   useEffect(() => {
     if (viewingProduct) {
       setCurrentImageIndex(0);
-      // Initialize custom options from Swell product options
-      const initial: Record<string, string> = {};
-      viewingProduct.swellData?.options?.forEach((opt: any) => {
-        if (opt.values?.length > 0) {
-          initial[opt.name] = opt.values[0].name;
-        } else {
-          initial[opt.name] = '';
-        }
-      });
-      setCustomOptions(initial);
     }
   }, [viewingProduct]);
 
   const isSelected = (productId: string) => selectedProducts.some(p => p.id === productId);
   const getSelectedProduct = (productId: string) => selectedProducts.find(p => p.id === productId);
 
-  // ── Add with Swell options for customizable products ──────────────────────
-  const handleAddFromModal = () => {
-    if (!viewingProduct) return;
-    if (viewingProduct.isCustomizable && Object.keys(customOptions).length > 0) {
-      const opts = Object.entries(customOptions).map(([name, value]) => ({ name, value }));
-      onAddProduct({ ...viewingProduct, customOptions: opts });
-    } else {
-      onAddProduct(viewingProduct);
-    }
-    setViewingProduct(null);
-  };
-
+  // ── Auto-inject design info into customizable products ────────────────────
   const handleAddClick = (product: ProductItem) => {
     if (product.isCustomizable) {
-      setViewingProduct(product);
+      const autoOptions: { name: string; value: string }[] = [];
+      if (selectedDesign) autoOptions.push({ name: 'Lid Design', value: selectedDesign.name });
+      if (namesOrInitials.trim()) autoOptions.push({ name: 'Names / Initials', value: namesOrInitials });
+      if (eventDate.trim()) autoOptions.push({ name: 'Event Date', value: eventDate });
+      if (customUploadUrl) autoOptions.push({ name: 'Custom Design URL', value: customUploadUrl });
+      onAddProduct({ ...product, customOptions: autoOptions });
     } else {
       onAddProduct(product);
     }
@@ -181,7 +164,7 @@ export default function StepWelcomeProducts({
                 )}
                 {product.isCustomizable && !selected && (
                   <div className="absolute top-3 right-3 bg-white/90 text-gold text-[10px] font-sans uppercase tracking-widest px-2.5 py-1 rounded-full shadow-sm border border-gold/20">
-                    ✨ Customizable
+                    ✨ Design Applied
                   </div>
                 )}
                 <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors duration-500" />
@@ -204,13 +187,22 @@ export default function StepWelcomeProducts({
                     </div>
                   </div>
 
-                  {/* Show applied customization after adding */}
+                  {/* Show applied design info after adding */}
                   {selected && selectedItem?.customOptions && selectedItem.customOptions.length > 0 && (
                     <div className="mt-2 bg-gold/5 border border-gold/20 rounded-lg px-3 py-2 text-xs text-espresso/70 space-y-0.5">
                       {selectedItem.customOptions.map((opt, i) => (
                         <p key={i}><span className="font-semibold text-espresso">{opt.name}:</span> {opt.value}</p>
                       ))}
                     </div>
+                  )}
+
+                  {/* Design hint for customizable products not yet added */}
+                  {product.isCustomizable && !selected && selectedDesign && (
+                    <p className="mt-1 text-[11px] font-sans text-gold/70">
+                      ✨ {selectedDesign.isCustomUpload
+                        ? 'Your custom design will be applied'
+                        : `"${namesOrInitials}" · ${eventDate} will be applied`}
+                    </p>
                   )}
                 </div>
 
@@ -392,41 +384,36 @@ export default function StepWelcomeProducts({
               )}
 
               <div className="flex-1">
-                {/* Customization options for customizable products */}
-                {viewingProduct.isCustomizable && viewingProduct.swellData?.options?.length > 0 ? (
-                  <div className="bg-gold/5 border border-gold/20 rounded-xl p-5 mb-6 space-y-4">
-                    <div className="flex items-center gap-2 mb-1">
+                {/* Design info preview — read-only, no inputs */}
+                {viewingProduct.isCustomizable && selectedDesign ? (
+                  <div className="bg-gold/5 border border-gold/20 rounded-xl p-5 mb-6">
+                    <div className="flex items-center gap-2 mb-3">
                       <span className="text-gold">✨</span>
                       <span className="text-xs font-sans uppercase tracking-widest text-gold font-semibold">
-                        Customization Options
+                        Design — Auto-Applied
                       </span>
                     </div>
-                    {viewingProduct.swellData.options.map((opt: any) => (
-                      <div key={opt.name}>
-                        <label className="block text-xs uppercase tracking-widest text-espresso/60 font-sans font-semibold mb-2">
-                          {opt.name}
-                        </label>
-                        {opt.values && opt.values.length > 0 ? (
-                          <select
-                            value={customOptions[opt.name] || ''}
-                            onChange={(e) => setCustomOptions(prev => ({ ...prev, [opt.name]: e.target.value }))}
-                            className="w-full px-4 py-3 bg-white border border-gold-pale/40 rounded-xl font-sans text-espresso focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold/30 transition-colors"
-                          >
-                            {opt.values.map((val: any) => (
-                              <option key={val.name} value={val.name}>{val.name}</option>
-                            ))}
-                          </select>
-                        ) : (
-                          <input
-                            type="text"
-                            value={customOptions[opt.name] || ''}
-                            onChange={(e) => setCustomOptions(prev => ({ ...prev, [opt.name]: e.target.value }))}
-                            placeholder={`Enter ${opt.name.toLowerCase()}`}
-                            className="w-full px-4 py-3 bg-white border border-gold-pale/40 rounded-xl font-sans text-espresso placeholder:text-espresso/30 focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold/30 transition-colors"
-                          />
-                        )}
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-3">
+                        <img
+                          src={selectedDesign.isCustomUpload ? customUploadUrl : selectedDesign.imageUrl}
+                          alt={selectedDesign.name}
+                          className="w-12 h-12 rounded-lg object-cover border border-gold-pale/30"
+                          onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                        />
+                        <div>
+                          <p className="font-serif text-espresso">{selectedDesign.name}</p>
+                          {namesOrInitials && (
+                            <p className="text-sm font-sans text-espresso/60">
+                              {namesOrInitials}{eventDate ? ` · ${eventDate}` : ''}
+                            </p>
+                          )}
+                        </div>
                       </div>
-                    ))}
+                    </div>
+                    <p className="text-[11px] text-espresso/40 font-sans mt-3">
+                      Your design info from Step 2 will be applied to this item automatically — no extra input needed.
+                    </p>
                   </div>
                 ) : (
                   <div className="bg-cream/40 border border-gold-pale/20 rounded-xl p-4 mb-6">
@@ -450,23 +437,10 @@ export default function StepWelcomeProducts({
                   >
                     ✓ Remove from Box
                   </button>
-                ) : viewingProduct.isCustomizable ? (
-                  <button
-                    onClick={handleAddFromModal}
-                    disabled={isSubmitting}
-                    className={`w-full py-4 uppercase tracking-widest text-sm transition-all duration-300 flex items-center justify-center gap-2 ${
-                      isSubmitting
-                        ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                        : 'bg-espresso text-cream hover:bg-espresso-light shadow-md hover:-translate-y-0.5'
-                    }`}
-                  >
-                    {isSubmitting && <SpinnerIcon />}
-                    Add to Box with Options
-                  </button>
                 ) : (
                   <button
                     onClick={() => {
-                      onAddProduct(viewingProduct);
+                      handleAddClick(viewingProduct);
                       setViewingProduct(null);
                     }}
                     disabled={isSubmitting}
