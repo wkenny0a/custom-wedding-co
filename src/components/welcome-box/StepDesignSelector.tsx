@@ -147,7 +147,7 @@ export default function StepDesignSelector({
     <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
       <h3 className="font-serif text-3xl mb-2 text-center">Step 2: Choose Your Lid Design</h3>
       <p className="text-center text-espresso-light mb-8 max-w-lg mx-auto">
-        Select a design for the lid of every box. Personalize with your names and event date.
+        Select a design for the lid of every box. Personalize with your names and event date — this info will automatically be applied to every customizable product in your box.
       </p>
 
       <div className="flex flex-col lg:flex-row gap-10">
