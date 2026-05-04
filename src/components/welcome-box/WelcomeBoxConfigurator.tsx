@@ -422,6 +422,7 @@ export default function WelcomeBoxConfigurator({
                   onChangeWelcomeMessage={setWelcomeMessage}
                   onNext={nextStep}
                   onPrev={prevStep}
+                  isSubmitting={isSubmitting}
                 />
               )}
 
