@@ -97,7 +97,7 @@ export function HomeBoxConfigurator() {
           {/* Background Image Panel */}
           <div className="absolute inset-0 z-0">
             <Image 
-              src="https://cdn.swell.store/customweddingco/69ff0a69098e8400127e3089/f321de49b89dfce92f6942673f30714b/welcome_gift_box_lifestyle.png"
+              src="https://cdn.swell.store/customweddingco/69ff0be02965c50012b5eda5/dd89355e69345d33f8eb15938a4d8cac/welcome_gift_box_lifestyle_v2.png"
               alt="Design Your Welcome Gift Box"
               fill
               className="object-cover transition-transform duration-1000 ease-[cubic-bezier(0.25,0.46,0.45,0.94)] group-hover:scale-105"
