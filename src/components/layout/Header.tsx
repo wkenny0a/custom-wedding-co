@@ -37,7 +37,7 @@ export function Header() {
                         <Link href="/shop/bridal-party-gifts" className="font-sans text-[0.8rem] uppercase tracking-widest font-medium hover:text-gold transition-colors">Bridal</Link>
                         <div className="relative group py-2">
                             <button className="font-sans text-[0.8rem] uppercase tracking-widest font-medium hover:text-gold transition-colors flex items-center gap-1">
-                                Gift Boxes <ChevronDown size={14} className="group-hover:-rotate-180 transition-transform duration-300" />
+                                Build a Box <ChevronDown size={14} className="group-hover:-rotate-180 transition-transform duration-300" />
                             </button>
                             <div className="absolute top-full left-0 pt-2 opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-300">
                                 <div className="bg-cream border border-gold/20 shadow-xl rounded-md py-2 w-48 flex flex-col">

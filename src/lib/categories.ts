@@ -1,62 +1,156 @@
 export const WEDDING_CATEGORIES = [
-    'Welcome Signs & Signage',
-    'Wedding Decor & Displays',
-    'Stationery & Paper Goods',
-    'Tabletop & Barware',
-    'Favors & Gifts',
+    'Signage & Displays',
+    'Barware & Drinkware',
     'Bridal Party Gifts',
     'Groomsmen Gifts',
     'Wedding Keepsakes',
-    'Apparel & Sleepwear',
+    'Ceremony & Reception',
     'Bags & Totes',
-    'Bridal Accessories',
-    'Ceremony Details'
+    'Jewelry & Accessories',
+    'Apparel & Loungewear',
+    'Favors & Party Extras',
+    'Beauty & Self-Care',
+    'Build Your Box',
 ];
 
 export const PRODUCT_TO_CATEGORIES_MAP: Record<string, string[]> = {
-    'custom-minimalist-wedding-welcome-sign': ['Welcome Signs & Signage', 'Wedding Decor & Displays', 'Ceremony Details'],
-    'bespoke-mirrored-acrylic-wedding-welcome-sign': ['Welcome Signs & Signage', 'Wedding Decor & Displays', 'Ceremony Details'],
-    
-    'bespoke-illuminated-script-sign': ['Wedding Decor & Displays', 'Ceremony Details'],
-    
-    'the-heirloom-acrylic-wedding-invitation-suite': ['Stationery & Paper Goods'],
-    'bespoke-handmade-wax-seal-stickers': ['Stationery & Paper Goods', 'Favors & Gifts'],
-    'bespoke-folded-wedding-place-cards': ['Stationery & Paper Goods', 'Tabletop & Barware', 'Day-Of Details'],
-    
-    'bespoke-engraved-stemless-wine-glass-set': ['Tabletop & Barware', 'Bridal Party Gifts', 'Groomsmen Gifts'],
-    'bespoke-engraved-champagne-flute': ['Tabletop & Barware', 'Bridal Party Gifts'],
-    'bespoke-laser-engraved-wedding-shot-glasses': ['Tabletop & Barware', 'Favors & Gifts'],
-    'bespoke-heirloom-whiskey-glass-decanter-collection': ['Tabletop & Barware', 'Groomsmen Gifts', 'Favors & Gifts'],
-    'bespoke-monogram-cocktail-napkins': ['Tabletop & Barware', 'Wedding Decor & Displays'],
-    
-    'bespoke-beers-birdies-neoprene-can-cooler': ['Favors & Gifts', 'Groomsmen Gifts'],
-    'personalized-organic-turkish-cotton-towel': ['Favors & Gifts', 'Bridal Party Gifts'],
-    
-    'bespoke-engraved-compact-mirror': ['Bridal Party Gifts', 'Favors & Gifts', 'Bridal Accessories'],
-    'bespoke-16oz-acrylic-tumbler': ['Bridal Party Gifts', 'Favors & Gifts'],
-    'bespoke-matte-acrylic-tumbler': ['Bridal Party Gifts', 'Favors & Gifts'],
-    'heirloom-corduroy-cosmetic-pouch': ['Bridal Party Gifts', 'Bags & Totes'],
-    
-    'bespoke-personalized-golf-balls': ['Groomsmen Gifts', 'Favors & Gifts'],
-    'bespoke-leather-wrapped-hip-flask': ['Groomsmen Gifts', 'Favors & Gifts'],
-    
-    'bespoke-interlocking-photo-keepsake': ['Wedding Keepsakes', 'Favors & Gifts'],
-    'bespoke-heirloom-guest-book': ['Wedding Keepsakes', 'Wedding Decor & Displays'],
-    
-    'bespoke-satin-bridesmaid-pajama-set': ['Apparel & Sleepwear', 'Bridal Party Gifts'],
-    
-    'bespoke-hand-crocheted-bridal-tote': ['Bags & Totes', 'Bridal Party Gifts', 'Honeymoon'],
-    'bespoke-embroidered-heirloom-canvas-tote': ['Bags & Totes', 'Bridal Party Gifts', 'Favors & Gifts'],
-    
-    'bespoke-wire-script-bridal-hanger': ['Bridal Accessories', 'Bridal Party Gifts', 'Apparel & Sleepwear'],
-    'bespoke-pav-name-necklace': ['Bridal Accessories', 'Bridal Party Gifts', 'Favors & Gifts'],
-    
-    'bespoke-botanical-ceramic-ring-dish': ['Ceremony Details', 'Wedding Keepsakes', 'Bridal Party Gifts'],
-    'personalized-heirloom-wedding-cake-topper': ['Ceremony Details', 'Wedding Decor & Displays', 'Tabletop & Barware']
+    // ═══════════════════════════════════════════════════════════════
+    // SIGNAGE & DISPLAYS
+    // ═══════════════════════════════════════════════════════════════
+    'bespoke-mirrored-acrylic-wedding-welcome-sign': ['Signage & Displays', 'Ceremony & Reception', 'Wedding Keepsakes'],
+    'custom-mirror-acrylic-seating-chart': ['Signage & Displays', 'Ceremony & Reception'],
+
+    // ═══════════════════════════════════════════════════════════════
+    // BARWARE & DRINKWARE
+    // ═══════════════════════════════════════════════════════════════
+    'bespoke-engraved-groomsmen-pint-glass': ['Barware & Drinkware', 'Groomsmen Gifts'],
+    'bespoke-engraved-heirloom-bottle-opener': ['Barware & Drinkware', 'Groomsmen Gifts', 'Favors & Party Extras'],
+    'bespoke-frosted-acrylic-wedding-cups': ['Barware & Drinkware', 'Ceremony & Reception'],
+    'bespoke-acrylic-cocktail-stirrers': ['Barware & Drinkware', 'Ceremony & Reception'],
+    'bespoke-engraved-mini-whiskey-glass': ['Barware & Drinkware', 'Groomsmen Gifts'],
+    'personlaized-wine-glass-custom-wine-glass-wedding-favor': ['Barware & Drinkware', 'Favors & Party Extras'],
+    'personlaized-champagne-glass-custom-champagne-glass-wedding-favor': ['Barware & Drinkware', 'Favors & Party Extras'],
+    'custom-16oz-acrylic-tumbler-personalized-bridal-party-wedding-favor': ['Barware & Drinkware', 'Bridal Party Gifts', 'Favors & Party Extras'],
+    'bespoke-heirloom-photo-whiskey-glass': ['Barware & Drinkware', 'Wedding Keepsakes', 'Groomsmen Gifts'],
+    'bespoke-engraved-crystal-whiskey-glass-keepsake-box-set': ['Barware & Drinkware', 'Groomsmen Gifts', 'Wedding Keepsakes'],
+    'bespoke-engraved-stemless-wine-glass-set': ['Barware & Drinkware', 'Wedding Keepsakes'],
+    'granite-whiskey-stones-set': ['Barware & Drinkware', 'Groomsmen Gifts'],
+    'aromatic-cocktail-bitters': ['Barware & Drinkware', 'Groomsmen Gifts'],
+    'bartenders-bottle-opener-black': ['Barware & Drinkware', 'Groomsmen Gifts'],
+    'leather-wrapped-stainless-steel-flask': ['Barware & Drinkware', 'Groomsmen Gifts'],
+    'gold-heart-wine-stopper-bridal': ['Barware & Drinkware', 'Favors & Party Extras', 'Bridal Party Gifts'],
+
+    // ═══════════════════════════════════════════════════════════════
+    // BRIDAL PARTY GIFTS
+    // ═══════════════════════════════════════════════════════════════
+    'bespoke-botanical-makeup-brush-portfolio': ['Bridal Party Gifts', 'Beauty & Self-Care'],
+    'the-heirloom-mini-velvet-jewelry-case': ['Bridal Party Gifts', 'Jewelry & Accessories'],
+    'bespoke-velvet-heirloom-jewelry-case': ['Bridal Party Gifts', 'Jewelry & Accessories', 'Wedding Keepsakes'],
+    'bespoke-satin-lace-bridal-robe': ['Bridal Party Gifts', 'Apparel & Loungewear'],
+    'bespoke-satin-sleep-collection': ['Bridal Party Gifts', 'Apparel & Loungewear'],
+    'custom-cosmetic-pouch-personalized-bridal-party-gift': ['Bridal Party Gifts', 'Bags & Totes'],
+    'personalized-compact-mirror-custom-heirloom-bridal-gift': ['Bridal Party Gifts', 'Beauty & Self-Care', 'Jewelry & Accessories'],
+    'bespoke-diamond-rosegold-name-necklace-heirloom-script-pendant': ['Bridal Party Gifts', 'Jewelry & Accessories'],
+    'heirloom-satin-scrunchie-set': ['Bridal Party Gifts', 'Beauty & Self-Care'],
+    'mulberry-silk-pillowcase-bridal': ['Bridal Party Gifts', 'Beauty & Self-Care'],
+    'botanical-bath-bomb-trio': ['Bridal Party Gifts', 'Beauty & Self-Care'],
+    'rose-gold-reusable-straw-set': ['Bridal Party Gifts', 'Favors & Party Extras'],
+    'rose-gold-compact-mirror-bridal': ['Bridal Party Gifts', 'Jewelry & Accessories', 'Beauty & Self-Care'],
+    'pearl-embellished-hair-claw-clip': ['Bridal Party Gifts', 'Jewelry & Accessories'],
+    'dainty-pearl-bracelet-bridal': ['Bridal Party Gifts', 'Jewelry & Accessories'],
+    'luxe-satin-sleep-mask': ['Bridal Party Gifts', 'Beauty & Self-Care'],
+    'luxury-botanical-lip-balm-trio': ['Bridal Party Gifts', 'Beauty & Self-Care'],
+    'crystal-glass-nail-file-set': ['Bridal Party Gifts', 'Beauty & Self-Care'],
+    'calm-collect-essential-oil-roller': ['Bridal Party Gifts', 'Beauty & Self-Care'],
+    'champagne-gummy-bears-bridal': ['Bridal Party Gifts', 'Favors & Party Extras'],
+    'botanical-body-lotion-bridal': ['Bridal Party Gifts', 'Beauty & Self-Care'],
+    'rosewater-face-mist-bridal': ['Bridal Party Gifts', 'Beauty & Self-Care'],
+    'floral-tea-sampler-bridal': ['Bridal Party Gifts', 'Beauty & Self-Care'],
+    'rose-petal-hand-cream-bridal': ['Bridal Party Gifts', 'Beauty & Self-Care'],
+
+    // ═══════════════════════════════════════════════════════════════
+    // GROOMSMEN GIFTS
+    // ═══════════════════════════════════════════════════════════════
+    'bespoke-leather-golf-pouch': ['Groomsmen Gifts', 'Favors & Party Extras'],
+    'bespoke-engraved-guitar-capo': ['Groomsmen Gifts', 'Wedding Keepsakes'],
+    'single-cigar-travel-tube-black': ['Groomsmen Gifts'],
+    'zip-recovery-pouch-black': ['Groomsmen Gifts', 'Favors & Party Extras'],
+    'leather-cord-organizer-espresso': ['Groomsmen Gifts'],
+    'minimalist-magnetic-money-clip': ['Groomsmen Gifts'],
+    'premium-sandalwood-pocket-comb': ['Groomsmen Gifts', 'Beauty & Self-Care'],
+    'silk-pocket-square-espresso': ['Groomsmen Gifts', 'Apparel & Loungewear'],
+    'heavyweight-cigar-cutter-black': ['Groomsmen Gifts'],
+    'classic-tie-clip-antique-gold': ['Groomsmen Gifts', 'Jewelry & Accessories'],
+    'premium-foil-stamped-playing-cards': ['Groomsmen Gifts', 'Favors & Party Extras'],
+    'solid-brass-collar-stays-tin': ['Groomsmen Gifts'],
+    'artisan-solid-cologne-tobacco': ['Groomsmen Gifts', 'Beauty & Self-Care'],
+    'morning-after-craft-coffee-beans': ['Groomsmen Gifts', 'Favors & Party Extras'],
+    'woven-shoe-shine-cloth': ['Groomsmen Gifts'],
+    'cedar-wood-shoe-deodorizer-balls': ['Groomsmen Gifts'],
+    'premium-oversized-matchbox-black-gold': ['Groomsmen Gifts', 'Favors & Party Extras'],
+    'travel-size-sleek-lint-roller': ['Groomsmen Gifts'],
+
+    // ═══════════════════════════════════════════════════════════════
+    // WEDDING KEEPSAKES
+    // ═══════════════════════════════════════════════════════════════
+    'bespoke-interlocking-photo-keepsake': ['Wedding Keepsakes', 'Favors & Party Extras'],
+    'bespoke-heirloom-photo-block-puzzle': ['Wedding Keepsakes', 'Favors & Party Extras'],
+    'bespoke-photo-magnet-favours': ['Wedding Keepsakes', 'Favors & Party Extras'],
+    'everlasting-heirloom-rose-set': ['Wedding Keepsakes', 'Ceremony & Reception'],
+    'heirloom-walnut-ring-dish': ['Wedding Keepsakes', 'Jewelry & Accessories', 'Ceremony & Reception'],
+    'linen-wedding-vow-booklet': ['Wedding Keepsakes', 'Ceremony & Reception'],
+    'gold-rimmed-ceramic-jewelry-dish': ['Wedding Keepsakes', 'Jewelry & Accessories'],
+    'custom-ceramic-ring-dish-personalized-heirloom-trinket-tray': ['Wedding Keepsakes', 'Jewelry & Accessories'],
+
+    // ═══════════════════════════════════════════════════════════════
+    // CEREMONY & RECEPTION
+    // ═══════════════════════════════════════════════════════════════
+    'bespoke-satin-place-setting-ribbons': ['Ceremony & Reception', 'Favors & Party Extras'],
+    'bespoke-engraved-wedding-cake-serving-set': ['Ceremony & Reception', 'Wedding Keepsakes'],
+    'bespoke-keepsake-handheld-fan': ['Ceremony & Reception', 'Favors & Party Extras'],
+    'welcome-wedding-box': ['Ceremony & Reception', 'Build Your Box'],
+    'bespoke-gold-gilded-agate-coaster': ['Ceremony & Reception', 'Favors & Party Extras', 'Wedding Keepsakes'],
+
+    // ═══════════════════════════════════════════════════════════════
+    // BAGS & TOTES
+    // ═══════════════════════════════════════════════════════════════
+    'bespoke-canvas-and-burlap-tote': ['Bags & Totes', 'Bridal Party Gifts'],
+    'personalized-hand-crocheted-bridal-tote-beach-bag': ['Bags & Totes', 'Bridal Party Gifts'],
+    'personalized-embroidered-canvas-tote-custom-bridal-party-gift': ['Bags & Totes', 'Bridal Party Gifts'],
+
+    // ═══════════════════════════════════════════════════════════════
+    // JEWELRY & ACCESSORIES
+    // ═══════════════════════════════════════════════════════════════
+    'the-heirloom-botanical-hairbrush': ['Jewelry & Accessories', 'Bridal Party Gifts', 'Beauty & Self-Care'],
+    'luxe-just-married-honeymoon-sunglasses': ['Jewelry & Accessories', 'Favors & Party Extras'],
+
+    // ═══════════════════════════════════════════════════════════════
+    // APPAREL & LOUNGEWEAR
+    // ═══════════════════════════════════════════════════════════════
+    'bespoke-bridal-slipper': ['Apparel & Loungewear', 'Bridal Party Gifts'],
+    'personalized-white-cotton-towel-bespoke-bridal-party-gift-wedding-favor': ['Apparel & Loungewear', 'Bridal Party Gifts', 'Favors & Party Extras'],
+
+    // ═══════════════════════════════════════════════════════════════
+    // BEAUTY & SELF-CARE
+    // ═══════════════════════════════════════════════════════════════
+    'artisan-soy-candle-bridal': ['Beauty & Self-Care', 'Bridal Party Gifts'],
+
+    // ═══════════════════════════════════════════════════════════════
+    // BUILD YOUR BOX (Configurators)
+    // ═══════════════════════════════════════════════════════════════
+    'bridesmaid-box': ['Build Your Box'],
+    'groom-box': ['Build Your Box'],
+
+    // ═══════════════════════════════════════════════════════════════
+    // CONCIERGE (shows in All Products only)
+    // ═══════════════════════════════════════════════════════════════
+    'personal-product-specialist': [],
 };
 
 export function getProductCategories(slug: string): string[] {
-    return PRODUCT_TO_CATEGORIES_MAP[slug] || ['Personalized Details'];
+    const cats = PRODUCT_TO_CATEGORIES_MAP[slug];
+    if (cats && cats.length > 0) return cats;
+    return ['Personalized Details'];
 }
 
 export function getProductCategory(slug: string): string {
