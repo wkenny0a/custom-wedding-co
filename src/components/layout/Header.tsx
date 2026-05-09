@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { Search, ShoppingBag, Menu } from 'lucide-react'
+import { Search, ShoppingBag, Menu, ChevronDown } from 'lucide-react'
 import { MobileDrawer } from './MobileDrawer'
 import { useCart } from '@/context/CartContext'
 
@@ -35,7 +35,18 @@ export function Header() {
                     <nav className="hidden lg:flex items-center gap-5 xl:gap-8 w-1/3">
                         <Link href="/shop" className="font-sans text-[0.8rem] uppercase tracking-widest font-medium hover:text-gold transition-colors">Shop All</Link>
                         <Link href="/shop/bridal-party-gifts" className="font-sans text-[0.8rem] uppercase tracking-widest font-medium hover:text-gold transition-colors">Bridal</Link>
-                        <Link href="/gifts/welcome-gift-box" className="font-sans text-[0.8rem] uppercase tracking-widest font-medium hover:text-gold transition-colors">Welcome Box</Link>
+                        <div className="relative group py-2">
+                            <button className="font-sans text-[0.8rem] uppercase tracking-widest font-medium hover:text-gold transition-colors flex items-center gap-1">
+                                Gift Boxes <ChevronDown size={14} className="group-hover:-rotate-180 transition-transform duration-300" />
+                            </button>
+                            <div className="absolute top-full left-0 pt-2 opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-300">
+                                <div className="bg-cream border border-gold/20 shadow-xl rounded-md py-2 w-48 flex flex-col">
+                                    <Link href="/gifts/bridesmaid-box" className="px-4 py-2.5 font-sans text-xs uppercase tracking-widest hover:bg-gold/5 hover:text-gold transition-colors text-espresso">Bridesmaid Box</Link>
+                                    <Link href="/gifts/groom-box" className="px-4 py-2.5 font-sans text-xs uppercase tracking-widest hover:bg-gold/5 hover:text-gold transition-colors text-espresso">Groomsman Box</Link>
+                                    <Link href="/gifts/welcome-gift-box" className="px-4 py-2.5 font-sans text-xs uppercase tracking-widest hover:bg-gold/5 hover:text-gold transition-colors text-espresso">Welcome Box</Link>
+                                </div>
+                            </div>
+                        </div>
                         <Link href="/shop/welcome-signs-signage" className="font-sans text-[0.8rem] uppercase tracking-widest font-medium hover:text-gold transition-colors">Décor</Link>
                     </nav>
 
