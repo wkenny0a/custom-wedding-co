@@ -20,7 +20,7 @@ export function TrustBar() {
         {
             icon: <Truck className="text-gold w-6 h-6" strokeWidth={1.5} />,
             label: 'Free Shipping',
-            sublabel: 'On orders over $75',
+            sublabel: 'On orders over $99',
         },
         {
             icon: <FileCheck className="text-gold w-6 h-6" strokeWidth={1.5} />,

@@ -127,7 +127,7 @@ export function ProductTabs({ product }: { product: any }) {
                         </div>
                         <div>
                             <h4 className="font-bold text-espresso uppercase tracking-widest text-xs mb-2">Shipping Transit</h4>
-                            <p className="text-sm border-l-2 border-gold/40 pl-4 py-1 italic mb-2">Free Standard Shipping on orders over $75 within the contiguous US.</p>
+                            <p className="text-sm border-l-2 border-gold/40 pl-4 py-1 italic mb-2">Free Standard Shipping on orders over $99 within the contiguous US.</p>
                             <ul className="text-sm space-y-1 list-disc list-inside">
                                 <li>Standard: 3-5 business days</li>
                                 <li>Expedited: 2 business days</li>

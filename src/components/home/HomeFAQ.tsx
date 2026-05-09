@@ -10,7 +10,7 @@ const faqs = [
     },
     {
         question: 'What are your shipping times?',
-        answer: 'Standard orders ship within 5–7 business days after proof approval. We offer rush processing (2–3 business days) for an additional fee. Free shipping is included on all orders over $75 within the continental US.',
+        answer: 'Standard orders ship within 5–7 business days after proof approval. We offer rush processing (2–3 business days) for an additional fee. Free shipping is included on all orders over $99 within the continental US.',
     },
     {
         question: 'Can I see a proof before my order is made?',

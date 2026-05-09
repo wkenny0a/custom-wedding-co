@@ -128,7 +128,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
                 </div>
                 <div className="flex items-center gap-2.5">
                     <Truck className="text-gold w-5 h-5 flex-shrink-0" />
-                    <span className="font-sans text-sm text-espresso font-medium">Free Shipping on Orders $75+</span>
+                    <span className="font-sans text-sm text-espresso font-medium">Free Shipping on Orders $99+</span>
                 </div>
             </div>
         </div>
