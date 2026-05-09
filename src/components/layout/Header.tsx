@@ -35,6 +35,7 @@ export function Header() {
                     <nav className="hidden lg:flex items-center gap-5 xl:gap-8 w-1/3">
                         <Link href="/shop" className="font-sans text-[0.8rem] uppercase tracking-widest font-medium hover:text-gold transition-colors">Shop All</Link>
                         <Link href="/shop/bridal-party-gifts" className="font-sans text-[0.8rem] uppercase tracking-widest font-medium hover:text-gold transition-colors">Bridal</Link>
+                        <Link href="/gifts/welcome-gift-box" className="font-sans text-[0.8rem] uppercase tracking-widest font-medium hover:text-gold transition-colors">Welcome Box</Link>
                         <Link href="/shop/welcome-signs-signage" className="font-sans text-[0.8rem] uppercase tracking-widest font-medium hover:text-gold transition-colors">Décor</Link>
                     </nav>
 

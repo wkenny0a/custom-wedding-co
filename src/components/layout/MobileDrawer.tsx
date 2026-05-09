@@ -43,6 +43,7 @@ export function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
                 <nav className="flex-1 overflow-y-auto p-6 flex flex-col gap-6">
                     <Link href="/shop" onClick={onClose} className="font-serif text-2xl text-espresso hover:text-gold transition-colors">Shop All</Link>
                     <Link href="/shop/bridal-party-gifts" onClick={onClose} className="font-serif text-2xl text-espresso hover:text-gold transition-colors">Bridal Party</Link>
+                    <Link href="/gifts/welcome-gift-box" onClick={onClose} className="font-serif text-2xl text-espresso hover:text-gold transition-colors">Welcome Box</Link>
                     <Link href="/shop/welcome-signs-signage" onClick={onClose} className="font-serif text-2xl text-espresso hover:text-gold transition-colors">Signage & Décor</Link>
                     <Link href="/shop/tabletop-barware" onClick={onClose} className="font-serif text-2xl text-espresso hover:text-gold transition-colors">Tabletop & Bar</Link>
                     <Link href="/shop/favors-gifts" onClick={onClose} className="font-serif text-2xl text-espresso hover:text-gold transition-colors">Wedding Favors</Link>
