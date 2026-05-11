@@ -9,7 +9,7 @@ export function CategoryGrid() {
         { title: 'Favors & Gifts', count: 9, slug: 'favors-gifts', image: '/images/category_favors.png' },
         { title: 'Bridal Party Gifts', count: 11, slug: 'bridal-party-gifts', image: '/images/category_bridesmaid.png' },
         { title: 'Ceremony Details', count: 5, slug: 'ceremony-details', image: '/images/category_cake_toppers.png' },
-        { title: 'Tabletop & Bar', count: 6, slug: 'tabletop-barware', image: '/images/category_table_decor.png' },
+        { title: 'Tabletop & Bar', count: 6, slug: 'barware-drinkware', image: '/images/category_table_decor.png' },
         { title: 'Groomsmen Gifts', count: 5, slug: 'groomsmen-gifts', image: '/images/category_keepsakes.png' },
     ]
 

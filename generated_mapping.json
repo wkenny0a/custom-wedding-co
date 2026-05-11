@@ -1,0 +1,595 @@
+{
+  "welcome-wedding-box": [
+    "wedding-keepsakes"
+  ],
+  "bespoke-bridal-slipper": [
+    "bridal-party-gifts",
+    "wedding-keepsakes",
+    "apparel-loungewear",
+    "beauty-self-care"
+  ],
+  "the-heirloom-botanical-hairbrush": [
+    "signage-displays",
+    "bridal-party-gifts",
+    "wedding-keepsakes",
+    "jewelry-accessories",
+    "beauty-self-care"
+  ],
+  "heirloom-walnut-ring-dish": [
+    "bridal-party-gifts",
+    "wedding-keepsakes",
+    "jewelry-accessories"
+  ],
+  "bespoke-gold-gilded-agate-coaster": [
+    "barware-drinkware",
+    "bridal-party-gifts",
+    "wedding-keepsakes",
+    "ceremony-reception",
+    "favors-party-extras"
+  ],
+  "bespoke-leather-golf-pouch": [
+    "groomsmen-gifts",
+    "wedding-keepsakes",
+    "bags-totes",
+    "favors-party-extras"
+  ],
+  "bespoke-engraved-groomsmen-pint-glass": [
+    "barware-drinkware",
+    "groomsmen-gifts",
+    "wedding-keepsakes",
+    "jewelry-accessories"
+  ],
+  "bespoke-engraved-heirloom-bottle-opener": [
+    "barware-drinkware",
+    "wedding-keepsakes",
+    "favors-party-extras"
+  ],
+  "bespoke-engraved-guitar-capo": [
+    "wedding-keepsakes"
+  ],
+  "bespoke-frosted-acrylic-wedding-cups": [
+    "barware-drinkware",
+    "wedding-keepsakes"
+  ],
+  "bespoke-botanical-makeup-brush-portfolio": [
+    "bridal-party-gifts",
+    "wedding-keepsakes",
+    "bags-totes",
+    "favors-party-extras",
+    "beauty-self-care"
+  ],
+  "the-heirloom-mini-velvet-jewelry-case": [
+    "bridal-party-gifts",
+    "wedding-keepsakes",
+    "jewelry-accessories",
+    "favors-party-extras"
+  ],
+  "bespoke-acrylic-cocktail-stirrers": [
+    "barware-drinkware",
+    "wedding-keepsakes"
+  ],
+  "bespoke-satin-place-setting-ribbons": [
+    "bridal-party-gifts",
+    "wedding-keepsakes",
+    "ceremony-reception",
+    "favors-party-extras",
+    "beauty-self-care"
+  ],
+  "bespoke-velvet-heirloom-jewelry-case": [
+    "bridal-party-gifts",
+    "wedding-keepsakes",
+    "jewelry-accessories"
+  ],
+  "bespoke-engraved-wedding-cake-serving-set": [
+    "bridal-party-gifts",
+    "wedding-keepsakes",
+    "ceremony-reception"
+  ],
+  "bespoke-engraved-mini-whiskey-glass": [
+    "barware-drinkware",
+    "groomsmen-gifts",
+    "wedding-keepsakes"
+  ],
+  "bespoke-satin-lace-bridal-robe": [
+    "bridal-party-gifts",
+    "wedding-keepsakes",
+    "apparel-loungewear"
+  ],
+  "bespoke-satin-sleep-collection": [
+    "bridal-party-gifts",
+    "apparel-loungewear"
+  ],
+  "bespoke-keepsake-handheld-fan": [
+    "bridal-party-gifts",
+    "groomsmen-gifts",
+    "wedding-keepsakes",
+    "ceremony-reception",
+    "favors-party-extras"
+  ],
+  "bespoke-photo-magnet-favours": [
+    "wedding-keepsakes"
+  ],
+  "bespoke-canvas-and-burlap-tote": [
+    "bridal-party-gifts",
+    "groomsmen-gifts",
+    "wedding-keepsakes",
+    "bags-totes",
+    "favors-party-extras"
+  ],
+  "bespoke-heirloom-photo-block-puzzle": [
+    "bridal-party-gifts",
+    "wedding-keepsakes"
+  ],
+  "personlaized-wine-glass-custom-wine-glass-wedding-favor": [
+    "barware-drinkware",
+    "favors-party-extras"
+  ],
+  "custom-cosmetic-pouch-personalized-bridal-party-gift": [
+    "bridal-party-gifts",
+    "bags-totes",
+    "favors-party-extras"
+  ],
+  "personlaized-champagne-glass-custom-champagne-glass-wedding-favor": [
+    "barware-drinkware",
+    "favors-party-extras"
+  ],
+  "custom-16oz-acrylic-tumbler-personalized-bridal-party-wedding-favor": [
+    "barware-drinkware",
+    "bridal-party-gifts",
+    "favors-party-extras"
+  ],
+  "personalized-white-cotton-towel-bespoke-bridal-party-gift-wedding-favor": [
+    "bridal-party-gifts",
+    "apparel-loungewear",
+    "favors-party-extras"
+  ],
+  "custom-ceramic-ring-dish-personalized-heirloom-trinket-tray": [
+    "wedding-keepsakes",
+    "jewelry-accessories"
+  ],
+  "personalized-compact-mirror-custom-heirloom-bridal-gift": [
+    "bridal-party-gifts",
+    "wedding-keepsakes"
+  ],
+  "personalized-hand-crocheted-bridal-tote-beach-bag": [
+    "bridal-party-gifts",
+    "bags-totes"
+  ],
+  "personalized-embroidered-canvas-tote-custom-bridal-party-gift": [
+    "bridal-party-gifts",
+    "bags-totes",
+    "favors-party-extras"
+  ],
+  "bespoke-heirloom-photo-whiskey-glass": [
+    "barware-drinkware",
+    "groomsmen-gifts",
+    "wedding-keepsakes"
+  ],
+  "bespoke-diamond-rosegold-name-necklace-heirloom-script-pendant": [
+    "wedding-keepsakes",
+    "jewelry-accessories"
+  ],
+  "bespoke-engraved-crystal-whiskey-glass-keepsake-box-set": [
+    "barware-drinkware",
+    "groomsmen-gifts",
+    "wedding-keepsakes",
+    "favors-party-extras"
+  ],
+  "travel-size-sleek-lint-roller": [
+    "favors-party-extras"
+  ],
+  "premium-oversized-matchbox-black-gold": [
+    "favors-party-extras",
+    "beauty-self-care"
+  ],
+  "cedar-wood-shoe-deodorizer-balls": [
+    "favors-party-extras"
+  ],
+  "woven-shoe-shine-cloth": [
+    "favors-party-extras"
+  ],
+  "single-cigar-travel-tube-black": [
+    "favors-party-extras"
+  ],
+  "zip-recovery-pouch-black": [
+    "bags-totes"
+  ],
+  "leather-cord-organizer-espresso": [
+    "favors-party-extras"
+  ],
+  "aromatic-cocktail-bitters": [
+    "barware-drinkware"
+  ],
+  "morning-after-craft-coffee-beans": [
+    "favors-party-extras"
+  ],
+  "bartenders-bottle-opener-black": [
+    "barware-drinkware"
+  ],
+  "minimalist-magnetic-money-clip": [
+    "wedding-keepsakes",
+    "jewelry-accessories",
+    "beauty-self-care"
+  ],
+  "premium-sandalwood-pocket-comb": [
+    "beauty-self-care"
+  ],
+  "artisan-solid-cologne-tobacco": [
+    "favors-party-extras"
+  ],
+  "silk-pocket-square-espresso": [
+    "apparel-loungewear"
+  ],
+  "solid-brass-collar-stays-tin": [
+    "favors-party-extras"
+  ],
+  "premium-foil-stamped-playing-cards": [
+    "favors-party-extras",
+    "beauty-self-care"
+  ],
+  "classic-tie-clip-antique-gold": [
+    "jewelry-accessories",
+    "beauty-self-care"
+  ],
+  "heavyweight-cigar-cutter-black": [
+    "favors-party-extras"
+  ],
+  "granite-whiskey-stones-set": [
+    "barware-drinkware",
+    "bags-totes"
+  ],
+  "leather-wrapped-stainless-steel-flask": [
+    "barware-drinkware"
+  ],
+  "groom-box": [
+    "groomsmen-gifts"
+  ],
+  "rose-gold-reusable-straw-set": [
+    "bridal-party-gifts",
+    "wedding-keepsakes",
+    "favors-party-extras"
+  ],
+  "gold-heart-wine-stopper-bridal": [
+    "barware-drinkware",
+    "bridal-party-gifts",
+    "wedding-keepsakes",
+    "favors-party-extras"
+  ],
+  "rose-petal-hand-cream-bridal": [
+    "bridal-party-gifts",
+    "wedding-keepsakes",
+    "ceremony-reception"
+  ],
+  "floral-tea-sampler-bridal": [
+    "bridal-party-gifts",
+    "wedding-keepsakes",
+    "favors-party-extras",
+    "beauty-self-care"
+  ],
+  "rosewater-face-mist-bridal": [
+    "bridal-party-gifts",
+    "wedding-keepsakes",
+    "beauty-self-care"
+  ],
+  "linen-wedding-vow-booklet": [
+    "bridal-party-gifts",
+    "wedding-keepsakes",
+    "ceremony-reception",
+    "beauty-self-care"
+  ],
+  "botanical-body-lotion-bridal": [
+    "bridal-party-gifts",
+    "wedding-keepsakes",
+    "ceremony-reception",
+    "beauty-self-care"
+  ],
+  "champagne-gummy-bears-bridal": [
+    "bridal-party-gifts",
+    "favors-party-extras"
+  ],
+  "dainty-pearl-bracelet-bridal": [
+    "bridal-party-gifts",
+    "jewelry-accessories"
+  ],
+  "mulberry-silk-pillowcase-bridal": [
+    "bridal-party-gifts",
+    "apparel-loungewear"
+  ],
+  "crystal-glass-nail-file-set": [
+    "barware-drinkware",
+    "bridal-party-gifts",
+    "bags-totes",
+    "beauty-self-care"
+  ],
+  "calm-collect-essential-oil-roller": [
+    "bridal-party-gifts",
+    "beauty-self-care"
+  ],
+  "gold-rimmed-ceramic-jewelry-dish": [
+    "bridal-party-gifts",
+    "wedding-keepsakes",
+    "jewelry-accessories"
+  ],
+  "botanical-bath-bomb-trio": [
+    "bridal-party-gifts",
+    "wedding-keepsakes",
+    "jewelry-accessories",
+    "favors-party-extras",
+    "beauty-self-care"
+  ],
+  "pearl-embellished-hair-claw-clip": [
+    "bridal-party-gifts",
+    "jewelry-accessories",
+    "beauty-self-care"
+  ],
+  "rose-gold-compact-mirror-bridal": [
+    "bridal-party-gifts",
+    "wedding-keepsakes",
+    "bags-totes",
+    "favors-party-extras"
+  ],
+  "luxury-botanical-lip-balm-trio": [
+    "bridal-party-gifts",
+    "wedding-keepsakes",
+    "beauty-self-care"
+  ],
+  "luxe-satin-sleep-mask": [
+    "bridal-party-gifts",
+    "apparel-loungewear"
+  ],
+  "artisan-soy-candle-bridal": [
+    "bridal-party-gifts",
+    "favors-party-extras",
+    "beauty-self-care"
+  ],
+  "heirloom-satin-scrunchie-set": [
+    "bridal-party-gifts",
+    "wedding-keepsakes",
+    "jewelry-accessories",
+    "favors-party-extras",
+    "beauty-self-care"
+  ],
+  "bridesmaid-box": [
+    "bridal-party-gifts"
+  ],
+  "digital-wedding-invitation-suite": [
+    "favors-party-extras"
+  ],
+  "bespoke-engraved-cufflinks": [
+    "groomsmen-gifts",
+    "wedding-keepsakes"
+  ],
+  "custom-wedding-matchboxes": [
+    "ceremony-reception",
+    "favors-party-extras",
+    "beauty-self-care"
+  ],
+  "luxury-linen-wedding-planner-binder": [
+    "bridal-party-gifts",
+    "wedding-keepsakes",
+    "beauty-self-care"
+  ],
+  "bespoke-wedding-day-scented-candle": [
+    "bridal-party-gifts",
+    "beauty-self-care"
+  ],
+  "custom-foil-stamped-cocktail-napkins": [
+    "barware-drinkware",
+    "ceremony-reception",
+    "favors-party-extras",
+    "beauty-self-care"
+  ],
+  "mr-mrs-champagne-flute-set": [
+    "barware-drinkware",
+    "ceremony-reception"
+  ],
+  "bridesmaid-proposal-gift-box": [
+    "bridal-party-gifts",
+    "wedding-keepsakes",
+    "favors-party-extras"
+  ],
+  "groomsmen-proposal-gift-box": [
+    "barware-drinkware",
+    "bridal-party-gifts",
+    "groomsmen-gifts",
+    "wedding-keepsakes",
+    "favors-party-extras"
+  ],
+  "mr-mrs-leather-luggage-tag-set": [
+    "bridal-party-gifts",
+    "bags-totes"
+  ],
+  "bespoke-monogram-wax-seal-stickers": [
+    "favors-party-extras"
+  ],
+  "luxe-bridal-emergency-kit": [
+    "bridal-party-gifts"
+  ],
+  "heritage-velvet-ring-box": [
+    "signage-displays",
+    "wedding-keepsakes",
+    "ceremony-reception",
+    "jewelry-accessories"
+  ],
+  "personalized-wedding-coloring-book": [
+    "ceremony-reception",
+    "jewelry-accessories",
+    "favors-party-extras"
+  ],
+  "custom-wedding-vow-art-print": [
+    "wedding-keepsakes"
+  ],
+  "custom-mirror-acrylic-seating-chart": [
+    "signage-displays",
+    "ceremony-reception"
+  ],
+  "everlasting-heirloom-rose-set": [
+    "bridal-party-gifts",
+    "wedding-keepsakes"
+  ],
+  "luxe-just-married-honeymoon-sunglasses": [
+    "barware-drinkware",
+    "bridal-party-gifts",
+    "groomsmen-gifts",
+    "wedding-keepsakes",
+    "jewelry-accessories",
+    "favors-party-extras"
+  ],
+  "personal-product-specialist": [
+    "bridal-party-gifts"
+  ],
+  "bespoke-interlocking-photo-keepsake": [
+    "signage-displays",
+    "wedding-keepsakes"
+  ],
+  "bespoke-mirrored-acrylic-wedding-welcome-sign": [
+    "signage-displays",
+    "wedding-keepsakes"
+  ],
+  "bespoke-engraved-stemless-wine-glass-set": [
+    "barware-drinkware",
+    "bridal-party-gifts",
+    "wedding-keepsakes"
+  ],
+  "the-calia-botanical-welcome-sign": [
+    "signage-displays"
+  ],
+  "bespoke-illuminated-script-sign": [
+    "signage-displays",
+    "wedding-keepsakes",
+    "ceremony-reception"
+  ],
+  "personalized-heirloom-wedding-cake-topper": [
+    "wedding-keepsakes",
+    "ceremony-reception"
+  ],
+  "bespoke-handmade-wax-seal-stickers": [
+    "favors-party-extras"
+  ],
+  "bespoke-botanical-ceramic-ring-dish": [
+    "bridal-party-gifts",
+    "wedding-keepsakes",
+    "jewelry-accessories",
+    "favors-party-extras"
+  ],
+  "bespoke-monogram-cocktail-napkins": [
+    "barware-drinkware",
+    "wedding-keepsakes",
+    "ceremony-reception",
+    "favors-party-extras"
+  ],
+  "bespoke-personalized-golf-balls": [
+    "groomsmen-gifts",
+    "wedding-keepsakes",
+    "favors-party-extras"
+  ],
+  "bespoke-beers-birdies-neoprene-can-cooler": [
+    "groomsmen-gifts",
+    "wedding-keepsakes",
+    "favors-party-extras"
+  ],
+  "heirloom-corduroy-cosmetic-pouch": [
+    "bridal-party-gifts",
+    "wedding-keepsakes",
+    "bags-totes",
+    "favors-party-extras"
+  ],
+  "bespoke-leather-wrapped-hip-flask": [
+    "barware-drinkware",
+    "bridal-party-gifts",
+    "groomsmen-gifts",
+    "wedding-keepsakes"
+  ],
+  "bespoke-engraved-compact-mirror": [
+    "bridal-party-gifts",
+    "wedding-keepsakes",
+    "favors-party-extras"
+  ],
+  "bespoke-16oz-acrylic-tumbler": [
+    "barware-drinkware",
+    "bridal-party-gifts",
+    "groomsmen-gifts",
+    "favors-party-extras"
+  ],
+  "bespoke-matte-acrylic-tumbler": [
+    "barware-drinkware",
+    "bridal-party-gifts",
+    "wedding-keepsakes",
+    "favors-party-extras"
+  ],
+  "bespoke-hand-crocheted-bridal-tote": [
+    "bridal-party-gifts",
+    "groomsmen-gifts",
+    "wedding-keepsakes",
+    "bags-totes"
+  ],
+  "bespoke-engraved-champagne-flute": [
+    "barware-drinkware",
+    "bridal-party-gifts",
+    "wedding-keepsakes",
+    "favors-party-extras"
+  ],
+  "bespoke-embroidered-heirloom-canvas-tote": [
+    "bridal-party-gifts",
+    "wedding-keepsakes",
+    "bags-totes",
+    "favors-party-extras"
+  ],
+  "personalized-organic-turkish-cotton-towel": [
+    "bridal-party-gifts",
+    "wedding-keepsakes",
+    "apparel-loungewear",
+    "favors-party-extras"
+  ],
+  "bespoke-satin-bridesmaid-pajama-set": [
+    "bridal-party-gifts",
+    "apparel-loungewear",
+    "favors-party-extras"
+  ],
+  "bespoke-heirloom-whiskey-glass-decanter-collection": [
+    "barware-drinkware",
+    "bridal-party-gifts",
+    "groomsmen-gifts",
+    "wedding-keepsakes",
+    "favors-party-extras"
+  ],
+  "the-heirloom-acrylic-wedding-invitation-suite": [
+    "wedding-keepsakes",
+    "beauty-self-care"
+  ],
+  "bespoke-wire-script-bridal-hanger": [
+    "bridal-party-gifts",
+    "wedding-keepsakes"
+  ],
+  "bespoke-folded-wedding-place-cards": [
+    "signage-displays",
+    "wedding-keepsakes",
+    "ceremony-reception",
+    "favors-party-extras"
+  ],
+  "bespoke-laser-engraved-wedding-shot-glasses": [
+    "barware-drinkware",
+    "wedding-keepsakes",
+    "ceremony-reception",
+    "favors-party-extras"
+  ],
+  "bespoke-engraved-wooden-bridal-hangers": [
+    "bridal-party-gifts",
+    "wedding-keepsakes",
+    "favors-party-extras"
+  ],
+  "bespoke-pav-name-necklace": [
+    "bridal-party-gifts",
+    "wedding-keepsakes",
+    "jewelry-accessories"
+  ],
+  "bespoke-heirloom-guest-book": [
+    "signage-displays",
+    "wedding-keepsakes",
+    "ceremony-reception",
+    "beauty-self-care"
+  ],
+  "custom-minimalist-wedding-welcome-sign": [
+    "signage-displays"
+  ]
+}

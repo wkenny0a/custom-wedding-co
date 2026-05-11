@@ -29,7 +29,7 @@ export function Footer() {
                     <h4 className="font-sans font-bold uppercase tracking-widest text-sm mb-2 text-gold">Shop</h4>
                     <Link href="/shop/welcome-signs-signage" className="font-sans text-sm hover:text-gold transition-colors">Welcome Signs</Link>
                     <Link href="/shop/stationery-paper-goods" className="font-sans text-sm hover:text-gold transition-colors">Stationery & Paper</Link>
-                    <Link href="/shop/tabletop-barware" className="font-sans text-sm hover:text-gold transition-colors">Tabletop & Barware</Link>
+                    <Link href="/shop/barware-drinkware" className="font-sans text-sm hover:text-gold transition-colors">Tabletop & Barware</Link>
                     <Link href="/shop/bridal-party-gifts" className="font-sans text-sm hover:text-gold transition-colors">Bridal Party Gifts</Link>
                     <Link href="/shop/groomsmen-gifts" className="font-sans text-sm hover:text-gold transition-colors">Groomsmen Gifts</Link>
                     <Link href="/shop/wedding-keepsakes" className="font-sans text-sm hover:text-gold transition-colors">Wedding Keepsakes</Link>
