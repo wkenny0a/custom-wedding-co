@@ -7,6 +7,8 @@ export const metadata: Metadata = {
   description: 'Design the perfect personalized bridesmaid gift box in 3 steps. Choose your box color, add a heartfelt inner lid message, and curate luxury items. Free personalization · Ships in 5–7 days.',
 };
 
+export const dynamic = 'force-dynamic';
+
 export default async function BridesmaidBoxPage() {
   const [result, baseBox] = await Promise.all([
     getProducts({ category: 'bridesmaid-box' }),

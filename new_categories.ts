@@ -1,18 +1,3 @@
-export const WEDDING_CATEGORIES = [
-    'Signage & Displays',
-    'Barware & Drinkware',
-    'Bridal Party Gifts',
-    'Groomsmen Gifts',
-    'Wedding Keepsakes',
-    'Ceremony & Reception',
-    'Bags & Totes',
-    'Jewelry & Accessories',
-    'Apparel & Loungewear',
-    'Favors & Party Extras',
-    'Beauty & Self-Care',
-];
-
-
 export const PRODUCT_TO_RELATED_MAP: Record<string, string[]> = {
     "welcome-wedding-box": [
         "bespoke-mirrored-acrylic-wedding-welcome-sign",

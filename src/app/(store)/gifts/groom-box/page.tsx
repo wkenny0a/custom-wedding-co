@@ -3,11 +3,13 @@ import { getProducts, getLowestDisplayPrice, getProductBySlug } from '@/lib/swel
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Build Your Groom Box | Custom Wedding Co.',
-  description: 'Design the perfect personalized groom box.',
+  title: 'Custom Groomsman Box | Bulk Event Favors | Custom Wedding Co.',
+  description: 'Design personalized groomsmen boxes. Choose a lid design, add names or initials, and fill with curated gifts. Volume discounts up to 50% off.',
 };
 
-export default async function GroomBoxPage() {
+export const dynamic = 'force-dynamic';
+
+export default async function GroomsmanBoxPage() {
   const [result, baseBox] = await Promise.all([
     getProducts({ category: 'groom-box' }),
     getProductBySlug('groom-box')
