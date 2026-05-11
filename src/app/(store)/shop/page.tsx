@@ -2,8 +2,6 @@ import { Suspense } from 'react'
 import { ShopCatalog } from '@/components/shop/ShopCatalog'
 import { getProducts, getLowestDisplayPrice } from '@/lib/swell'
 
-import { getProductCategory } from '@/lib/categories'
-
 export const dynamic = 'force-dynamic'
 
 export const metadata = {
@@ -16,14 +14,12 @@ export default async function ShopPage() {
     const swellProducts = swellProductsResponse?.results || [];
 
     // Map Swell product schema to our ProductCard component schema
-    // In a real app we would use explicit types, but this maps the basic requirements
     const formattedProducts = swellProducts.map((p: any) => ({
         _id: p.id,
         name: p.name,
         slug: { current: p.slug },
         price: getLowestDisplayPrice(p),
-        category: { title: getProductCategory(p.slug) },
-        // Calculate dummy rating data for UI completeness
+        category: { title: 'Personalized Details' },
         rating: [4.6, 4.7, 4.8, 4.9, 4.8, 4.7, 4.9, 4.8][p.slug.length % 8],
         reviewCount: ((p.slug.charCodeAt(0) * 7 + p.slug.length * 13) % 176) + 12,
         images: p.images || []
@@ -34,7 +30,6 @@ export default async function ShopPage() {
             <div className="w-full text-center py-4 bg-red-100 text-red-800 text-xs hidden">
                 DEBUG INFO: missing_keys={String(swellProductsResponse?._debug_missing_keys)} | error={String(swellProductsResponse?._debug_error)}
             </div>
-            {/* Show visible debug on failure */}
             {(swellProductsResponse?._debug_missing_keys || swellProductsResponse?._debug_error) && (
                 <div className="w-full text-center py-4 bg-red-100 text-red-800 font-bold mb-4">
                     Vercel Debug Info: Missing Keys? {String(swellProductsResponse?._debug_missing_keys)}, Fetch Error Status: {String(swellProductsResponse?._debug_error)}

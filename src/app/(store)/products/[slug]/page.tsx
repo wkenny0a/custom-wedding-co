@@ -7,7 +7,7 @@ import { getProducts, getLowestDisplayPrice } from '@/lib/swell'
 import { client } from '@/sanity/lib/client'
 import { productBySlugQuery } from '@/sanity/lib/queries'
 import { ShieldCheck, Clock, Truck } from 'lucide-react'
-import { getProductCategory, getRelatedProductSlugs } from '@/lib/categories'
+import { getRelatedProductSlugs } from '@/lib/categories'
 
 export const metadata = {
     title: 'Product Details | Custom Wedding Co.',
@@ -86,7 +86,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
         priceRange: `$${lowestComputedPrice.toFixed(2)}`,
         priceNote: '',
         badge: sanityProduct?.badge || 'Popular',
-        category: { title: getProductCategory(slug) },
+        category: { title: 'Personalized Details' },
         rating: [4.7, 4.8, 4.9, 4.6, 4.8, 4.9, 4.7, 4.8][swellProduct.slug.length % 8],
         reviewCount: ((swellProduct.slug.charCodeAt(0) * 7 + swellProduct.slug.length * 13) % 176) + 12,
         images: swellProduct.images || [],

@@ -10,183 +10,510 @@ export const WEDDING_CATEGORIES = [
     'Apparel & Loungewear',
     'Favors & Party Extras',
     'Beauty & Self-Care',
-    'Build Your Box',
 ];
 
-export const PRODUCT_TO_CATEGORIES_MAP: Record<string, string[]> = {
-    // ═══════════════════════════════════════════════════════════════
-    // SIGNAGE & DISPLAYS
-    // ═══════════════════════════════════════════════════════════════
-    'bespoke-mirrored-acrylic-wedding-welcome-sign': ['Signage & Displays', 'Ceremony & Reception', 'Wedding Keepsakes'],
-    'custom-mirror-acrylic-seating-chart': ['Signage & Displays', 'Ceremony & Reception'],
 
-    // ═══════════════════════════════════════════════════════════════
-    // BARWARE & DRINKWARE
-    // ═══════════════════════════════════════════════════════════════
-    'bespoke-engraved-groomsmen-pint-glass': ['Barware & Drinkware', 'Groomsmen Gifts'],
-    'bespoke-engraved-heirloom-bottle-opener': ['Barware & Drinkware', 'Groomsmen Gifts', 'Favors & Party Extras'],
-    'bespoke-frosted-acrylic-wedding-cups': ['Barware & Drinkware', 'Ceremony & Reception'],
-    'bespoke-acrylic-cocktail-stirrers': ['Barware & Drinkware', 'Ceremony & Reception'],
-    'bespoke-engraved-mini-whiskey-glass': ['Barware & Drinkware', 'Groomsmen Gifts'],
-    'personlaized-wine-glass-custom-wine-glass-wedding-favor': ['Barware & Drinkware', 'Favors & Party Extras'],
-    'personlaized-champagne-glass-custom-champagne-glass-wedding-favor': ['Barware & Drinkware', 'Favors & Party Extras'],
-    'custom-16oz-acrylic-tumbler-personalized-bridal-party-wedding-favor': ['Barware & Drinkware', 'Bridal Party Gifts', 'Favors & Party Extras'],
-    'bespoke-heirloom-photo-whiskey-glass': ['Barware & Drinkware', 'Wedding Keepsakes', 'Groomsmen Gifts'],
-    'bespoke-engraved-crystal-whiskey-glass-keepsake-box-set': ['Barware & Drinkware', 'Groomsmen Gifts', 'Wedding Keepsakes'],
-    'bespoke-engraved-stemless-wine-glass-set': ['Barware & Drinkware', 'Wedding Keepsakes'],
-    'granite-whiskey-stones-set': ['Barware & Drinkware', 'Groomsmen Gifts'],
-    'aromatic-cocktail-bitters': ['Barware & Drinkware', 'Groomsmen Gifts'],
-    'bartenders-bottle-opener-black': ['Barware & Drinkware', 'Groomsmen Gifts'],
-    'leather-wrapped-stainless-steel-flask': ['Barware & Drinkware', 'Groomsmen Gifts'],
-    'gold-heart-wine-stopper-bridal': ['Barware & Drinkware', 'Favors & Party Extras', 'Bridal Party Gifts'],
-
-    // ═══════════════════════════════════════════════════════════════
-    // BRIDAL PARTY GIFTS
-    // ═══════════════════════════════════════════════════════════════
-    'bespoke-botanical-makeup-brush-portfolio': ['Bridal Party Gifts', 'Beauty & Self-Care'],
-    'the-heirloom-mini-velvet-jewelry-case': ['Bridal Party Gifts', 'Jewelry & Accessories'],
-    'bespoke-velvet-heirloom-jewelry-case': ['Bridal Party Gifts', 'Jewelry & Accessories', 'Wedding Keepsakes'],
-    'bespoke-satin-lace-bridal-robe': ['Bridal Party Gifts', 'Apparel & Loungewear'],
-    'bespoke-satin-sleep-collection': ['Bridal Party Gifts', 'Apparel & Loungewear'],
-    'custom-cosmetic-pouch-personalized-bridal-party-gift': ['Bridal Party Gifts', 'Bags & Totes'],
-    'personalized-compact-mirror-custom-heirloom-bridal-gift': ['Bridal Party Gifts', 'Beauty & Self-Care', 'Jewelry & Accessories'],
-    'bespoke-diamond-rosegold-name-necklace-heirloom-script-pendant': ['Bridal Party Gifts', 'Jewelry & Accessories'],
-    'heirloom-satin-scrunchie-set': ['Bridal Party Gifts', 'Beauty & Self-Care'],
-    'mulberry-silk-pillowcase-bridal': ['Bridal Party Gifts', 'Beauty & Self-Care'],
-    'botanical-bath-bomb-trio': ['Bridal Party Gifts', 'Beauty & Self-Care'],
-    'rose-gold-reusable-straw-set': ['Bridal Party Gifts', 'Favors & Party Extras'],
-    'rose-gold-compact-mirror-bridal': ['Bridal Party Gifts', 'Jewelry & Accessories', 'Beauty & Self-Care'],
-    'pearl-embellished-hair-claw-clip': ['Bridal Party Gifts', 'Jewelry & Accessories'],
-    'dainty-pearl-bracelet-bridal': ['Bridal Party Gifts', 'Jewelry & Accessories'],
-    'luxe-satin-sleep-mask': ['Bridal Party Gifts', 'Beauty & Self-Care'],
-    'luxury-botanical-lip-balm-trio': ['Bridal Party Gifts', 'Beauty & Self-Care'],
-    'crystal-glass-nail-file-set': ['Bridal Party Gifts', 'Beauty & Self-Care'],
-    'calm-collect-essential-oil-roller': ['Bridal Party Gifts', 'Beauty & Self-Care'],
-    'champagne-gummy-bears-bridal': ['Bridal Party Gifts', 'Favors & Party Extras'],
-    'botanical-body-lotion-bridal': ['Bridal Party Gifts', 'Beauty & Self-Care'],
-    'rosewater-face-mist-bridal': ['Bridal Party Gifts', 'Beauty & Self-Care'],
-    'floral-tea-sampler-bridal': ['Bridal Party Gifts', 'Beauty & Self-Care'],
-    'rose-petal-hand-cream-bridal': ['Bridal Party Gifts', 'Beauty & Self-Care'],
-
-    // ═══════════════════════════════════════════════════════════════
-    // GROOMSMEN GIFTS
-    // ═══════════════════════════════════════════════════════════════
-    'bespoke-leather-golf-pouch': ['Groomsmen Gifts', 'Favors & Party Extras'],
-    'bespoke-engraved-guitar-capo': ['Groomsmen Gifts', 'Wedding Keepsakes'],
-    'single-cigar-travel-tube-black': ['Groomsmen Gifts'],
-    'zip-recovery-pouch-black': ['Groomsmen Gifts', 'Favors & Party Extras'],
-    'leather-cord-organizer-espresso': ['Groomsmen Gifts'],
-    'minimalist-magnetic-money-clip': ['Groomsmen Gifts'],
-    'premium-sandalwood-pocket-comb': ['Groomsmen Gifts', 'Beauty & Self-Care'],
-    'silk-pocket-square-espresso': ['Groomsmen Gifts', 'Apparel & Loungewear'],
-    'heavyweight-cigar-cutter-black': ['Groomsmen Gifts'],
-    'classic-tie-clip-antique-gold': ['Groomsmen Gifts', 'Jewelry & Accessories'],
-    'premium-foil-stamped-playing-cards': ['Groomsmen Gifts', 'Favors & Party Extras'],
-    'solid-brass-collar-stays-tin': ['Groomsmen Gifts'],
-    'artisan-solid-cologne-tobacco': ['Groomsmen Gifts', 'Beauty & Self-Care'],
-    'morning-after-craft-coffee-beans': ['Groomsmen Gifts', 'Favors & Party Extras'],
-    'woven-shoe-shine-cloth': ['Groomsmen Gifts'],
-    'cedar-wood-shoe-deodorizer-balls': ['Groomsmen Gifts'],
-    'premium-oversized-matchbox-black-gold': ['Groomsmen Gifts', 'Favors & Party Extras'],
-    'travel-size-sleek-lint-roller': ['Groomsmen Gifts'],
-
-    // ═══════════════════════════════════════════════════════════════
-    // WEDDING KEEPSAKES
-    // ═══════════════════════════════════════════════════════════════
-    'bespoke-interlocking-photo-keepsake': ['Wedding Keepsakes', 'Favors & Party Extras'],
-    'bespoke-heirloom-photo-block-puzzle': ['Wedding Keepsakes', 'Favors & Party Extras'],
-    'bespoke-photo-magnet-favours': ['Wedding Keepsakes', 'Favors & Party Extras'],
-    'everlasting-heirloom-rose-set': ['Wedding Keepsakes', 'Ceremony & Reception'],
-    'heirloom-walnut-ring-dish': ['Wedding Keepsakes', 'Jewelry & Accessories', 'Ceremony & Reception'],
-    'linen-wedding-vow-booklet': ['Wedding Keepsakes', 'Ceremony & Reception'],
-    'gold-rimmed-ceramic-jewelry-dish': ['Wedding Keepsakes', 'Jewelry & Accessories'],
-    'custom-ceramic-ring-dish-personalized-heirloom-trinket-tray': ['Wedding Keepsakes', 'Jewelry & Accessories'],
-
-    // ═══════════════════════════════════════════════════════════════
-    // CEREMONY & RECEPTION
-    // ═══════════════════════════════════════════════════════════════
-    'bespoke-satin-place-setting-ribbons': ['Ceremony & Reception', 'Favors & Party Extras'],
-    'bespoke-engraved-wedding-cake-serving-set': ['Ceremony & Reception', 'Wedding Keepsakes'],
-    'bespoke-keepsake-handheld-fan': ['Ceremony & Reception', 'Favors & Party Extras'],
-    'welcome-wedding-box': ['Ceremony & Reception', 'Build Your Box'],
-    'bespoke-gold-gilded-agate-coaster': ['Ceremony & Reception', 'Favors & Party Extras', 'Wedding Keepsakes'],
-
-    // ═══════════════════════════════════════════════════════════════
-    // BAGS & TOTES
-    // ═══════════════════════════════════════════════════════════════
-    'bespoke-canvas-and-burlap-tote': ['Bags & Totes', 'Bridal Party Gifts'],
-    'personalized-hand-crocheted-bridal-tote-beach-bag': ['Bags & Totes', 'Bridal Party Gifts'],
-    'personalized-embroidered-canvas-tote-custom-bridal-party-gift': ['Bags & Totes', 'Bridal Party Gifts'],
-
-    // ═══════════════════════════════════════════════════════════════
-    // JEWELRY & ACCESSORIES
-    // ═══════════════════════════════════════════════════════════════
-    'the-heirloom-botanical-hairbrush': ['Jewelry & Accessories', 'Bridal Party Gifts', 'Beauty & Self-Care'],
-    'luxe-just-married-honeymoon-sunglasses': ['Jewelry & Accessories', 'Favors & Party Extras'],
-
-    // ═══════════════════════════════════════════════════════════════
-    // APPAREL & LOUNGEWEAR
-    // ═══════════════════════════════════════════════════════════════
-    'bespoke-bridal-slipper': ['Apparel & Loungewear', 'Bridal Party Gifts'],
-    'personalized-white-cotton-towel-bespoke-bridal-party-gift-wedding-favor': ['Apparel & Loungewear', 'Bridal Party Gifts', 'Favors & Party Extras'],
-
-    // ═══════════════════════════════════════════════════════════════
-    // BEAUTY & SELF-CARE
-    // ═══════════════════════════════════════════════════════════════
-    'artisan-soy-candle-bridal': ['Beauty & Self-Care', 'Bridal Party Gifts'],
-
-    // ═══════════════════════════════════════════════════════════════
-    // BUILD YOUR BOX (Configurators)
-    // ═══════════════════════════════════════════════════════════════
-    'bridesmaid-box': ['Build Your Box'],
-    'groom-box': ['Build Your Box'],
-
-    // ═══════════════════════════════════════════════════════════════
-    // CONCIERGE (shows in All Products only)
-    // ═══════════════════════════════════════════════════════════════
-    'personal-product-specialist': [],
-};
-
-export function getProductCategories(slug: string): string[] {
-    const cats = PRODUCT_TO_CATEGORIES_MAP[slug];
-    if (cats && cats.length > 0) return cats;
-    return ['Personalized Details'];
-}
-
-export function getProductCategory(slug: string): string {
-    const cats = getProductCategories(slug);
-    return cats[0];
-}
 
 export const PRODUCT_TO_RELATED_MAP: Record<string, string[]> = {
-    'custom-minimalist-wedding-welcome-sign': ['bespoke-mirrored-acrylic-wedding-welcome-sign', 'bespoke-illuminated-script-sign', 'bespoke-folded-wedding-place-cards', 'bespoke-heirloom-guest-book'],
-    'bespoke-mirrored-acrylic-wedding-welcome-sign': ['custom-minimalist-wedding-welcome-sign', 'bespoke-illuminated-script-sign', 'bespoke-folded-wedding-place-cards', 'bespoke-heirloom-guest-book'],
-    'bespoke-illuminated-script-sign': ['custom-minimalist-wedding-welcome-sign', 'bespoke-mirrored-acrylic-wedding-welcome-sign', 'bespoke-folded-wedding-place-cards', 'bespoke-heirloom-guest-book'],
-    'the-heirloom-acrylic-wedding-invitation-suite': ['bespoke-handmade-wax-seal-stickers', 'bespoke-folded-wedding-place-cards', 'bespoke-monogram-cocktail-napkins', 'custom-minimalist-wedding-welcome-sign'],
-    'bespoke-handmade-wax-seal-stickers': ['the-heirloom-acrylic-wedding-invitation-suite', 'bespoke-folded-wedding-place-cards', 'bespoke-interlocking-photo-keepsake', 'bespoke-botanical-ceramic-ring-dish'],
-    'bespoke-folded-wedding-place-cards': ['the-heirloom-acrylic-wedding-invitation-suite', 'custom-minimalist-wedding-welcome-sign', 'bespoke-monogram-cocktail-napkins', 'bespoke-engraved-stemless-wine-glass-set'],
-    'bespoke-engraved-stemless-wine-glass-set': ['bespoke-engraved-champagne-flute', 'bespoke-monogram-cocktail-napkins', 'bespoke-heirloom-whiskey-glass-decanter-collection', 'bespoke-laser-engraved-wedding-shot-glasses'],
-    'bespoke-engraved-champagne-flute': ['bespoke-engraved-stemless-wine-glass-set', 'bespoke-monogram-cocktail-napkins', 'bespoke-laser-engraved-wedding-shot-glasses', 'personalized-heirloom-wedding-cake-topper'],
-    'bespoke-laser-engraved-wedding-shot-glasses': ['bespoke-engraved-champagne-flute', 'bespoke-beers-birdies-neoprene-can-cooler', 'bespoke-leather-wrapped-hip-flask', 'bespoke-engraved-stemless-wine-glass-set'],
-    'bespoke-heirloom-whiskey-glass-decanter-collection': ['bespoke-leather-wrapped-hip-flask', 'bespoke-personalized-golf-balls', 'bespoke-engraved-stemless-wine-glass-set', 'bespoke-laser-engraved-wedding-shot-glasses'],
-    'bespoke-monogram-cocktail-napkins': ['bespoke-engraved-champagne-flute', 'bespoke-engraved-stemless-wine-glass-set', 'bespoke-folded-wedding-place-cards', 'personalized-heirloom-wedding-cake-topper'],
-    'bespoke-beers-birdies-neoprene-can-cooler': ['bespoke-personalized-golf-balls', 'bespoke-leather-wrapped-hip-flask', 'bespoke-heirloom-whiskey-glass-decanter-collection', 'bespoke-laser-engraved-wedding-shot-glasses'],
-    'personalized-organic-turkish-cotton-towel': ['bespoke-embroidered-heirloom-canvas-tote', 'heirloom-corduroy-cosmetic-pouch', 'bespoke-satin-bridesmaid-pajama-set', 'bespoke-16oz-acrylic-tumbler'],
-    'bespoke-engraved-compact-mirror': ['heirloom-corduroy-cosmetic-pouch', 'bespoke-16oz-acrylic-tumbler', 'bespoke-pav-name-necklace', 'bespoke-wire-script-bridal-hanger'],
-    'bespoke-16oz-acrylic-tumbler': ['bespoke-matte-acrylic-tumbler', 'bespoke-satin-bridesmaid-pajama-set', 'heirloom-corduroy-cosmetic-pouch', 'bespoke-engraved-compact-mirror'],
-    'bespoke-matte-acrylic-tumbler': ['bespoke-16oz-acrylic-tumbler', 'bespoke-satin-bridesmaid-pajama-set', 'heirloom-corduroy-cosmetic-pouch', 'bespoke-engraved-compact-mirror'],
-    'heirloom-corduroy-cosmetic-pouch': ['bespoke-engraved-compact-mirror', 'bespoke-16oz-acrylic-tumbler', 'bespoke-satin-bridesmaid-pajama-set', 'bespoke-embroidered-heirloom-canvas-tote'],
-    'bespoke-personalized-golf-balls': ['bespoke-leather-wrapped-hip-flask', 'bespoke-beers-birdies-neoprene-can-cooler', 'bespoke-heirloom-whiskey-glass-decanter-collection', 'bespoke-laser-engraved-wedding-shot-glasses'],
-    'bespoke-leather-wrapped-hip-flask': ['bespoke-personalized-golf-balls', 'bespoke-heirloom-whiskey-glass-decanter-collection', 'bespoke-laser-engraved-wedding-shot-glasses', 'bespoke-beers-birdies-neoprene-can-cooler'],
-    'bespoke-interlocking-photo-keepsake': ['bespoke-heirloom-guest-book', 'bespoke-botanical-ceramic-ring-dish', 'bespoke-handmade-wax-seal-stickers', 'bespoke-pav-name-necklace'],
-    'bespoke-heirloom-guest-book': ['bespoke-interlocking-photo-keepsake', 'personalized-heirloom-wedding-cake-topper', 'bespoke-botanical-ceramic-ring-dish', 'custom-minimalist-wedding-welcome-sign'],
-    'bespoke-satin-bridesmaid-pajama-set': ['bespoke-wire-script-bridal-hanger', 'heirloom-corduroy-cosmetic-pouch', 'bespoke-16oz-acrylic-tumbler', 'bespoke-embroidered-heirloom-canvas-tote'],
-    'bespoke-hand-crocheted-bridal-tote': ['bespoke-embroidered-heirloom-canvas-tote', 'personalized-organic-turkish-cotton-towel', 'bespoke-satin-bridesmaid-pajama-set', 'heirloom-corduroy-cosmetic-pouch'],
-    'bespoke-embroidered-heirloom-canvas-tote': ['bespoke-hand-crocheted-bridal-tote', 'personalized-organic-turkish-cotton-towel', 'bespoke-satin-bridesmaid-pajama-set', 'heirloom-corduroy-cosmetic-pouch'],
-    'bespoke-wire-script-bridal-hanger': ['bespoke-satin-bridesmaid-pajama-set', 'bespoke-pav-name-necklace', 'bespoke-engraved-compact-mirror', 'bespoke-botanical-ceramic-ring-dish'],
-    'bespoke-pav-name-necklace': ['bespoke-wire-script-bridal-hanger', 'bespoke-engraved-compact-mirror', 'bespoke-botanical-ceramic-ring-dish', 'bespoke-interlocking-photo-keepsake'],
-    'bespoke-botanical-ceramic-ring-dish': ['bespoke-pav-name-necklace', 'bespoke-heirloom-guest-book', 'bespoke-interlocking-photo-keepsake', 'bespoke-wire-script-bridal-hanger'],
-    'personalized-heirloom-wedding-cake-topper': ['custom-minimalist-wedding-welcome-sign', 'bespoke-engraved-champagne-flute', 'bespoke-monogram-cocktail-napkins', 'bespoke-heirloom-guest-book']
+    "bespoke-mirrored-acrylic-wedding-welcome-sign": [
+        "custom-mirror-acrylic-seating-chart",
+        "everlasting-heirloom-rose-set",
+        "heirloom-walnut-ring-dish",
+        "linen-wedding-vow-booklet"
+    ],
+    "custom-mirror-acrylic-seating-chart": [
+        "bespoke-mirrored-acrylic-wedding-welcome-sign",
+        "everlasting-heirloom-rose-set",
+        "linen-wedding-vow-booklet",
+        "bespoke-engraved-wedding-cake-serving-set"
+    ],
+    "bespoke-engraved-groomsmen-pint-glass": [
+        "bespoke-engraved-heirloom-bottle-opener",
+        "bespoke-engraved-mini-whiskey-glass",
+        "bespoke-heirloom-photo-whiskey-glass",
+        "bespoke-engraved-crystal-whiskey-glass-keepsake-box-set"
+    ],
+    "bespoke-engraved-heirloom-bottle-opener": [
+        "bespoke-engraved-groomsmen-pint-glass",
+        "bespoke-engraved-mini-whiskey-glass",
+        "bespoke-heirloom-photo-whiskey-glass",
+        "bespoke-engraved-crystal-whiskey-glass-keepsake-box-set"
+    ],
+    "bespoke-frosted-acrylic-wedding-cups": [
+        "bespoke-acrylic-cocktail-stirrers",
+        "custom-mirror-acrylic-seating-chart",
+        "bespoke-satin-place-setting-ribbons",
+        "bespoke-engraved-wedding-cake-serving-set"
+    ],
+    "bespoke-acrylic-cocktail-stirrers": [
+        "bespoke-frosted-acrylic-wedding-cups",
+        "custom-mirror-acrylic-seating-chart",
+        "bespoke-satin-place-setting-ribbons",
+        "bespoke-engraved-wedding-cake-serving-set"
+    ],
+    "bespoke-engraved-mini-whiskey-glass": [
+        "bespoke-engraved-groomsmen-pint-glass",
+        "bespoke-engraved-heirloom-bottle-opener",
+        "bespoke-heirloom-photo-whiskey-glass",
+        "bespoke-engraved-crystal-whiskey-glass-keepsake-box-set"
+    ],
+    "personlaized-wine-glass-custom-wine-glass-wedding-favor": [
+        "personlaized-champagne-glass-custom-champagne-glass-wedding-favor",
+        "custom-16oz-acrylic-tumbler-personalized-bridal-party-wedding-favor",
+        "bespoke-engraved-heirloom-bottle-opener",
+        "gold-heart-wine-stopper-bridal"
+    ],
+    "personlaized-champagne-glass-custom-champagne-glass-wedding-favor": [
+        "personlaized-wine-glass-custom-wine-glass-wedding-favor",
+        "custom-16oz-acrylic-tumbler-personalized-bridal-party-wedding-favor",
+        "bespoke-engraved-heirloom-bottle-opener",
+        "gold-heart-wine-stopper-bridal"
+    ],
+    "custom-16oz-acrylic-tumbler-personalized-bridal-party-wedding-favor": [
+        "personlaized-wine-glass-custom-wine-glass-wedding-favor",
+        "personlaized-champagne-glass-custom-champagne-glass-wedding-favor",
+        "gold-heart-wine-stopper-bridal",
+        "bespoke-botanical-makeup-brush-portfolio"
+    ],
+    "bespoke-heirloom-photo-whiskey-glass": [
+        "bespoke-engraved-crystal-whiskey-glass-keepsake-box-set",
+        "bespoke-engraved-groomsmen-pint-glass",
+        "bespoke-engraved-heirloom-bottle-opener",
+        "bespoke-engraved-mini-whiskey-glass"
+    ],
+    "bespoke-engraved-crystal-whiskey-glass-keepsake-box-set": [
+        "bespoke-heirloom-photo-whiskey-glass",
+        "bespoke-engraved-groomsmen-pint-glass",
+        "bespoke-engraved-heirloom-bottle-opener",
+        "bespoke-engraved-mini-whiskey-glass"
+    ],
+    "bespoke-engraved-stemless-wine-glass-set": [
+        "bespoke-heirloom-photo-whiskey-glass",
+        "bespoke-engraved-crystal-whiskey-glass-keepsake-box-set",
+        "bespoke-interlocking-photo-keepsake",
+        "bespoke-heirloom-photo-block-puzzle"
+    ],
+    "granite-whiskey-stones-set": [
+        "bespoke-engraved-groomsmen-pint-glass",
+        "bespoke-engraved-heirloom-bottle-opener",
+        "bespoke-engraved-mini-whiskey-glass",
+        "bespoke-heirloom-photo-whiskey-glass"
+    ],
+    "aromatic-cocktail-bitters": [
+        "bespoke-engraved-groomsmen-pint-glass",
+        "bespoke-engraved-heirloom-bottle-opener",
+        "bespoke-engraved-mini-whiskey-glass",
+        "bespoke-heirloom-photo-whiskey-glass"
+    ],
+    "bartenders-bottle-opener-black": [
+        "bespoke-engraved-groomsmen-pint-glass",
+        "bespoke-engraved-heirloom-bottle-opener",
+        "bespoke-engraved-mini-whiskey-glass",
+        "bespoke-heirloom-photo-whiskey-glass"
+    ],
+    "leather-wrapped-stainless-steel-flask": [
+        "bespoke-engraved-groomsmen-pint-glass",
+        "bespoke-engraved-heirloom-bottle-opener",
+        "bespoke-engraved-mini-whiskey-glass",
+        "bespoke-heirloom-photo-whiskey-glass"
+    ],
+    "gold-heart-wine-stopper-bridal": [
+        "custom-16oz-acrylic-tumbler-personalized-bridal-party-wedding-favor",
+        "personlaized-wine-glass-custom-wine-glass-wedding-favor",
+        "personlaized-champagne-glass-custom-champagne-glass-wedding-favor",
+        "bespoke-botanical-makeup-brush-portfolio"
+    ],
+    "bespoke-botanical-makeup-brush-portfolio": [
+        "personalized-compact-mirror-custom-heirloom-bridal-gift",
+        "rose-gold-compact-mirror-bridal",
+        "the-heirloom-mini-velvet-jewelry-case",
+        "bespoke-velvet-heirloom-jewelry-case"
+    ],
+    "the-heirloom-mini-velvet-jewelry-case": [
+        "bespoke-velvet-heirloom-jewelry-case",
+        "personalized-compact-mirror-custom-heirloom-bridal-gift",
+        "bespoke-diamond-rosegold-name-necklace-heirloom-script-pendant",
+        "rose-gold-compact-mirror-bridal"
+    ],
+    "bespoke-velvet-heirloom-jewelry-case": [
+        "the-heirloom-mini-velvet-jewelry-case",
+        "personalized-compact-mirror-custom-heirloom-bridal-gift",
+        "bespoke-diamond-rosegold-name-necklace-heirloom-script-pendant",
+        "rose-gold-compact-mirror-bridal"
+    ],
+    "bespoke-satin-lace-bridal-robe": [
+        "bespoke-satin-sleep-collection",
+        "bespoke-bridal-slipper",
+        "personalized-white-cotton-towel-bespoke-bridal-party-gift-wedding-favor",
+        "bespoke-botanical-makeup-brush-portfolio"
+    ],
+    "bespoke-satin-sleep-collection": [
+        "bespoke-satin-lace-bridal-robe",
+        "bespoke-bridal-slipper",
+        "personalized-white-cotton-towel-bespoke-bridal-party-gift-wedding-favor",
+        "bespoke-botanical-makeup-brush-portfolio"
+    ],
+    "custom-cosmetic-pouch-personalized-bridal-party-gift": [
+        "bespoke-canvas-and-burlap-tote",
+        "personalized-hand-crocheted-bridal-tote-beach-bag",
+        "personalized-embroidered-canvas-tote-custom-bridal-party-gift",
+        "bespoke-botanical-makeup-brush-portfolio"
+    ],
+    "personalized-compact-mirror-custom-heirloom-bridal-gift": [
+        "rose-gold-compact-mirror-bridal",
+        "bespoke-botanical-makeup-brush-portfolio",
+        "the-heirloom-mini-velvet-jewelry-case",
+        "bespoke-velvet-heirloom-jewelry-case"
+    ],
+    "bespoke-diamond-rosegold-name-necklace-heirloom-script-pendant": [
+        "the-heirloom-mini-velvet-jewelry-case",
+        "bespoke-velvet-heirloom-jewelry-case",
+        "personalized-compact-mirror-custom-heirloom-bridal-gift",
+        "rose-gold-compact-mirror-bridal"
+    ],
+    "heirloom-satin-scrunchie-set": [
+        "bespoke-botanical-makeup-brush-portfolio",
+        "personalized-compact-mirror-custom-heirloom-bridal-gift",
+        "mulberry-silk-pillowcase-bridal",
+        "botanical-bath-bomb-trio"
+    ],
+    "mulberry-silk-pillowcase-bridal": [
+        "bespoke-botanical-makeup-brush-portfolio",
+        "personalized-compact-mirror-custom-heirloom-bridal-gift",
+        "heirloom-satin-scrunchie-set",
+        "botanical-bath-bomb-trio"
+    ],
+    "botanical-bath-bomb-trio": [
+        "bespoke-botanical-makeup-brush-portfolio",
+        "personalized-compact-mirror-custom-heirloom-bridal-gift",
+        "heirloom-satin-scrunchie-set",
+        "mulberry-silk-pillowcase-bridal"
+    ],
+    "rose-gold-reusable-straw-set": [
+        "custom-16oz-acrylic-tumbler-personalized-bridal-party-wedding-favor",
+        "gold-heart-wine-stopper-bridal",
+        "bespoke-botanical-makeup-brush-portfolio",
+        "the-heirloom-mini-velvet-jewelry-case"
+    ],
+    "rose-gold-compact-mirror-bridal": [
+        "personalized-compact-mirror-custom-heirloom-bridal-gift",
+        "bespoke-botanical-makeup-brush-portfolio",
+        "the-heirloom-mini-velvet-jewelry-case",
+        "bespoke-velvet-heirloom-jewelry-case"
+    ],
+    "pearl-embellished-hair-claw-clip": [
+        "the-heirloom-mini-velvet-jewelry-case",
+        "bespoke-velvet-heirloom-jewelry-case",
+        "personalized-compact-mirror-custom-heirloom-bridal-gift",
+        "bespoke-diamond-rosegold-name-necklace-heirloom-script-pendant"
+    ],
+    "dainty-pearl-bracelet-bridal": [
+        "the-heirloom-mini-velvet-jewelry-case",
+        "bespoke-velvet-heirloom-jewelry-case",
+        "personalized-compact-mirror-custom-heirloom-bridal-gift",
+        "bespoke-diamond-rosegold-name-necklace-heirloom-script-pendant"
+    ],
+    "luxe-satin-sleep-mask": [
+        "bespoke-botanical-makeup-brush-portfolio",
+        "personalized-compact-mirror-custom-heirloom-bridal-gift",
+        "heirloom-satin-scrunchie-set",
+        "mulberry-silk-pillowcase-bridal"
+    ],
+    "luxury-botanical-lip-balm-trio": [
+        "bespoke-botanical-makeup-brush-portfolio",
+        "personalized-compact-mirror-custom-heirloom-bridal-gift",
+        "heirloom-satin-scrunchie-set",
+        "mulberry-silk-pillowcase-bridal"
+    ],
+    "crystal-glass-nail-file-set": [
+        "bespoke-botanical-makeup-brush-portfolio",
+        "personalized-compact-mirror-custom-heirloom-bridal-gift",
+        "heirloom-satin-scrunchie-set",
+        "mulberry-silk-pillowcase-bridal"
+    ],
+    "calm-collect-essential-oil-roller": [
+        "bespoke-botanical-makeup-brush-portfolio",
+        "personalized-compact-mirror-custom-heirloom-bridal-gift",
+        "heirloom-satin-scrunchie-set",
+        "mulberry-silk-pillowcase-bridal"
+    ],
+    "champagne-gummy-bears-bridal": [
+        "custom-16oz-acrylic-tumbler-personalized-bridal-party-wedding-favor",
+        "gold-heart-wine-stopper-bridal",
+        "rose-gold-reusable-straw-set",
+        "bespoke-botanical-makeup-brush-portfolio"
+    ],
+    "botanical-body-lotion-bridal": [
+        "bespoke-botanical-makeup-brush-portfolio",
+        "personalized-compact-mirror-custom-heirloom-bridal-gift",
+        "heirloom-satin-scrunchie-set",
+        "mulberry-silk-pillowcase-bridal"
+    ],
+    "rosewater-face-mist-bridal": [
+        "bespoke-botanical-makeup-brush-portfolio",
+        "personalized-compact-mirror-custom-heirloom-bridal-gift",
+        "heirloom-satin-scrunchie-set",
+        "mulberry-silk-pillowcase-bridal"
+    ],
+    "floral-tea-sampler-bridal": [
+        "bespoke-botanical-makeup-brush-portfolio",
+        "personalized-compact-mirror-custom-heirloom-bridal-gift",
+        "heirloom-satin-scrunchie-set",
+        "mulberry-silk-pillowcase-bridal"
+    ],
+    "rose-petal-hand-cream-bridal": [
+        "bespoke-botanical-makeup-brush-portfolio",
+        "personalized-compact-mirror-custom-heirloom-bridal-gift",
+        "heirloom-satin-scrunchie-set",
+        "mulberry-silk-pillowcase-bridal"
+    ],
+    "bespoke-leather-golf-pouch": [
+        "bespoke-engraved-heirloom-bottle-opener",
+        "zip-recovery-pouch-black",
+        "premium-foil-stamped-playing-cards",
+        "morning-after-craft-coffee-beans"
+    ],
+    "bespoke-engraved-guitar-capo": [
+        "bespoke-heirloom-photo-whiskey-glass",
+        "bespoke-engraved-crystal-whiskey-glass-keepsake-box-set",
+        "bespoke-engraved-stemless-wine-glass-set",
+        "bespoke-interlocking-photo-keepsake"
+    ],
+    "single-cigar-travel-tube-black": [
+        "bespoke-engraved-groomsmen-pint-glass",
+        "bespoke-engraved-heirloom-bottle-opener",
+        "bespoke-engraved-mini-whiskey-glass",
+        "bespoke-heirloom-photo-whiskey-glass"
+    ],
+    "zip-recovery-pouch-black": [
+        "bespoke-engraved-heirloom-bottle-opener",
+        "bespoke-leather-golf-pouch",
+        "premium-foil-stamped-playing-cards",
+        "morning-after-craft-coffee-beans"
+    ],
+    "leather-cord-organizer-espresso": [
+        "bespoke-engraved-groomsmen-pint-glass",
+        "bespoke-engraved-heirloom-bottle-opener",
+        "bespoke-engraved-mini-whiskey-glass",
+        "bespoke-heirloom-photo-whiskey-glass"
+    ],
+    "minimalist-magnetic-money-clip": [
+        "bespoke-engraved-groomsmen-pint-glass",
+        "bespoke-engraved-heirloom-bottle-opener",
+        "bespoke-engraved-mini-whiskey-glass",
+        "bespoke-heirloom-photo-whiskey-glass"
+    ],
+    "premium-sandalwood-pocket-comb": [
+        "artisan-solid-cologne-tobacco",
+        "bespoke-botanical-makeup-brush-portfolio",
+        "personalized-compact-mirror-custom-heirloom-bridal-gift",
+        "heirloom-satin-scrunchie-set"
+    ],
+    "silk-pocket-square-espresso": [
+        "bespoke-satin-lace-bridal-robe",
+        "bespoke-satin-sleep-collection",
+        "bespoke-bridal-slipper",
+        "personalized-white-cotton-towel-bespoke-bridal-party-gift-wedding-favor"
+    ],
+    "heavyweight-cigar-cutter-black": [
+        "bespoke-engraved-groomsmen-pint-glass",
+        "bespoke-engraved-heirloom-bottle-opener",
+        "bespoke-engraved-mini-whiskey-glass",
+        "bespoke-heirloom-photo-whiskey-glass"
+    ],
+    "classic-tie-clip-antique-gold": [
+        "the-heirloom-mini-velvet-jewelry-case",
+        "bespoke-velvet-heirloom-jewelry-case",
+        "personalized-compact-mirror-custom-heirloom-bridal-gift",
+        "bespoke-diamond-rosegold-name-necklace-heirloom-script-pendant"
+    ],
+    "premium-foil-stamped-playing-cards": [
+        "bespoke-engraved-heirloom-bottle-opener",
+        "bespoke-leather-golf-pouch",
+        "zip-recovery-pouch-black",
+        "morning-after-craft-coffee-beans"
+    ],
+    "solid-brass-collar-stays-tin": [
+        "bespoke-engraved-groomsmen-pint-glass",
+        "bespoke-engraved-heirloom-bottle-opener",
+        "bespoke-engraved-mini-whiskey-glass",
+        "bespoke-heirloom-photo-whiskey-glass"
+    ],
+    "artisan-solid-cologne-tobacco": [
+        "premium-sandalwood-pocket-comb",
+        "bespoke-botanical-makeup-brush-portfolio",
+        "personalized-compact-mirror-custom-heirloom-bridal-gift",
+        "heirloom-satin-scrunchie-set"
+    ],
+    "morning-after-craft-coffee-beans": [
+        "bespoke-engraved-heirloom-bottle-opener",
+        "bespoke-leather-golf-pouch",
+        "zip-recovery-pouch-black",
+        "premium-foil-stamped-playing-cards"
+    ],
+    "woven-shoe-shine-cloth": [
+        "bespoke-engraved-groomsmen-pint-glass",
+        "bespoke-engraved-heirloom-bottle-opener",
+        "bespoke-engraved-mini-whiskey-glass",
+        "bespoke-heirloom-photo-whiskey-glass"
+    ],
+    "cedar-wood-shoe-deodorizer-balls": [
+        "bespoke-engraved-groomsmen-pint-glass",
+        "bespoke-engraved-heirloom-bottle-opener",
+        "bespoke-engraved-mini-whiskey-glass",
+        "bespoke-heirloom-photo-whiskey-glass"
+    ],
+    "premium-oversized-matchbox-black-gold": [
+        "bespoke-engraved-heirloom-bottle-opener",
+        "bespoke-leather-golf-pouch",
+        "zip-recovery-pouch-black",
+        "premium-foil-stamped-playing-cards"
+    ],
+    "travel-size-sleek-lint-roller": [
+        "bespoke-engraved-groomsmen-pint-glass",
+        "bespoke-engraved-heirloom-bottle-opener",
+        "bespoke-engraved-mini-whiskey-glass",
+        "bespoke-heirloom-photo-whiskey-glass"
+    ],
+    "bespoke-interlocking-photo-keepsake": [
+        "bespoke-heirloom-photo-block-puzzle",
+        "bespoke-photo-magnet-favours",
+        "bespoke-gold-gilded-agate-coaster",
+        "bespoke-mirrored-acrylic-wedding-welcome-sign"
+    ],
+    "bespoke-heirloom-photo-block-puzzle": [
+        "bespoke-interlocking-photo-keepsake",
+        "bespoke-photo-magnet-favours",
+        "bespoke-gold-gilded-agate-coaster",
+        "bespoke-mirrored-acrylic-wedding-welcome-sign"
+    ],
+    "bespoke-photo-magnet-favours": [
+        "bespoke-interlocking-photo-keepsake",
+        "bespoke-heirloom-photo-block-puzzle",
+        "bespoke-gold-gilded-agate-coaster",
+        "bespoke-mirrored-acrylic-wedding-welcome-sign"
+    ],
+    "everlasting-heirloom-rose-set": [
+        "bespoke-mirrored-acrylic-wedding-welcome-sign",
+        "heirloom-walnut-ring-dish",
+        "linen-wedding-vow-booklet",
+        "bespoke-engraved-wedding-cake-serving-set"
+    ],
+    "heirloom-walnut-ring-dish": [
+        "bespoke-velvet-heirloom-jewelry-case",
+        "bespoke-mirrored-acrylic-wedding-welcome-sign",
+        "everlasting-heirloom-rose-set",
+        "linen-wedding-vow-booklet"
+    ],
+    "linen-wedding-vow-booklet": [
+        "bespoke-mirrored-acrylic-wedding-welcome-sign",
+        "everlasting-heirloom-rose-set",
+        "heirloom-walnut-ring-dish",
+        "bespoke-engraved-wedding-cake-serving-set"
+    ],
+    "gold-rimmed-ceramic-jewelry-dish": [
+        "the-heirloom-mini-velvet-jewelry-case",
+        "bespoke-velvet-heirloom-jewelry-case",
+        "personalized-compact-mirror-custom-heirloom-bridal-gift",
+        "bespoke-diamond-rosegold-name-necklace-heirloom-script-pendant"
+    ],
+    "custom-ceramic-ring-dish-personalized-heirloom-trinket-tray": [
+        "the-heirloom-mini-velvet-jewelry-case",
+        "bespoke-velvet-heirloom-jewelry-case",
+        "personalized-compact-mirror-custom-heirloom-bridal-gift",
+        "bespoke-diamond-rosegold-name-necklace-heirloom-script-pendant"
+    ],
+    "bespoke-satin-place-setting-ribbons": [
+        "bespoke-keepsake-handheld-fan",
+        "bespoke-gold-gilded-agate-coaster",
+        "bespoke-mirrored-acrylic-wedding-welcome-sign",
+        "custom-mirror-acrylic-seating-chart"
+    ],
+    "bespoke-engraved-wedding-cake-serving-set": [
+        "bespoke-mirrored-acrylic-wedding-welcome-sign",
+        "everlasting-heirloom-rose-set",
+        "heirloom-walnut-ring-dish",
+        "linen-wedding-vow-booklet"
+    ],
+    "bespoke-keepsake-handheld-fan": [
+        "bespoke-satin-place-setting-ribbons",
+        "bespoke-gold-gilded-agate-coaster",
+        "bespoke-mirrored-acrylic-wedding-welcome-sign",
+        "custom-mirror-acrylic-seating-chart"
+    ],
+    "welcome-wedding-box": [
+        "bespoke-mirrored-acrylic-wedding-welcome-sign",
+        "custom-mirror-acrylic-seating-chart",
+        "bespoke-frosted-acrylic-wedding-cups",
+        "bespoke-acrylic-cocktail-stirrers"
+    ],
+    "bespoke-gold-gilded-agate-coaster": [
+        "bespoke-interlocking-photo-keepsake",
+        "bespoke-heirloom-photo-block-puzzle",
+        "bespoke-photo-magnet-favours",
+        "bespoke-mirrored-acrylic-wedding-welcome-sign"
+    ],
+    "bespoke-canvas-and-burlap-tote": [
+        "custom-cosmetic-pouch-personalized-bridal-party-gift",
+        "personalized-hand-crocheted-bridal-tote-beach-bag",
+        "personalized-embroidered-canvas-tote-custom-bridal-party-gift",
+        "bespoke-botanical-makeup-brush-portfolio"
+    ],
+    "personalized-hand-crocheted-bridal-tote-beach-bag": [
+        "custom-cosmetic-pouch-personalized-bridal-party-gift",
+        "bespoke-canvas-and-burlap-tote",
+        "personalized-embroidered-canvas-tote-custom-bridal-party-gift",
+        "bespoke-botanical-makeup-brush-portfolio"
+    ],
+    "personalized-embroidered-canvas-tote-custom-bridal-party-gift": [
+        "custom-cosmetic-pouch-personalized-bridal-party-gift",
+        "bespoke-canvas-and-burlap-tote",
+        "personalized-hand-crocheted-bridal-tote-beach-bag",
+        "bespoke-botanical-makeup-brush-portfolio"
+    ],
+    "the-heirloom-botanical-hairbrush": [
+        "the-heirloom-mini-velvet-jewelry-case",
+        "bespoke-velvet-heirloom-jewelry-case",
+        "personalized-compact-mirror-custom-heirloom-bridal-gift",
+        "bespoke-diamond-rosegold-name-necklace-heirloom-script-pendant"
+    ],
+    "luxe-just-married-honeymoon-sunglasses": [
+        "the-heirloom-mini-velvet-jewelry-case",
+        "bespoke-velvet-heirloom-jewelry-case",
+        "personalized-compact-mirror-custom-heirloom-bridal-gift",
+        "bespoke-diamond-rosegold-name-necklace-heirloom-script-pendant"
+    ],
+    "bespoke-bridal-slipper": [
+        "bespoke-satin-lace-bridal-robe",
+        "bespoke-satin-sleep-collection",
+        "personalized-white-cotton-towel-bespoke-bridal-party-gift-wedding-favor",
+        "bespoke-botanical-makeup-brush-portfolio"
+    ],
+    "personalized-white-cotton-towel-bespoke-bridal-party-gift-wedding-favor": [
+        "bespoke-satin-lace-bridal-robe",
+        "bespoke-satin-sleep-collection",
+        "bespoke-bridal-slipper",
+        "custom-16oz-acrylic-tumbler-personalized-bridal-party-wedding-favor"
+    ],
+    "artisan-soy-candle-bridal": [
+        "bespoke-botanical-makeup-brush-portfolio",
+        "personalized-compact-mirror-custom-heirloom-bridal-gift",
+        "heirloom-satin-scrunchie-set",
+        "mulberry-silk-pillowcase-bridal"
+    ],
+    "bridesmaid-box": [
+        "welcome-wedding-box",
+        "groom-box",
+        "bespoke-mirrored-acrylic-wedding-welcome-sign",
+        "custom-mirror-acrylic-seating-chart"
+    ],
+    "groom-box": [
+        "welcome-wedding-box",
+        "bridesmaid-box",
+        "bespoke-mirrored-acrylic-wedding-welcome-sign",
+        "custom-mirror-acrylic-seating-chart"
+    ],
+    "personal-product-specialist": []
 };
 
 export function getRelatedProductSlugs(slug: string): string[] {
