@@ -34,6 +34,29 @@ export default async function Home() {
       <HeroSection />
       <TrustBar />
       <ScrollingBanner />
+
+      {/* ── Section Heading: Gift Boxes ────────────────────────── */}
+      <section className="bg-cream py-16 md:py-20 text-center">
+        <div className="max-w-2xl mx-auto px-6">
+          <div className="flex items-center justify-center gap-4 mb-6">
+            <div className="h-px w-12 bg-gold/40" />
+            <span className="text-gold text-sm tracking-[0.3em] font-sans uppercase font-semibold">✦</span>
+            <div className="h-px w-12 bg-gold/40" />
+          </div>
+          <h2 className="font-serif text-3xl md:text-4xl lg:text-5xl text-espresso mb-4 leading-tight">
+            Our Signature Gift Boxes
+          </h2>
+          <p className="font-sans text-espresso-light/70 text-base md:text-lg leading-relaxed max-w-lg mx-auto">
+            Curated sets for your bridal party, groomsmen, and wedding guests — each personalized to tell your unique story.
+          </p>
+          <div className="flex items-center justify-center gap-4 mt-8">
+            <div className="h-px w-8 bg-gold/20" />
+            <span className="text-gold/40 text-xs tracking-[0.3em] font-sans uppercase">Choose your box</span>
+            <div className="h-px w-8 bg-gold/20" />
+          </div>
+        </div>
+      </section>
+
       <HomeBoxConfigurator />
       <FeaturedProducts products={products} />
       <CategoryGrid />
