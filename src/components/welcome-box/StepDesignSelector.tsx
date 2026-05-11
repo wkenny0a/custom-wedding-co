@@ -6,18 +6,18 @@ import { useCart } from '@/context/CartContext';
 
 // ── Design Data ─────────────────────────────────────────────────────────────
 const DESIGNS: DesignOption[] = [
-  { id: 1,  name: 'Classic Monogram',  imageUrl: '/images/gift-box/design-1.jpg',  isCustomUpload: false },
-  { id: 2,  name: 'Floral Wreath',     imageUrl: '/images/gift-box/design-2.jpg',  isCustomUpload: false },
-  { id: 3,  name: 'Elegant Script',    imageUrl: '/images/gift-box/design-3.jpg',  isCustomUpload: false },
-  { id: 4,  name: 'Botanical Frame',   imageUrl: '/images/gift-box/design-4.jpg',  isCustomUpload: false },
-  { id: 5,  name: 'Gold Crest',        imageUrl: '/images/gift-box/design-5.jpg',  isCustomUpload: false },
-  { id: 6,  name: 'Minimalist Line',   imageUrl: '/images/gift-box/design-6.jpg',  isCustomUpload: false },
-  { id: 7,  name: 'Watercolor Bloom',  imageUrl: '/images/gift-box/design-7.jpg',  isCustomUpload: false },
-  { id: 8,  name: 'Art Deco',          imageUrl: '/images/gift-box/design-8.jpg',  isCustomUpload: false },
-  { id: 9,  name: 'Rustic Wreath',     imageUrl: '/images/gift-box/design-9.jpg',  isCustomUpload: false },
-  { id: 10, name: 'Coastal',           imageUrl: '/images/gift-box/design-10.jpg', isCustomUpload: false },
-  { id: 11, name: 'Garden Party',      imageUrl: '/images/gift-box/design-11.jpg', isCustomUpload: false },
-  { id: 12, name: 'Upload Your Own',   imageUrl: '/images/gift-box/design-custom.jpg', isCustomUpload: true },
+  { id: 1,  name: 'The Classic Initial',  imageUrl: '/images/gift-boxes/monograms/2.png',  isCustomUpload: false },
+  { id: 2,  name: 'The Modern Serif',     imageUrl: '/images/gift-boxes/monograms/3.png',  isCustomUpload: false },
+  { id: 3,  name: 'The Romantic Script',  imageUrl: '/images/gift-boxes/monograms/4.png',  isCustomUpload: false },
+  { id: 4,  name: 'The Elegant Floral',   imageUrl: '/images/gift-boxes/monograms/5.png',  isCustomUpload: false },
+  { id: 5,  name: 'The Minimalist Block', imageUrl: '/images/gift-boxes/monograms/6.png',  isCustomUpload: false },
+  { id: 6,  name: 'The Vintage Crest',    imageUrl: '/images/gift-boxes/monograms/7.png',  isCustomUpload: false },
+  { id: 7,  name: 'The Artisan Frame',    imageUrl: '/images/gift-boxes/monograms/8.png',  isCustomUpload: false },
+  { id: 8,  name: 'The Timeless Calligraphy', imageUrl: '/images/gift-boxes/monograms/9.png',  isCustomUpload: false },
+  { id: 9,  name: 'The Botanical Wreath', imageUrl: '/images/gift-boxes/monograms/10.png', isCustomUpload: false },
+  { id: 10, name: 'The Regal Monogram',   imageUrl: '/images/gift-boxes/monograms/11.png', isCustomUpload: false },
+  { id: 11, name: 'The Contemporary Sans',imageUrl: '/images/gift-boxes/monograms/12.png', isCustomUpload: false },
+  { id: 12, name: 'Upload Your Own',      imageUrl: '/images/gift-boxes/monograms/custom-design.png', isCustomUpload: true },
 ];
 
 // ── Props ───────────────────────────────────────────────────────────────────
