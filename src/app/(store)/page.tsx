@@ -12,6 +12,8 @@ import { HomeFAQ } from '@/components/home/HomeFAQ'
 import { Newsletter } from '@/components/home/Newsletter'
 import { getProducts, getLowestDisplayPrice } from '@/lib/swell'
 
+export const dynamic = 'force-dynamic'
+
 export default async function Home() {
   // Fetch products in the "Homepage" category from Swell
   const homepageProducts = await getProducts({ category: 'homepage' })

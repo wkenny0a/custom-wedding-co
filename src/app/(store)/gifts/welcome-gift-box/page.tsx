@@ -7,6 +7,8 @@ export const metadata: Metadata = {
   description: 'Design personalized welcome boxes for your wedding guests. Choose a lid design, add names or initials, and fill with curated gifts. Volume discounts up to 50% off.',
 };
 
+export const dynamic = 'force-dynamic';
+
 export default async function WelcomeWeddingBoxPage() {
   const [result, baseBox] = await Promise.all([
     getProducts({ category: 'gift-box' }),
