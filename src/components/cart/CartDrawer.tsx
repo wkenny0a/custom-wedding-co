@@ -70,7 +70,7 @@ export function CartDrawer() {
     const items = cart?.items || []
     
     // Calculate display subtotal including mock items if API isn't ready
-    let subtotal = cart?.sub_total ?? cart?.subTotal ?? items.reduce((sum: number, item: any) => sum + ((item.price_total ?? item.price ?? 0) * (item.quantity ?? 1)), 0)
+    let subtotal = cart?.sub_total ?? cart?.subTotal ?? items.reduce((sum: number, item: any) => sum + (item.price_total ?? ((item.price ?? 0) * (item.quantity ?? 1))), 0)
     
     if (mockRushAdded) subtotal += RUSH_PROCESSING_FEE;
     if (mockUpsellAdded) subtotal += 9.99; // mock heirloom rose set price
@@ -214,7 +214,7 @@ export function CartDrawer() {
                                             </div>
 
                                             <span className="font-sans font-medium text-espresso">
-                                                ${((item.price_total ?? item.price ?? 0) * (item.quantity ?? 1)).toFixed(2)}
+                                                ${(item.price_total ?? ((item.price ?? 0) * (item.quantity ?? 1))).toFixed(2)}
                                             </span>
                                         </div>
                                     </div>
