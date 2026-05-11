@@ -185,7 +185,7 @@ export default function WelcomeBoxConfigurator({
       if (product.isCustomizable && product.customOptions && product.customOptions.length > 0) {
         itemOptions = product.customOptions.map(opt => ({ name: opt.name, value: opt.value }));
       }
-      const updatedCart = await addToCart(product.id, 1, itemOptions, null, true);
+      const updatedCart = await addToCart(product.id, boxQuantity, itemOptions, null, true);
       const newestItem = updatedCart?.items?.[updatedCart.items.length - 1];
       const newProduct = { ...product, cartItemId: newestItem?.id };
       setState(s => ({ ...s, selectedProducts: [...s.selectedProducts, newProduct] }));
