@@ -11,7 +11,7 @@ export const dynamic = 'force-dynamic';
 
 export default async function WelcomeWeddingBoxPage() {
   const [result, baseBox] = await Promise.all([
-    getProducts({ category: 'gift-box' }),
+    getProducts({ category: 'custom-welcome-box' }),
     getProductBySlug('welcome-wedding-box')
   ]);
 

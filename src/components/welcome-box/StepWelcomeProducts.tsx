@@ -28,7 +28,7 @@ export default function StepWelcomeProducts({
   onPrev,
   onSubmit,
   isSubmitting = false,
-  emptyCategoryText = 'No products found in the "gift-box" category.',
+  emptyCategoryText = 'No products found in the "custom-welcome-box" category.',
   quantity: rawQuantity,
   selectedDesign,
   namesOrInitials = '',

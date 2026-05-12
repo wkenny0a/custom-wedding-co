@@ -72,7 +72,7 @@ export default function BridesmaidBoxConfigurator({
   baseBoxProduct = null,
   title = "Design Your Bridesmaid Box",
   presetMessage = "Will you be my bridesmaid, Carly?",
-  emptyCategoryText = 'No products found in the "bridesmaid-box" category.',
+  emptyCategoryText = 'No products found in the "custom-brides-box" category.',
   theme = 'bridesmaid'
 }: {
   catalogProducts?: ProductItem[],
