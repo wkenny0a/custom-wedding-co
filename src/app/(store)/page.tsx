@@ -15,8 +15,8 @@ import { getProducts, getLowestDisplayPrice } from '@/lib/swell'
 export const dynamic = 'force-dynamic'
 
 export default async function Home() {
-  // Fetch products in the "Homepage" category from Swell
-  const homepageProducts = await getProducts({ category: 'homepage' })
+  // Fetch products in the "Most Loved by Couples" category from Swell
+  const homepageProducts = await getProducts({ category: 'most-loved-by-couples' })
   const products = (homepageProducts?.results || []).map((p: any) => ({
     _id: p.id,
     name: p.name,
