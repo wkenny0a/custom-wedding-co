@@ -348,7 +348,6 @@ export default function StepDesignSelector({
               rows={3}
               className="w-full px-4 py-3 bg-white border border-gold-pale/40 rounded-xl font-serif text-espresso placeholder:text-espresso/30 focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold/30 transition-colors resize-none"
             />
-            </p>
           </div>
 
           {/* ── Add-on: Matching Welcome Bag ────────────────────────────── */}
