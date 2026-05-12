@@ -49,7 +49,7 @@ export function BrandStory() {
                                 <span className="font-sans text-xs uppercase tracking-wider text-gray-500 font-semibold">Average Rating</span>
                             </div>
                             <div className="flex flex-col gap-1 col-span-2 sm:col-span-1">
-                                <span className="font-display pl-1 text-3xl text-gold">24</span>
+                                <span className="font-display pl-1 text-3xl text-gold">200+</span>
                                 <span className="font-sans text-xs uppercase tracking-wider text-gray-500 font-semibold">Unique Products</span>
                             </div>
                         </div>
