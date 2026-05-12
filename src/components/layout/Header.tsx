@@ -47,7 +47,6 @@ export function Header() {
                                 </div>
                             </div>
                         </div>
-                        <Link href="/shop/welcome-signs-signage" className="font-sans text-[0.8rem] uppercase tracking-widest font-medium hover:text-gold transition-colors">Décor</Link>
                     </nav>
 
                     {/* Mobile Hamburger */}
@@ -69,7 +68,7 @@ export function Header() {
                     <div className="flex items-center justify-end gap-5 xl:gap-6 w-1/3">
                         <nav className="hidden lg:flex items-center gap-5 xl:gap-8 mr-2 xl:mr-4">
                             <Link href="/shop/barware-drinkware" className="font-sans text-[0.8rem] uppercase tracking-widest font-medium hover:text-gold transition-colors">Tabletop</Link>
-                            <Link href="/shop/favors-gifts" className="font-sans text-[0.8rem] uppercase tracking-widest font-medium hover:text-gold transition-colors">Favors</Link>
+                            <Link href="/shop/favors-party-extras" className="font-sans text-[0.8rem] uppercase tracking-widest font-medium hover:text-gold transition-colors">Favors</Link>
                             <Link href="/about" className="font-sans text-[0.8rem] uppercase tracking-widest font-medium hover:text-gold transition-colors">About</Link>
                         </nav>
                         <div className="flex items-center gap-4 text-espresso">
