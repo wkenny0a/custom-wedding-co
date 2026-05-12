@@ -123,6 +123,7 @@ export default function WelcomeBoxConfigurator({
     welcomeMessage: '',
     selectedProducts: [],
     baseBoxCartItemId: undefined,
+    includeMatchingBag: false,
   });
 
   const discountAmount = getDiscount(boxQuantity);
@@ -143,6 +144,7 @@ export default function WelcomeBoxConfigurator({
       if (state.eventDate.trim()) baseOptions.push({ name: 'Event Date', value: state.eventDate });
       if (state.customUploadUrl) baseOptions.push({ name: 'Custom Design URL', value: state.customUploadUrl });
       if (state.welcomeMessage.trim()) baseOptions.push({ name: 'Welcome Message', value: state.welcomeMessage });
+      if (state.includeMatchingBag) baseOptions.push({ name: 'Matching Custom Welcome Bag', value: 'Yes (+$2.00)' });
       if (boxQuantity > 1) baseOptions.push({ name: 'Quantity', value: String(boxQuantity) });
 
       const updatedCart = await addToCart(baseBoxProduct.id, boxQuantity, baseOptions, null, true);
@@ -177,6 +179,7 @@ export default function WelcomeBoxConfigurator({
   const setEventDate = (v: string) => setState(s => ({ ...s, eventDate: v }));
   const setCustomUpload = (url: string, filename: string) => setState(s => ({ ...s, customUploadUrl: url, customUploadFilename: filename }));
   const setWelcomeMessage = (v: string) => setState(s => ({ ...s, welcomeMessage: v }));
+  const setIncludeMatchingBag = (v: boolean) => setState(s => ({ ...s, includeMatchingBag: v }));
 
   const addProduct = async (product: ProductItem) => {
     setIsSubmitting(true);
@@ -444,6 +447,8 @@ export default function WelcomeBoxConfigurator({
                   onUploadComplete={setCustomUpload}
                   welcomeMessage={state.welcomeMessage}
                   onChangeWelcomeMessage={setWelcomeMessage}
+                  includeMatchingBag={state.includeMatchingBag}
+                  onChangeMatchingBag={setIncludeMatchingBag}
                   onNext={nextStep}
                   onPrev={prevStep}
                   isSubmitting={isSubmitting}

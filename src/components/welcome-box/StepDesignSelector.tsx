@@ -33,6 +33,8 @@ interface StepDesignSelectorProps {
   onUploadComplete: (url: string, filename: string) => void;
   welcomeMessage: string;
   onChangeWelcomeMessage: (val: string) => void;
+  includeMatchingBag?: boolean;
+  onChangeMatchingBag?: (val: boolean) => void;
   onNext: () => void;
   onPrev: () => void;
   isSubmitting?: boolean;
@@ -50,6 +52,8 @@ export default function StepDesignSelector({
   onUploadComplete,
   welcomeMessage,
   onChangeWelcomeMessage,
+  includeMatchingBag = false,
+  onChangeMatchingBag,
   onNext,
   onPrev,
   isSubmitting = false,
@@ -344,10 +348,34 @@ export default function StepDesignSelector({
               rows={3}
               className="w-full px-4 py-3 bg-white border border-gold-pale/40 rounded-xl font-serif text-espresso placeholder:text-espresso/30 focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold/30 transition-colors resize-none"
             />
-            <p className="text-[11px] font-sans text-espresso/40 mt-2">
-              This message will be printed on the inside of the lid — the same message for all boxes.
             </p>
           </div>
+
+          {/* ── Add-on: Matching Welcome Bag ────────────────────────────── */}
+          {onChangeMatchingBag && (
+            <div className="bg-white/40 border border-gold-pale/20 rounded-2xl p-6 mb-8 flex items-center justify-between transition-all hover:border-gold/30">
+              <div>
+                <h4 className="text-sm uppercase tracking-widest text-espresso font-sans font-semibold">
+                  Matching Custom Welcome Bag
+                </h4>
+                <p className="text-xs font-sans text-espresso/60 mt-1">
+                  Includes a high-quality personalized canvas bag that matches your box lid design. (+$2.00)
+                </p>
+              </div>
+              <button
+                onClick={() => onChangeMatchingBag(!includeMatchingBag)}
+                className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors duration-300 focus:outline-none ${
+                  includeMatchingBag ? 'bg-gold' : 'bg-gold-pale/40'
+                }`}
+              >
+                <span
+                  className={`inline-block h-5 w-5 transform rounded-full bg-white shadow-sm transition-transform duration-300 ${
+                    includeMatchingBag ? 'translate-x-6' : 'translate-x-1'
+                  }`}
+                />
+              </button>
+            </div>
+          )}
         </div>
       </div>
 

@@ -19,4 +19,5 @@ export interface WelcomeBoxState {
   welcomeMessage: string;           // Single message for all boxes
   selectedProducts: ProductItem[];
   baseBoxCartItemId?: string;
+  includeMatchingBag?: boolean;     // Add-on for matching welcome bag
 }
