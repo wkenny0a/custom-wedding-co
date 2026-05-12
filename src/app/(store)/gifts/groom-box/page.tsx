@@ -11,7 +11,7 @@ export const dynamic = 'force-dynamic';
 
 export default async function GroomsmanBoxPage() {
   const [result, baseBox] = await Promise.all([
-    getProducts({ category: 'groom-box' }),
+    getProducts({ category: 'groomsmen-gifts' }),
     getProductBySlug('groom-box')
   ]);
   
@@ -38,7 +38,7 @@ export default async function GroomsmanBoxPage() {
         baseBoxProduct={baseBox}
         title="Design Your Groom Box"
         presetMessage="Will you be my groomsman, Brady?"
-        emptyCategoryText="No products found in the groom-box category."
+        emptyCategoryText="No products found in the groomsmen-gifts category."
       />
     </div>
   );

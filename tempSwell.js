@@ -1,0 +1,1 @@
+const swell = require('swell-node'); swell.init('customweddingco', 'pk_0iFv2Wz7Fhyq1E2J2YmDIt4tQxGk52F1'); async function run() { const res = await swell.get('/products', { category: 'groom-box', limit: 100 }); console.log(res.results.map(p => p.name).join('\n')); } run();
