@@ -434,6 +434,7 @@ export default function BridesmaidBoxConfigurator({
                   selectedColor={state.boxColor}
                   onNext={nextStep}
                   onPrev={prevStep}
+                  isSubmitting={isSubmitting}
                 />
               )}
 

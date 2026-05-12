@@ -15,6 +15,7 @@ interface StepPersonalizationProps {
   selectedColor: BoxColorOption | null;
   onNext: () => void;
   onPrev: () => void;
+  isSubmitting?: boolean;
 }
 
 const EXAMPLE_NAMES = ['Emma', 'Sophia', 'Lily', 'Grace', 'Olivia', 'Charlotte', 'Ava', 'Mia'];
@@ -32,8 +33,16 @@ export default function StepPersonalization({
   onToggleBowTie,
   selectedColor,
   onNext, 
-  onPrev 
+  onPrev,
+  isSubmitting = false
 }: StepPersonalizationProps) {
+
+  const SpinnerIcon = () => (
+    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-current inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+    </svg>
+  );
 
   const [previewIndex, setPreviewIndex] = useState(0);
 
@@ -363,14 +372,15 @@ export default function StepPersonalization({
         </button>
         <button
           onClick={handleNext}
-          disabled={!allFilled}
-          className={`px-8 py-4 uppercase tracking-widest text-sm transition-all duration-500 ${
-            allFilled
+          disabled={!allFilled || isSubmitting}
+          className={`px-8 py-4 uppercase tracking-widest text-sm transition-all duration-500 flex items-center justify-center ${
+            allFilled && !isSubmitting
               ? 'bg-espresso text-cream hover:bg-espresso-light shadow-md hover:-translate-y-0.5'
               : 'bg-gray-200 text-gray-400 cursor-not-allowed'
           }`}
         >
-          {allFilled ? 'I Love It — Next ›' : `Fill in all ${quantity > 1 ? `${quantity} names & ` : ''}messages to continue`}
+          {isSubmitting && <SpinnerIcon />}
+          {isSubmitting ? 'Preparing...' : allFilled ? 'I Love It — Next ›' : `Fill in all ${quantity > 1 ? `${quantity} names & ` : ''}messages to continue`}
         </button>
       </div>
     </div>
