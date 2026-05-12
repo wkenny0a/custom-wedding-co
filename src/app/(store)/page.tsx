@@ -46,7 +46,7 @@ export default async function Home() {
               Our Signature Gift Boxes
             </h2>
             <p className="font-sans text-gray-600 text-base md:text-lg leading-relaxed max-w-lg">
-              Curated sets for your bridal party, groomsmen, and wedding guests — each personalized to tell your unique story.
+              Curated sets for your bridal party, groomsmen, and wedding guests. Each personalized to tell your unique story.
             </p>
           </div>
         </div>
