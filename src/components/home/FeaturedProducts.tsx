@@ -20,9 +20,6 @@ export function FeaturedProducts({ products = [] }: { products?: any[] }) {
         <section className="py-20 lg:py-28 bg-cream">
             <div className="max-w-[1280px] mx-auto px-6 lg:px-12">
                 <div className="flex flex-col items-center text-center mb-16">
-                    <span className="uppercase tracking-[0.18em] text-gold font-bold text-xs sm:text-sm mb-4">
-                        Our Bestsellers
-                    </span>
                     <h2 className="font-display text-4xl md:text-5xl text-espresso mb-6">
                         Most Loved by Couples
                     </h2>
