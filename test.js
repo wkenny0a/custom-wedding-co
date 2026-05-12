@@ -1,0 +1,1 @@
+const fetch = require('node-fetch'); async function run() { const res = await fetch('https://customweddingco.swell.store/api/products?category=groom-box', { headers: { 'Authorization': 'Basic ' + Buffer.from('pk_0iFv2Wz7Fhyq1E2J2YmDIt4tQxGk52F1:').toString('base64') } }); const data = await res.json(); console.log(data.results.map(p => p.name).join('\n')); } run();

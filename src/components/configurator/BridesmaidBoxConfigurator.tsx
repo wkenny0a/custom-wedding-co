@@ -335,6 +335,28 @@ export default function BridesmaidBoxConfigurator({
                 Start Building My Box →
               </button>
             </div>
+
+            {/* UGC Section for Bridesmaid */}
+            {theme === 'bridesmaid' && (
+              <div className="mt-16 animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-300">
+                <div className="text-center mb-8">
+                  <h3 className="font-serif text-2xl text-espresso">See What Real Brides Created</h3>
+                  <p className="text-sm text-espresso-light/70 mt-2">Join thousands of brides who built the perfect box.</p>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+                  {[1, 2, 3].map((num) => (
+                    <div key={num} className="relative aspect-[4/5] rounded-2xl overflow-hidden shadow-lg border border-gold-pale/20 group">
+                      <img 
+                        src={`/images/ugc/bridesmaid-review-${num}.jpeg`}
+                        alt={`Real bridesmaid box review ${num}`}
+                        className="object-cover w-full h-full transform transition-transform duration-700 group-hover:scale-105"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         )}
 
