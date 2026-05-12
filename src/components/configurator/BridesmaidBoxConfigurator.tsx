@@ -88,7 +88,6 @@ export default function BridesmaidBoxConfigurator({
     heroDesc: '4,200+ grooms have used this builder to create the moment their guys said "I\'m in." Build yours in 3 easy steps.',
     quantityQuestion: 'How many groomsmen are you gifting?',
     statsCount: '847 grooms',
-    ugcSubtitle: "Here's what some of our grooms received ↓",
     partyName: 'groomsman party',
     singularName: 'groomsman',
     reviewHeader: 'What Our Customers Say'
@@ -98,7 +97,6 @@ export default function BridesmaidBoxConfigurator({
     heroDesc: '4,200+ brides have used this builder to create the moment their girls said "I\'m in." Build yours in 3 easy steps.',
     quantityQuestion: 'How many bridesmaids are you gifting?',
     statsCount: '847 brides',
-    ugcSubtitle: "Here's what some of our brides received ↓",
     partyName: 'bridal party',
     singularName: 'bridesmaid',
     reviewHeader: 'What Our Brides Say'
@@ -327,23 +325,6 @@ export default function BridesmaidBoxConfigurator({
                   🎉 You qualify for a <strong>{discountAmount}% volume discount</strong> — applied heavily at checkout!
                 </div>
               )}
-            </div>
-
-            {/* UGC Preview Strip */}
-            <div className="mb-10">
-              <p className="text-center text-xs uppercase tracking-widest text-gray-400 mb-5">{t.ugcSubtitle}</p>
-              <div className="grid grid-cols-3 gap-3 max-w-2xl mx-auto">
-                {[
-                  { bg: 'bg-stone-100', emoji: '🤍', label: 'Premium Cream' },
-                  { bg: 'bg-rose-50', emoji: '🌸', label: 'Light Pink' },
-                  { bg: 'bg-slate-900', emoji: '🖤', label: 'Matte Black' },
-                ].map((box) => (
-                  <div key={box.label} className={`${box.bg} rounded-2xl aspect-square flex flex-col items-center justify-center shadow-sm border border-gold-pale/20`}>
-                    <span className="text-4xl mb-2">{box.emoji}</span>
-                    <span className="text-[10px] uppercase tracking-wider text-gray-500">{box.label}</span>
-                  </div>
-                ))}
-              </div>
             </div>
 
             <div className="flex justify-center border-t border-gold-pale/50 pt-8">
