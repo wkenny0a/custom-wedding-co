@@ -78,7 +78,8 @@ export function CheckoutProvider({ children }: { children: React.ReactNode }) {
     setIsWorking(true);
     try {
       await swell.cart.update({
-        account: { email: c.email, first_name: c.firstName, last_name: c.lastName },
+        account: { email: c.email },
+        billing: { first_name: c.firstName, last_name: c.lastName, name: `${c.firstName} ${c.lastName}` },
       } as any);
       setContact(c);
       setStep(2);
