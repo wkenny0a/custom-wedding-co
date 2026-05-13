@@ -7,82 +7,94 @@ import { useCart } from '@/context/CartContext';
 import swell from '@/lib/swell';
 
 export default function PaymentForm() {
-  const { step, setStep, submitOrder, isWorking, contact } = useCheckout();
+  const { step, setStep, submitOrder, contact, address } = useCheckout();
   const { cart } = useCart();
   const router = useRouter();
 
-  const paypalMountedRef = useRef(false);
+  const cardElementRef = useRef<any>(null);
+  
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
-  const [paypalStatus, setPaypalStatus] = useState<'idle' | 'loading' | 'ready' | 'approved' | 'error'>('idle');
+  const [cardStatus, setCardStatus] = useState<'idle' | 'loading' | 'ready' | 'error'>('idle');
+  const [sameAsShipping, setSameAsShipping] = useState(true);
 
   const isLocked = step < 4;
 
-  // Mount PayPal button when step reaches 4
+  // Mount payment elements when step reaches 4
   useEffect(() => {
-    if (step !== 4 || paypalMountedRef.current) return;
-    paypalMountedRef.current = true;
-    setPaypalStatus('loading');
+    if (step !== 4) return;
 
-    const mountPayPal = async () => {
-      try {
-        // swell.payment.createElements() renders a PayPal button into #paypal-button-container
-        await (swell as any).payment.createElements({
-          elementType: 'paypal',
-          elementId: 'paypal-button-container',
-          onSuccess: async (result: any) => {
-            // Called after user approves in PayPal popup
-            setPaypalStatus('approved');
-            setIsSubmitting(true);
-            try {
-              // Update billing with PayPal result
-              await swell.cart.update({ billing: { paypal: result } } as any);
-              // Submit the order
-              const orderId = await submitOrder();
-              if (orderId) {
-                router.push(`/checkout/success?order_id=${orderId}`);
-              } else {
-                setErrorMsg('Order could not be placed. Please try again.');
-                setPaypalStatus('error');
-              }
-            } catch (err: any) {
-              setErrorMsg(err?.message || 'Something went wrong. Please try again.');
-              setPaypalStatus('error');
-            } finally {
-              setIsSubmitting(false);
-            }
-          },
-          onError: (err: any) => {
-            console.error('PayPal error:', err);
-            setErrorMsg(err?.message || 'PayPal encountered an error. Please try again.');
-            setPaypalStatus('error');
-          },
-          onCancel: () => {
-            setPaypalStatus('ready');
-            setErrorMsg('');
-          },
-        });
-        setPaypalStatus('ready');
-      } catch (e: any) {
-        console.error('PayPal Elements mount failed:', e);
-        setPaypalStatus('error');
-        setErrorMsg('PayPal could not be loaded. Please use the fallback checkout link below.');
-      }
-    };
+    if (cardStatus === 'idle') {
+      setCardStatus('loading');
+      const mountCard = async () => {
+        try {
+          cardElementRef.current = await (swell as any).payment.createElements({
+            elementType: 'card',
+            elementId: '#card-element-container',
+          });
+          setCardStatus('ready');
+        } catch (e: any) {
+          console.error('Card Elements mount failed:', e);
+          setCardStatus('error');
+          setErrorMsg('Credit card input could not be loaded. Please refresh and try again.');
+        }
+      };
+      
+      const timer = setTimeout(mountCard, 150);
+      return () => clearTimeout(timer);
+    }
+  }, [step, cardStatus]);
 
-    // Small delay to ensure DOM node #paypal-button-container is rendered
-    const timer = setTimeout(mountPayPal, 150);
-    return () => clearTimeout(timer);
-  }, [step, submitOrder, router]);
-
-  // Reset mount flag if user navigates away from step 4 and comes back
+  // Reset mount flags if user navigates away from step 4
   useEffect(() => {
     if (step < 4) {
-      paypalMountedRef.current = false;
-      setPaypalStatus('idle');
+      setCardStatus('idle');
+      cardElementRef.current = null;
       setErrorMsg('');
     }
   }, [step]);
+
+  const handleCardSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!cardElementRef.current || cardStatus !== 'ready') return;
+    
+    setIsSubmitting(true);
+    setErrorMsg('');
+    
+    try {
+      // Address object for billing
+      if (sameAsShipping && address) {
+        await swell.cart.update({
+          billing: {
+            name: `${contact.firstName} ${contact.lastName}`,
+            address1: address.address1,
+            city: address.city,
+            state: address.state,
+            zip: address.zip,
+            country: address.country,
+          }
+        } as any);
+      }
+
+      // Tokenize card
+      await swell.payment.tokenize({
+        card: cardElementRef.current,
+      });
+      
+      // Submit order
+      const orderId = await submitOrder();
+      if (orderId) {
+        router.push(`/checkout/success?order_id=${orderId}`);
+      } else {
+        setErrorMsg('Order could not be placed. Please try again.');
+      }
+    } catch (err: any) {
+      console.error('Card payment error:', err);
+      setErrorMsg(err?.message || 'Payment failed. Please check your card details and try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <div className={`bg-white/60 backdrop-blur-sm border border-gold-pale/30 rounded-2xl overflow-hidden transition-opacity duration-300 ${isLocked ? 'opacity-50 pointer-events-none' : ''}`}>
@@ -97,7 +109,7 @@ export default function PaymentForm() {
           <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
           </svg>
-          Secured by PayPal
+          Secured by Stripe
         </div>
       </div>
 
@@ -108,69 +120,65 @@ export default function PaymentForm() {
           <div className="bg-cream/40 border border-gold-pale/20 rounded-xl px-5 py-4 text-sm font-sans text-espresso/70 space-y-1.5">
             <p className="font-semibold text-espresso text-xs uppercase tracking-wider mb-2">Review Before Paying</p>
             <p>📧 {contact.email}</p>
-            <p>💳 You'll be redirected to PayPal to complete payment securely</p>
+            <p>💳 Payments are processed securely with Stripe</p>
             <p>✦ Order confirmation will be emailed immediately after</p>
           </div>
 
-          {/* PayPal Button Zone */}
-          <div>
-            <p className="text-xs font-sans uppercase tracking-widest text-espresso/50 mb-3 text-center">
-              Click below to pay securely with PayPal
-            </p>
+          {/* Credit Card Zone */}
+          <form onSubmit={handleCardSubmit} className="space-y-4">
+            <div className="bg-white border border-gold-pale/40 rounded-lg p-4">
+              {cardStatus === 'loading' && (
+                <div className="w-full h-[20px] bg-gray-100 rounded animate-pulse" />
+              )}
+              {cardStatus === 'error' && (
+                <p className="text-red-500 text-xs">Could not load card input. Please refresh or try another method.</p>
+              )}
+              <div id="card-element-container" className={`min-h-[20px] ${cardStatus === 'loading' ? 'hidden' : 'block'}`} />
+            </div>
 
-            {/* Loading skeleton */}
-            {paypalStatus === 'loading' && (
-              <div className="w-full h-[50px] bg-[#0070ba]/10 rounded-lg flex items-center justify-center gap-2 animate-pulse">
-                <Spinner />
-                <span className="text-sm font-sans text-[#0070ba]/60">Loading PayPal…</span>
+            <div className="flex items-center gap-2 pt-2">
+              <input
+                type="checkbox"
+                id="same-billing"
+                checked={sameAsShipping}
+                onChange={(e) => setSameAsShipping(e.target.checked)}
+                className="accent-gold w-4 h-4 rounded border-gold-pale/40"
+              />
+              <label htmlFor="same-billing" className="text-xs font-sans text-espresso/70 cursor-pointer">
+                Billing address is same as shipping
+              </label>
+            </div>
+
+            {!sameAsShipping && (
+              <div className="text-xs text-espresso/60 italic px-2">
+                (Billing address updates will be prompted by your bank if needed, or matched automatically.)
               </div>
             )}
 
-            {/* Approved state */}
-            {paypalStatus === 'approved' && (
-              <div className="w-full h-[50px] bg-green-50 border border-green-200 rounded-lg flex items-center justify-center gap-2">
-                <span className="text-green-700 font-sans text-sm font-semibold">
-                  ✓ PayPal Approved — Placing Your Order…
-                </span>
-                <Spinner />
-              </div>
-            )}
+            <button
+              type="submit"
+              disabled={isSubmitting || cardStatus !== 'ready'}
+              className={`w-full py-4 font-sans text-sm uppercase tracking-widest transition-all duration-300 rounded-lg flex items-center justify-center gap-2 ${
+                (isSubmitting || cardStatus !== 'ready')
+                  ? 'bg-espresso/40 text-cream/60 cursor-not-allowed'
+                  : 'bg-espresso text-cream hover:bg-espresso-light shadow-sm hover:-translate-y-0.5'
+              }`}
+            >
+              {isSubmitting ? <><Spinner /> Processing…</> : 'Pay & Place Order'}
+            </button>
+          </form>
 
-            {/* PayPal button container — Swell mounts here */}
-            <div
-              id="paypal-button-container"
-              className={`w-full min-h-[50px] rounded-lg overflow-hidden transition-opacity duration-300 ${(paypalStatus === 'loading' || paypalStatus === 'approved') ? 'opacity-0 h-0 overflow-hidden' : 'opacity-100'}`}
-            />
-
-            {/* Fallback if PayPal button fails to mount */}
-            {paypalStatus === 'error' && (
-              <div className="space-y-3">
-                <div className="bg-amber-50 border border-amber-200 rounded-lg px-4 py-3 text-sm font-sans text-amber-800">
-                  ⚠ PayPal button could not load in this environment.
-                </div>
-                {cart?.checkoutUrl && (
-                  <a
-                    href={cart.checkoutUrl}
-                    className="w-full block bg-[#0070ba] text-white font-sans font-bold text-sm py-4 rounded-lg text-center hover:bg-[#005ea6] transition-colors shadow-md"
-                  >
-                    Continue to Swell Checkout →
-                  </a>
-                )}
-              </div>
-            )}
-          </div>
-
-          {/* PayPal trust line */}
-          <div className="flex flex-col items-center gap-2 pt-2">
+          {/* Trust line */}
+          <div className="flex flex-col items-center gap-2 pt-4">
             <div className="flex items-center gap-3 text-[10px] font-sans text-espresso/40 uppercase tracking-wider">
-              <span>🔒 SSL Encrypted</span>
+              <span>🔒 256-bit SSL Encrypted</span>
               <span>·</span>
-              <span>💳 PayPal Buyer Protection</span>
+              <span>💳 Powered by Stripe</span>
               <span>·</span>
-              <span>✦ No account required</span>
+              <span>✦ Safe & Secure Checkout</span>
             </div>
             <p className="text-[10px] font-sans text-espresso/30 text-center max-w-xs">
-              You'll be redirected to PayPal to complete payment. Your card details are never shared with us.
+              Your payment is processed through Stripe's secure infrastructure. Your full card details are never saved on our servers.
             </p>
           </div>
 
@@ -186,7 +194,7 @@ export default function PaymentForm() {
             <button
               type="button"
               onClick={() => setStep(3)}
-              disabled={isSubmitting || paypalStatus === 'approved'}
+              disabled={isSubmitting}
               className="text-sm font-sans text-espresso/50 hover:text-espresso transition-colors uppercase tracking-wider"
             >
               ← Back to Shipping
