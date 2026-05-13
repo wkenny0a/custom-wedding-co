@@ -3,14 +3,14 @@ import Image from 'next/image'
 
 export function CategoryGrid() {
     const categories = [
-        { title: 'Stationery & Paper', count: 3, slug: 'stationery-paper-goods', image: '/images/category_paper.png' },
-        { title: 'Signs & Signage', count: 3, slug: 'welcome-signs-signage', image: '/images/category_signs.png' },
-        { title: 'Wedding Keepsakes', count: 4, slug: 'wedding-keepsakes', image: '/images/category_guest_books.png' },
-        { title: 'Favors & Gifts', count: 9, slug: 'favors-party-extras', image: '/images/category_favors.png' },
-        { title: 'Bridal Party Gifts', count: 11, slug: 'bridal-party-gifts', image: '/images/category_bridesmaid.png' },
-        { title: 'Ceremony Details', count: 5, slug: 'ceremony-details', image: '/images/category_cake_toppers.png' },
-        { title: 'Tabletop & Bar', count: 6, slug: 'barware-drinkware', image: '/images/category_table_decor.png' },
-        { title: 'Groomsmen Gifts', count: 5, slug: 'groomsmen-gifts', image: '/images/category_keepsakes.png' },
+        { title: 'Signage & Displays', count: 10, slug: 'signage-displays', image: '/images/category_signs.png' },
+        { title: 'Barware & Drinkware', count: 29, slug: 'barware-drinkware', image: '/images/category_table_decor.png' },
+        { title: 'Bridal Party Gifts', count: 70, slug: 'bridal-party-gifts', image: '/images/category_bridesmaid.png' },
+        { title: 'Groomsmen Gifts', count: 18, slug: 'groomsmen-gifts', image: '/images/category_keepsakes.png' },
+        { title: 'Wedding Keepsakes', count: 73, slug: 'wedding-keepsakes', image: '/images/category_guest_books.png' },
+        { title: 'Ceremony & Reception', count: 19, slug: 'ceremony-reception', image: '/images/category_cake_toppers.png' },
+        { title: 'Favors & Party Extras', count: 59, slug: 'favors-party-extras', image: '/images/category_favors.png' },
+        { title: 'Jewelry & Accessories', count: 19, slug: 'jewelry-accessories', image: '/images/category_sentimental.png' },
     ]
 
     return (
