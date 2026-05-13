@@ -123,7 +123,7 @@ export function CheckoutProvider({ children }: { children: React.ReactNode }) {
     setIsWorking(true);
     try {
       await swell.cart.update({
-        shipping: { service_id: rate.id },
+        shipping: { service: rate.id },
       } as any);
       setSelectedRate(rate);
       setStep(4);
