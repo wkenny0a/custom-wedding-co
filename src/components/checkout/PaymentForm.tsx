@@ -23,6 +23,10 @@ export default function PaymentForm() {
     const ts = new Date().toLocaleTimeString();
     console.log(`[CWC Pay ${ts}] ${msg}`);
     setDebugLog(prev => [...prev, `${ts} ${msg}`]);
+    // Also set document title for easy screenshot reading
+    if (typeof document !== 'undefined') {
+      document.title = `[PAY] ${msg.substring(0, 80)}`;
+    }
   }, []);
 
   // Mount Stripe card element when step reaches 4
@@ -261,16 +265,14 @@ export default function PaymentForm() {
             </div>
           )}
 
-          {/* Debug log (visible on page for debugging, remove later) */}
+          {/* Debug log - ALWAYS VISIBLE for debugging */}
           {debugLog.length > 0 && (
-            <details className="border border-gray-200 rounded-lg">
-              <summary className="px-3 py-2 text-xs font-sans text-gray-400 cursor-pointer">Debug Log ({debugLog.length} entries)</summary>
-              <div className="bg-gray-900 text-green-400 px-3 py-2 text-[10px] font-mono max-h-48 overflow-auto rounded-b-lg">
-                {debugLog.map((line, i) => (
-                  <div key={i} className={line.includes('❌') ? 'text-red-400' : line.includes('✅') ? 'text-green-300' : ''}>{line}</div>
-                ))}
-              </div>
-            </details>
+            <div className="bg-gray-900 text-green-400 px-4 py-3 text-xs font-mono max-h-48 overflow-auto rounded-lg border-2 border-yellow-400">
+              <p className="text-yellow-300 font-bold mb-1">DEBUG LOG ({debugLog.length} entries):</p>
+              {debugLog.map((line, i) => (
+                <div key={i} className={line.includes('❌') ? 'text-red-400 font-bold' : line.includes('✅') ? 'text-green-300 font-bold' : ''}>{line}</div>
+              ))}
+            </div>
           )}
 
           {/* Back button */}
