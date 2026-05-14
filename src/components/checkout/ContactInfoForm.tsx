@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useCheckout, ContactInfo } from './CheckoutProvider';
 
 export default function ContactInfoForm() {
-  const { contact, saveContact, isWorking, step, setStep } = useCheckout();
+  const { contact, saveContact, isWorking, step, setStep, checkoutError } = useCheckout();
 
   const [form, setForm] = useState<ContactInfo>({
     email: contact.email,
@@ -128,6 +128,12 @@ export default function ContactInfoForm() {
               'Continue to Shipping →'
             )}
           </button>
+          
+          {checkoutError && (
+            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm font-sans">
+              ⚠ {checkoutError}
+            </div>
+          )}
         </form>
       )}
     </div>

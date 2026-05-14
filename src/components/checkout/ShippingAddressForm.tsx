@@ -11,7 +11,7 @@ const US_STATES = [
 ];
 
 export default function ShippingAddressForm() {
-  const { address, saveAddress, isWorking, step, setStep, contact } = useCheckout();
+  const { address, saveAddress, isWorking, step, setStep, contact, checkoutError } = useCheckout();
 
   const [form, setForm] = useState<ShippingAddress>({
     address1: address.address1,
@@ -28,7 +28,13 @@ export default function ShippingAddressForm() {
     if (!form.address1.trim()) e.address1 = 'Street address is required';
     if (!form.city.trim()) e.city = 'City is required';
     if (!form.state.trim()) e.state = 'State is required';
-    if (!form.zip.match(/^\d{5}(-\d{4})?$/)) e.zip = 'Valid ZIP code required';
+    
+    if (!form.zip.trim()) {
+      e.zip = 'ZIP/Postal code is required';
+    } else if (form.country === 'US' && !form.zip.match(/^\d{5}(-\d{4})?$/)) {
+      e.zip = 'Valid ZIP code required';
+    }
+    
     setErrors(e);
     return Object.keys(e).length === 0;
   };
@@ -151,6 +157,12 @@ export default function ShippingAddressForm() {
               {isWorking ? <><Spinner />Finding Rates…</> : 'Continue to Shipping →'}
             </button>
           </div>
+          
+          {checkoutError && (
+            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm font-sans">
+              ⚠ {checkoutError}
+            </div>
+          )}
         </form>
       )}
     </div>

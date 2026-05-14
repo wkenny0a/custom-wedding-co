@@ -45,6 +45,8 @@ interface CheckoutContextType {
   bumpAdded: boolean;
   setBumpAdded: (v: boolean) => void;
   orderBumpProductId: string;
+  checkoutError: string | null;
+  setCheckoutError: (e: string | null) => void;
 }
 
 const CheckoutContext = createContext<CheckoutContextType | undefined>(undefined);
@@ -64,6 +66,7 @@ export function CheckoutProvider({ children }: { children: React.ReactNode }) {
   const [step, setStep] = useState(1); // 1=Contact, 2=Address, 3=Shipping, 4=Payment
   const [isWorking, setIsWorking] = useState(false);
   const [bumpAdded, setBumpAddedState] = useState(false);
+  const [checkoutError, setCheckoutError] = useState<string | null>(null);
 
   const [contact, setContact] = useState<ContactInfo>({
     email: '', firstName: '', lastName: '',
@@ -76,13 +79,23 @@ export function CheckoutProvider({ children }: { children: React.ReactNode }) {
 
   const saveContact = useCallback(async (c: ContactInfo) => {
     setIsWorking(true);
+    setCheckoutError(null);
     try {
-      await swell.cart.update({
+      const res: any = await swell.cart.update({
         account: { email: c.email },
         billing: { first_name: c.firstName, last_name: c.lastName, name: `${c.firstName} ${c.lastName}` },
       } as any);
+      
+      if (res?.errors) {
+        const errorMessages = Object.values(res.errors).map((e: any) => e.message).join(' | ');
+        setCheckoutError(errorMessages || 'Validation error updating contact info.');
+        return;
+      }
+
       setContact(c);
       setStep(2);
+    } catch (e: any) {
+      setCheckoutError(e?.message || 'Something went wrong updating contact info.');
     } finally {
       setIsWorking(false);
     }
@@ -90,8 +103,9 @@ export function CheckoutProvider({ children }: { children: React.ReactNode }) {
 
   const saveAddress = useCallback(async (a: ShippingAddress) => {
     setIsWorking(true);
+    setCheckoutError(null);
     try {
-      await swell.cart.update({
+      const res: any = await swell.cart.update({
         shipping: {
           name: `${contact.firstName} ${contact.lastName}`,
           address1: a.address1,
@@ -102,6 +116,13 @@ export function CheckoutProvider({ children }: { children: React.ReactNode }) {
           country: a.country,
         },
       } as any);
+
+      if (res?.errors) {
+        const errorMessages = Object.values(res.errors).map((e: any) => e.message).join(' | ');
+        setCheckoutError(errorMessages || 'Validation error updating address.');
+        return;
+      }
+
       setAddress(a);
       // Fetch shipping rates after address is saved
       const ratesResponse: any = await swell.cart.getShippingRates();
@@ -114,6 +135,8 @@ export function CheckoutProvider({ children }: { children: React.ReactNode }) {
       setShippingRates(services);
       // If no rates returned, still go to payment (free shipping scenario)
       setStep(3);
+    } catch (e: any) {
+      setCheckoutError(e?.message || 'Something went wrong updating address.');
     } finally {
       setIsWorking(false);
     }
@@ -121,12 +144,22 @@ export function CheckoutProvider({ children }: { children: React.ReactNode }) {
 
   const saveShippingRate = useCallback(async (rate: ShippingRate) => {
     setIsWorking(true);
+    setCheckoutError(null);
     try {
-      await swell.cart.update({
+      const res: any = await swell.cart.update({
         shipping: { service: rate.id },
       } as any);
+
+      if (res?.errors) {
+        const errorMessages = Object.values(res.errors).map((e: any) => e.message).join(' | ');
+        setCheckoutError(errorMessages || 'Validation error updating shipping method.');
+        return;
+      }
+
       setSelectedRate(rate);
       setStep(4);
+    } catch (e: any) {
+      setCheckoutError(e?.message || 'Something went wrong updating shipping method.');
     } finally {
       setIsWorking(false);
     }
@@ -170,6 +203,7 @@ export function CheckoutProvider({ children }: { children: React.ReactNode }) {
       submitOrder,
       bumpAdded, setBumpAdded,
       orderBumpProductId: ORDER_BUMP_PRODUCT_ID,
+      checkoutError, setCheckoutError,
     }}>
       {children}
     </CheckoutContext.Provider>
