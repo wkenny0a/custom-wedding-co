@@ -31,6 +31,9 @@ export default function CheckoutFlow() {
               </span>
             </div>
 
+            {/* Order Bump — appears before contact step */}
+            <OrderBumpWidget />
+
             {/* Step 1: Contact */}
             <ContactInfoForm />
 
@@ -39,9 +42,6 @@ export default function CheckoutFlow() {
 
             {/* Step 3: Shipping Method */}
             <ShippingMethodSelector />
-
-            {/* Order Bump — appears at payment step */}
-            <OrderBumpWidget />
 
             {/* Step 4: Payment */}
             <PaymentForm />

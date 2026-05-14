@@ -14,6 +14,7 @@ interface CartContextType {
     removeFromCart: (itemId: string) => Promise<void>;
     updateQuantity: (itemId: string, quantity: number) => Promise<void>;
     applyCoupon: (code: string) => Promise<any>;
+    updateCart: (newCart: any) => void;
     isLoading: boolean;
 }
 
@@ -159,6 +160,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
         }
     }
 
+    const updateCart = (newCart: any) => {
+        setCart(newCart);
+    };
+
     return (
         <CartContext.Provider
             value={{
@@ -170,6 +175,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
                 removeFromCart,
                 updateQuantity,
                 applyCoupon,
+                updateCart,
                 isLoading
             }}
         >

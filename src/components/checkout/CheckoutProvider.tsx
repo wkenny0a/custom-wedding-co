@@ -61,7 +61,7 @@ const ORDER_BUMP_PRODUCT_ID = '69e9a9c652ca2a001272aa14';
 
 // ─── Provider ─────────────────────────────────────────────────────────────────
 export function CheckoutProvider({ children }: { children: React.ReactNode }) {
-  const { cart, addToCart, removeFromCart } = useCart();
+  const { cart, addToCart, removeFromCart, updateCart } = useCart();
 
   const [step, setStep] = useState(1); // 1=Contact, 2=Address, 3=Shipping, 4=Payment
   const [isWorking, setIsWorking] = useState(false);
@@ -92,6 +92,7 @@ export function CheckoutProvider({ children }: { children: React.ReactNode }) {
         return;
       }
 
+      updateCart(res);
       setContact(c);
       setStep(2);
     } catch (e: any) {
@@ -99,7 +100,7 @@ export function CheckoutProvider({ children }: { children: React.ReactNode }) {
     } finally {
       setIsWorking(false);
     }
-  }, []);
+  }, [updateCart]);
 
   const saveAddress = useCallback(async (a: ShippingAddress) => {
     setIsWorking(true);
@@ -123,6 +124,7 @@ export function CheckoutProvider({ children }: { children: React.ReactNode }) {
         return;
       }
 
+      updateCart(res);
       setAddress(a);
       // Fetch shipping rates after address is saved
       const ratesResponse: any = await swell.cart.getShippingRates();
@@ -140,7 +142,7 @@ export function CheckoutProvider({ children }: { children: React.ReactNode }) {
     } finally {
       setIsWorking(false);
     }
-  }, [contact]);
+  }, [contact, updateCart]);
 
   const saveShippingRate = useCallback(async (rate: ShippingRate) => {
     setIsWorking(true);
@@ -156,6 +158,8 @@ export function CheckoutProvider({ children }: { children: React.ReactNode }) {
         return;
       }
 
+      updateCart(res); // Sync the global cart state with the new totals!
+
       setSelectedRate(rate);
       setStep(4);
     } catch (e: any) {
@@ -163,7 +167,7 @@ export function CheckoutProvider({ children }: { children: React.ReactNode }) {
     } finally {
       setIsWorking(false);
     }
-  }, []);
+  }, [updateCart]);
 
   const setBumpAdded = useCallback(async (val: boolean) => {
     setBumpAddedState(val);
