@@ -3,6 +3,7 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useCart } from '@/context/CartContext';
+import { trackInitiateCheckout } from '@/lib/analytics';
 import CheckoutFlow from '@/components/checkout/CheckoutFlow';
 
 export default function CheckoutPage() {
@@ -15,6 +16,23 @@ export default function CheckoutPage() {
       router.replace('/shop');
     }
   }, [cart, isLoading, router]);
+
+  // Fire InitiateCheckout tracking event when cart is loaded
+  useEffect(() => {
+    if (!isLoading && cart?.items?.length > 0) {
+      try {
+        trackInitiateCheckout({
+          items: cart.items.map((item: any) => ({
+            id: item.product_id || item.id,
+            name: item.product?.name || 'Unknown',
+            price: item.price || 0,
+            quantity: item.quantity || 1,
+          })),
+          total: cart.sub_total || cart.grand_total || 0,
+        });
+      } catch (_) { /* analytics should never break checkout */ }
+    }
+  }, [cart, isLoading]);
 
   if (isLoading) {
     return (

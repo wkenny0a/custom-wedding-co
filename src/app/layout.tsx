@@ -1,5 +1,6 @@
 import { Inter, Cormorant_Garamond, Playfair_Display } from 'next/font/google';
 import './globals.css';
+import { AnalyticsScripts } from '@/components/analytics/AnalyticsScripts';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 const cormorant = Cormorant_Garamond({ subsets: ['latin'], weight: ['400', '500', '600', '700'], variable: '--font-cormorant' });
@@ -14,10 +15,16 @@ export const metadata = {
   },
 }
 
+import Script from 'next/script';
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${inter.variable} ${cormorant.variable} ${playfair.variable}`}>
-      <body>{children}</body>
+      <body>
+        {children}
+        <AnalyticsScripts />
+        <Script src="https://js.stripe.com/v3/" strategy="beforeInteractive" />
+      </body>
     </html>
   )
 }

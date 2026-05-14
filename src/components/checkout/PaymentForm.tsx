@@ -1,180 +1,99 @@
 'use client';
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useCheckout } from './CheckoutProvider';
 import { useCart } from '@/context/CartContext';
 import swell from '@/lib/swell';
+import { loadStripe } from '@stripe/stripe-js';
+import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 
-export default function PaymentForm() {
+// Cache the promise so we don't recreate it
+let stripePromiseCache: any = null;
+
+function Spinner() {
+  return (
+    <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+    </svg>
+  );
+}
+
+// Separate component that uses Stripe hooks
+function PaymentFormContent() {
   const { step, setStep, submitOrder, contact, address } = useCheckout();
   const { cart } = useCart();
   const router = useRouter();
 
+  const stripe = useStripe();
+  const elements = useElements();
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
-  const [cardStatus, setCardStatus] = useState<'idle' | 'loading' | 'ready' | 'error'>('idle');
   const [sameAsShipping, setSameAsShipping] = useState(true);
-  const [debugLog, setDebugLog] = useState<string[]>([]);
 
   const isLocked = step < 4;
 
-  const log = useCallback((msg: string) => {
-    const ts = new Date().toLocaleTimeString();
-    console.log(`[CWC Pay ${ts}] ${msg}`);
-    setDebugLog(prev => [...prev, `${ts} ${msg}`]);
-    // Also set document title for easy screenshot reading
-    if (typeof document !== 'undefined') {
-      document.title = `[PAY] ${msg.substring(0, 80)}`;
-    }
-  }, []);
-
-  // Mount Stripe card element when step reaches 4
-  useEffect(() => {
-    if (step !== 4) return;
-
-    if (cardStatus === 'idle') {
-      setCardStatus('loading');
-      log('Step 4 reached, starting mount...');
-
-      const mountCard = async () => {
-        try {
-          // 1. Verify swell object
-          log(`swell type: ${typeof swell}`);
-          log(`swell.payment type: ${typeof (swell as any).payment}`);
-          log(`createElements type: ${typeof (swell as any).payment?.createElements}`);
-
-          if (!(swell as any).payment?.createElements) {
-            throw new Error('swell.payment.createElements is not available');
-          }
-
-          // 2. Check payment settings
-          log('Fetching payment settings...');
-          try {
-            const ps = await (swell as any).settings.payments();
-            log(`Settings card: ${JSON.stringify(ps?.card || 'NO_CARD')}`);
-          } catch (settingsErr: any) {
-            log(`Settings fetch error: ${settingsErr?.message}`);
-          }
-
-          // 3. Check cart state
-          log('Checking cart...');
-          try {
-            const c = await swell.cart.get();
-            log(`Cart: id=${(c as any)?.id?.substring(0,8)}, items=${(c as any)?.items?.length || 0}`);
-          } catch (cartErr: any) {
-            log(`Cart error: ${cartErr?.message}`);
-          }
-
-          // 4. Check DOM container
-          const container = document.getElementById('card-element-container');
-          log(`DOM #card-element-container: ${container ? 'FOUND' : 'NOT FOUND'}`);
-          if (!container) {
-            throw new Error('Container #card-element-container not in DOM');
-          }
-
-          // 5. Call createElements
-          log('Calling swell.payment.createElements...');
-          await (swell as any).payment.createElements({
-            card: {
-              elementId: '#card-element-container',
-              options: {
-                hidePostalCode: true,
-                style: {
-                  base: {
-                    fontFamily: '"Cormorant Garamond", serif',
-                    fontSize: '16px',
-                    color: '#3B2F2F',
-                    '::placeholder': { color: '#3B2F2F66' },
-                  },
-                  invalid: { color: '#dc2626' },
-                },
-              },
-              onReady: () => {
-                log('✅ Stripe card onReady fired!');
-                setCardStatus('ready');
-              },
-              onError: (err: any) => {
-                log(`❌ Stripe card onError: ${err?.message || JSON.stringify(err)}`);
-                setErrorMsg(err?.message || 'Card input error.');
-              },
-            },
-          });
-
-          log('createElements resolved successfully');
-          setCardStatus(prev => prev === 'loading' ? 'ready' : prev);
-        } catch (e: any) {
-          log(`❌ MOUNT EXCEPTION: ${e?.message}`);
-          log(`Stack: ${e?.stack?.substring(0, 200)}`);
-          setCardStatus('error');
-          setErrorMsg(e?.message || 'Credit card input could not be loaded.');
-        }
-      };
-
-      // Delay to ensure DOM container is rendered
-      const timer = setTimeout(mountCard, 600);
-      return () => clearTimeout(timer);
-    }
-  }, [step, cardStatus, log]);
-
-  // Reset mount flags if user navigates away from step 4
-  useEffect(() => {
-    if (step < 4) {
-      setCardStatus('idle');
-      setErrorMsg('');
-      setDebugLog([]);
-    }
-  }, [step]);
-
-  // Tokenize and submit order
   const handleCardSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (cardStatus !== 'ready') return;
+    if (!stripe || !elements) return;
 
     setIsSubmitting(true);
     setErrorMsg('');
 
     try {
-      // Set billing address on cart
-      if (sameAsShipping && address) {
-        await swell.cart.update({
-          billing: {
+      const cardElement = elements.getElement(CardElement);
+      if (!cardElement) {
+        throw new Error('Card element not loaded');
+      }
+
+      // Generate token using Stripe JS
+      const { error, token } = await stripe.createToken(cardElement, {
+        name: `${contact.firstName} ${contact.lastName}`,
+        address_line1: address?.address1,
+        address_city: address?.city,
+        address_state: address?.state,
+        address_zip: address?.zip,
+        address_country: address?.country,
+      });
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      if (!token) {
+        throw new Error('Could not securely tokenize card.');
+      }
+
+      // Pass the token to Swell
+      await swell.cart.update({
+        billing: {
+          method: 'card',
+          card: {
+            token: token.id
+          },
+          ...(sameAsShipping && address ? {
             name: `${contact.firstName} ${contact.lastName}`,
             address1: address.address1,
             city: address.city,
             state: address.state,
             zip: address.zip,
             country: address.country,
-          }
-        } as any);
-      }
+          } : {})
+        }
+      } as any);
 
-      // Tokenize
-      await (swell as any).payment.tokenize({
-        card: {
-          onError: (err: any) => {
-            console.error('Tokenize error:', err);
-            setErrorMsg(err?.message || 'Payment failed. Please check your card details.');
-            setIsSubmitting(false);
-          },
-          onSuccess: async () => {
-            try {
-              const orderId = await submitOrder();
-              if (orderId) {
-                router.push(`/checkout/success?order_id=${orderId}`);
-              } else {
-                setErrorMsg('Order could not be placed.');
-                setIsSubmitting(false);
-              }
-            } catch (orderErr: any) {
-              setErrorMsg(orderErr?.message || 'Order submission failed.');
-              setIsSubmitting(false);
-            }
-          },
-        },
-      });
+      // Submit the order
+      const orderId = await submitOrder();
+      if (orderId) {
+        router.push(`/checkout/success?order_id=${orderId}`);
+      } else {
+        throw new Error('Order could not be placed.');
+      }
     } catch (err: any) {
-      setErrorMsg(err?.message || 'Payment failed.');
+      console.error('Payment failed:', err);
+      setErrorMsg(err?.message || 'Payment failed. Please check your card details.');
       setIsSubmitting(false);
     }
   };
@@ -210,15 +129,22 @@ export default function PaymentForm() {
           {/* Credit Card Zone */}
           <form onSubmit={handleCardSubmit} className="space-y-4">
             <div className="bg-white border border-gold-pale/40 rounded-lg p-4">
-              {cardStatus === 'loading' && (
-                <div className="w-full h-[44px] bg-gray-100 rounded animate-pulse flex items-center justify-center text-xs text-gray-400">
-                  Loading payment form...
-                </div>
-              )}
-              {cardStatus === 'error' && (
-                <p className="text-red-500 text-xs">Could not load card input. See debug log below.</p>
-              )}
-              <div id="card-element-container" className={`min-h-[44px] ${cardStatus === 'loading' ? 'hidden' : 'block'}`} />
+              <div className="min-h-[44px] flex flex-col justify-center">
+                <CardElement 
+                  options={{
+                    hidePostalCode: true,
+                    style: {
+                      base: {
+                        fontFamily: '"Cormorant Garamond", serif',
+                        fontSize: '16px',
+                        color: '#3B2F2F',
+                        '::placeholder': { color: '#3B2F2F66' },
+                      },
+                      invalid: { color: '#dc2626' },
+                    },
+                  }}
+                />
+              </div>
             </div>
 
             <div className="flex items-center gap-2 pt-2">
@@ -236,9 +162,9 @@ export default function PaymentForm() {
 
             <button
               type="submit"
-              disabled={isSubmitting || cardStatus !== 'ready'}
+              disabled={isSubmitting || !stripe || !elements}
               className={`w-full py-4 font-sans text-sm uppercase tracking-widest transition-all duration-300 rounded-lg flex items-center justify-center gap-2 ${
-                (isSubmitting || cardStatus !== 'ready')
+                (isSubmitting || !stripe || !elements)
                   ? 'bg-espresso/40 text-cream/60 cursor-not-allowed'
                   : 'bg-espresso text-cream hover:bg-espresso-light shadow-sm hover:-translate-y-0.5'
               }`}
@@ -265,16 +191,6 @@ export default function PaymentForm() {
             </div>
           )}
 
-          {/* Debug log - ALWAYS VISIBLE for debugging */}
-          {debugLog.length > 0 && (
-            <div className="bg-gray-900 text-green-400 px-4 py-3 text-xs font-mono max-h-48 overflow-auto rounded-lg border-2 border-yellow-400">
-              <p className="text-yellow-300 font-bold mb-1">DEBUG LOG ({debugLog.length} entries):</p>
-              {debugLog.map((line, i) => (
-                <div key={i} className={line.includes('❌') ? 'text-red-400 font-bold' : line.includes('✅') ? 'text-green-300 font-bold' : ''}>{line}</div>
-              ))}
-            </div>
-          )}
-
           {/* Back button */}
           <div className="pt-2 border-t border-gold-pale/20">
             <button
@@ -292,11 +208,35 @@ export default function PaymentForm() {
   );
 }
 
-function Spinner() {
+export default function PaymentForm() {
+  const { step } = useCheckout();
+  const [stripePromise, setStripePromise] = useState<any>(null);
+
+  useEffect(() => {
+    if (step >= 4 && !stripePromiseCache) {
+      // Fetch public key securely
+      const auth = btoa(process.env.NEXT_PUBLIC_SWELL_PUBLIC_KEY + ':');
+      fetch('https://customweddingco.swell.store/api/settings/payments', {
+        headers: { 'Authorization': `Basic ${auth}` }
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data?.card?.publishable_key) {
+          stripePromiseCache = loadStripe(data.card.publishable_key);
+          setStripePromise(stripePromiseCache);
+        }
+      })
+      .catch(err => {
+        console.error('Failed to load Stripe configuration:', err);
+      });
+    } else if (stripePromiseCache && !stripePromise) {
+      setStripePromise(stripePromiseCache);
+    }
+  }, [step, stripePromise]);
+
   return (
-    <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
-      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-    </svg>
+    <Elements stripe={stripePromise}>
+      <PaymentFormContent />
+    </Elements>
   );
 }

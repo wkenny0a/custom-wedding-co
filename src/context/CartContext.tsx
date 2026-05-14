@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react'
 import swell from '@/lib/swell'
+import { trackAddToCart } from '@/lib/analytics'
 
 // Define the shape of our Cart Context
 interface CartContextType {
@@ -60,6 +61,20 @@ export function CartProvider({ children }: { children: ReactNode }) {
                 throw new Error(errorMessages || 'Validation error adding item to cart')
             }
             setCart(updatedCart)
+
+            // Fire e-commerce tracking events across all pixels
+            try {
+                const addedItem = updatedCart?.items?.slice(-1)[0]
+                if (addedItem) {
+                    trackAddToCart({
+                        id: addedItem.product_id || productId,
+                        name: addedItem.product?.name || 'Unknown Product',
+                        price: addedItem.price || 0,
+                        quantity: addedItem.quantity || quantity,
+                    })
+                }
+            } catch (_) { /* analytics should never break checkout */ }
+
             if (!suppressDrawer) {
                 setIsCartOpen(true) // Open drawer automatically if not silenced
             }
