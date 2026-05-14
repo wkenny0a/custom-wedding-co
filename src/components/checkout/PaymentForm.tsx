@@ -29,8 +29,9 @@ export default function PaymentForm() {
       const mountCard = async () => {
         try {
           cardElementRef.current = await (swell as any).payment.createElements({
-            elementType: 'card',
-            elementId: '#card-element-container',
+            card: {
+              elementId: '#card-element-container',
+            }
           });
           setCardStatus('ready');
         } catch (e: any) {
@@ -77,8 +78,13 @@ export default function PaymentForm() {
       }
 
       // Tokenize card
-      await swell.payment.tokenize({
-        card: cardElementRef.current,
+      await new Promise((resolve, reject) => {
+        (swell as any).payment.tokenize({
+          card: {
+            onSuccess: () => resolve(true),
+            onError: (err: any) => reject(err)
+          }
+        });
       });
       
       // Submit order
