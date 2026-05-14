@@ -11,8 +11,6 @@ export default function PaymentForm() {
   const { cart } = useCart();
   const router = useRouter();
 
-  const cardElementRef = useRef<any>(null);
-  
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const [cardStatus, setCardStatus] = useState<'idle' | 'loading' | 'ready' | 'error'>('idle');
@@ -20,7 +18,8 @@ export default function PaymentForm() {
 
   const isLocked = step < 4;
 
-  // Mount payment elements when step reaches 4
+  // Mount Stripe card element when step reaches 4
+  // Docs: https://developers.swell.is/frontend-api/payments#render-a-stripe-card-element
   useEffect(() => {
     if (step !== 4) return;
 
@@ -28,20 +27,44 @@ export default function PaymentForm() {
       setCardStatus('loading');
       const mountCard = async () => {
         try {
-          cardElementRef.current = await (swell as any).payment.createElements({
+          await (swell as any).payment.createElements({
             card: {
               elementId: '#card-element-container',
-            }
+              options: {
+                hidePostalCode: true,
+                style: {
+                  base: {
+                    fontFamily: '"Cormorant Garamond", serif',
+                    fontSize: '16px',
+                    color: '#3B2F2F',
+                    '::placeholder': {
+                      color: '#3B2F2F66',
+                    },
+                  },
+                  invalid: {
+                    color: '#dc2626',
+                  },
+                },
+              },
+              onReady: () => {
+                setCardStatus('ready');
+              },
+              onError: (err: any) => {
+                console.error('Stripe card element error:', err);
+                setErrorMsg(err?.message || 'Card input error. Please try again.');
+              },
+            },
           });
-          setCardStatus('ready');
+          // If onReady hasn't fired yet, set ready after createElements resolves
+          setCardStatus((prev) => prev === 'loading' ? 'ready' : prev);
         } catch (e: any) {
           console.error('Card Elements mount failed:', e);
           setCardStatus('error');
-          setErrorMsg('Credit card input could not be loaded. Please refresh and try again.');
+          setErrorMsg(e?.message || 'Credit card input could not be loaded. Please refresh and try again.');
         }
       };
-      
-      const timer = setTimeout(mountCard, 150);
+
+      const timer = setTimeout(mountCard, 200);
       return () => clearTimeout(timer);
     }
   }, [step, cardStatus]);
@@ -50,20 +73,21 @@ export default function PaymentForm() {
   useEffect(() => {
     if (step < 4) {
       setCardStatus('idle');
-      cardElementRef.current = null;
       setErrorMsg('');
     }
   }, [step]);
 
+  // Tokenize and submit order
+  // Docs: https://developers.swell.is/frontend-api/payments#tokenize-elements
   const handleCardSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!cardElementRef.current || cardStatus !== 'ready') return;
-    
+    if (cardStatus !== 'ready') return;
+
     setIsSubmitting(true);
     setErrorMsg('');
-    
+
     try {
-      // Address object for billing
+      // Set billing address on cart before tokenizing
       if (sameAsShipping && address) {
         await swell.cart.update({
           billing: {
@@ -77,27 +101,35 @@ export default function PaymentForm() {
         } as any);
       }
 
-      // Tokenize card
-      await new Promise((resolve, reject) => {
-        (swell as any).payment.tokenize({
-          card: {
-            onSuccess: () => resolve(true),
-            onError: (err: any) => reject(err)
-          }
-        });
+      // Tokenize the card using the correct Swell API signature
+      await (swell as any).payment.tokenize({
+        card: {
+          onError: (err: any) => {
+            console.error('Tokenize error:', err);
+            setErrorMsg(err?.message || 'Payment failed. Please check your card details and try again.');
+            setIsSubmitting(false);
+          },
+          onSuccess: async () => {
+            // Card tokenized successfully — submit the order
+            try {
+              const orderId = await submitOrder();
+              if (orderId) {
+                router.push(`/checkout/success?order_id=${orderId}`);
+              } else {
+                setErrorMsg('Order could not be placed. Please try again.');
+                setIsSubmitting(false);
+              }
+            } catch (orderErr: any) {
+              console.error('Order submit error:', orderErr);
+              setErrorMsg(orderErr?.message || 'Order submission failed. Please try again.');
+              setIsSubmitting(false);
+            }
+          },
+        },
       });
-      
-      // Submit order
-      const orderId = await submitOrder();
-      if (orderId) {
-        router.push(`/checkout/success?order_id=${orderId}`);
-      } else {
-        setErrorMsg('Order could not be placed. Please try again.');
-      }
     } catch (err: any) {
       console.error('Card payment error:', err);
       setErrorMsg(err?.message || 'Payment failed. Please check your card details and try again.');
-    } finally {
       setIsSubmitting(false);
     }
   };
@@ -134,12 +166,12 @@ export default function PaymentForm() {
           <form onSubmit={handleCardSubmit} className="space-y-4">
             <div className="bg-white border border-gold-pale/40 rounded-lg p-4">
               {cardStatus === 'loading' && (
-                <div className="w-full h-[20px] bg-gray-100 rounded animate-pulse" />
+                <div className="w-full h-[44px] bg-gray-100 rounded animate-pulse" />
               )}
               {cardStatus === 'error' && (
                 <p className="text-red-500 text-xs">Could not load card input. Please refresh or try another method.</p>
               )}
-              <div id="card-element-container" className={`min-h-[20px] ${cardStatus === 'loading' ? 'hidden' : 'block'}`} />
+              <div id="card-element-container" className={`min-h-[44px] ${cardStatus === 'loading' ? 'hidden' : 'block'}`} />
             </div>
 
             <div className="flex items-center gap-2 pt-2">
