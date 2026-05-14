@@ -27,6 +27,17 @@ export default function PaymentForm() {
       setCardStatus('loading');
       const mountCard = async () => {
         try {
+          // Debug: log payment settings to understand what Swell returns
+          const paymentSettings = await (swell as any).settings.payments();
+          console.log('[CWC Checkout] Payment settings from Swell:', JSON.stringify(paymentSettings, null, 2));
+
+          // Ensure DOM container exists
+          const container = document.getElementById('card-element-container');
+          if (!container) {
+            throw new Error('DOM element #card-element-container not found');
+          }
+          console.log('[CWC Checkout] Container found, calling createElements...');
+
           await (swell as any).payment.createElements({
             card: {
               elementId: '#card-element-container',
@@ -47,24 +58,27 @@ export default function PaymentForm() {
                 },
               },
               onReady: () => {
+                console.log('[CWC Checkout] Stripe card element is READY');
                 setCardStatus('ready');
               },
               onError: (err: any) => {
-                console.error('Stripe card element error:', err);
+                console.error('[CWC Checkout] Stripe card element onError:', err);
                 setErrorMsg(err?.message || 'Card input error. Please try again.');
               },
             },
           });
+          console.log('[CWC Checkout] createElements call resolved');
           // If onReady hasn't fired yet, set ready after createElements resolves
           setCardStatus((prev) => prev === 'loading' ? 'ready' : prev);
         } catch (e: any) {
-          console.error('Card Elements mount failed:', e);
+          console.error('[CWC Checkout] Card Elements mount FAILED:', e);
           setCardStatus('error');
           setErrorMsg(e?.message || 'Credit card input could not be loaded. Please refresh and try again.');
         }
       };
 
-      const timer = setTimeout(mountCard, 200);
+      // Give the DOM a moment to render the container
+      const timer = setTimeout(mountCard, 500);
       return () => clearTimeout(timer);
     }
   }, [step, cardStatus]);
