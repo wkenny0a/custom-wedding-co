@@ -1,16 +1,36 @@
-const swell = require('swell-js');
+require('dotenv').config({ path: '.env.local' });
+const swell = require('swell-node').swell;
+swell.init(
+  process.env.NEXT_PUBLIC_SWELL_STORE_ID,
+  process.env.NEXT_PUBLIC_SWELL_SECRET_KEY
+);
 
-swell.init('customweddingco', 'pk_pA1RkUIfVn6dijUq3DIFc324L7V7Z9n1');
-
-async function test() {
+(async () => {
   try {
-    const cart = await swell.cart.get();
-    console.log("Cart retrieved");
-    const rates = await swell.cart.getShippingRates();
-    console.log("Rates", rates);
+    const prods = await swell.get('/products', { limit: 1 });
+    const p = prods.results[0];
+    
+    // Create cart
+    const cart = await swell.post('/carts', {
+      items: [{ product_id: p.id, quantity: 1 }]
+    });
+    
+    // Set shipping address
+    await swell.put(`/carts/${cart.id}`, {
+      shipping: {
+        name: 'Test',
+        address1: '123 Test',
+        city: 'LA',
+        state: 'CA',
+        zip: '90001',
+        country: 'US'
+      }
+    });
+    
+    // Get rates
+    const rates = await swell.get(`/carts/${cart.id}/shipping-rates`);
+    console.log("Rates response:", JSON.stringify(rates, null, 2));
   } catch(e) {
-    console.error("Test failed", e);
+    console.error(e);
   }
-}
-
-test();
+})();
