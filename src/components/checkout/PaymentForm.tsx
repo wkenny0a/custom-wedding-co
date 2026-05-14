@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useCheckout } from './CheckoutProvider';
 import { useCart } from '@/context/CartContext';
@@ -15,29 +15,62 @@ export default function PaymentForm() {
   const [errorMsg, setErrorMsg] = useState('');
   const [cardStatus, setCardStatus] = useState<'idle' | 'loading' | 'ready' | 'error'>('idle');
   const [sameAsShipping, setSameAsShipping] = useState(true);
+  const [debugLog, setDebugLog] = useState<string[]>([]);
 
   const isLocked = step < 4;
 
+  const log = useCallback((msg: string) => {
+    const ts = new Date().toLocaleTimeString();
+    console.log(`[CWC Pay ${ts}] ${msg}`);
+    setDebugLog(prev => [...prev, `${ts} ${msg}`]);
+  }, []);
+
   // Mount Stripe card element when step reaches 4
-  // Docs: https://developers.swell.is/frontend-api/payments#render-a-stripe-card-element
   useEffect(() => {
     if (step !== 4) return;
 
     if (cardStatus === 'idle') {
       setCardStatus('loading');
+      log('Step 4 reached, starting mount...');
+
       const mountCard = async () => {
         try {
-          // Debug: log payment settings to understand what Swell returns
-          const paymentSettings = await (swell as any).settings.payments();
-          console.log('[CWC Checkout] Payment settings from Swell:', JSON.stringify(paymentSettings, null, 2));
+          // 1. Verify swell object
+          log(`swell type: ${typeof swell}`);
+          log(`swell.payment type: ${typeof (swell as any).payment}`);
+          log(`createElements type: ${typeof (swell as any).payment?.createElements}`);
 
-          // Ensure DOM container exists
-          const container = document.getElementById('card-element-container');
-          if (!container) {
-            throw new Error('DOM element #card-element-container not found');
+          if (!(swell as any).payment?.createElements) {
+            throw new Error('swell.payment.createElements is not available');
           }
-          console.log('[CWC Checkout] Container found, calling createElements...');
 
+          // 2. Check payment settings
+          log('Fetching payment settings...');
+          try {
+            const ps = await (swell as any).settings.payments();
+            log(`Settings card: ${JSON.stringify(ps?.card || 'NO_CARD')}`);
+          } catch (settingsErr: any) {
+            log(`Settings fetch error: ${settingsErr?.message}`);
+          }
+
+          // 3. Check cart state
+          log('Checking cart...');
+          try {
+            const c = await swell.cart.get();
+            log(`Cart: id=${(c as any)?.id?.substring(0,8)}, items=${(c as any)?.items?.length || 0}`);
+          } catch (cartErr: any) {
+            log(`Cart error: ${cartErr?.message}`);
+          }
+
+          // 4. Check DOM container
+          const container = document.getElementById('card-element-container');
+          log(`DOM #card-element-container: ${container ? 'FOUND' : 'NOT FOUND'}`);
+          if (!container) {
+            throw new Error('Container #card-element-container not in DOM');
+          }
+
+          // 5. Call createElements
+          log('Calling swell.payment.createElements...');
           await (swell as any).payment.createElements({
             card: {
               elementId: '#card-element-container',
@@ -48,51 +81,48 @@ export default function PaymentForm() {
                     fontFamily: '"Cormorant Garamond", serif',
                     fontSize: '16px',
                     color: '#3B2F2F',
-                    '::placeholder': {
-                      color: '#3B2F2F66',
-                    },
+                    '::placeholder': { color: '#3B2F2F66' },
                   },
-                  invalid: {
-                    color: '#dc2626',
-                  },
+                  invalid: { color: '#dc2626' },
                 },
               },
               onReady: () => {
-                console.log('[CWC Checkout] Stripe card element is READY');
+                log('✅ Stripe card onReady fired!');
                 setCardStatus('ready');
               },
               onError: (err: any) => {
-                console.error('[CWC Checkout] Stripe card element onError:', err);
-                setErrorMsg(err?.message || 'Card input error. Please try again.');
+                log(`❌ Stripe card onError: ${err?.message || JSON.stringify(err)}`);
+                setErrorMsg(err?.message || 'Card input error.');
               },
             },
           });
-          console.log('[CWC Checkout] createElements call resolved');
-          // If onReady hasn't fired yet, set ready after createElements resolves
-          setCardStatus((prev) => prev === 'loading' ? 'ready' : prev);
+
+          log('createElements resolved successfully');
+          setCardStatus(prev => prev === 'loading' ? 'ready' : prev);
         } catch (e: any) {
-          console.error('[CWC Checkout] Card Elements mount FAILED:', e);
+          log(`❌ MOUNT EXCEPTION: ${e?.message}`);
+          log(`Stack: ${e?.stack?.substring(0, 200)}`);
           setCardStatus('error');
-          setErrorMsg(e?.message || 'Credit card input could not be loaded. Please refresh and try again.');
+          setErrorMsg(e?.message || 'Credit card input could not be loaded.');
         }
       };
 
-      // Give the DOM a moment to render the container
-      const timer = setTimeout(mountCard, 500);
+      // Delay to ensure DOM container is rendered
+      const timer = setTimeout(mountCard, 600);
       return () => clearTimeout(timer);
     }
-  }, [step, cardStatus]);
+  }, [step, cardStatus, log]);
 
   // Reset mount flags if user navigates away from step 4
   useEffect(() => {
     if (step < 4) {
       setCardStatus('idle');
       setErrorMsg('');
+      setDebugLog([]);
     }
   }, [step]);
 
   // Tokenize and submit order
-  // Docs: https://developers.swell.is/frontend-api/payments#tokenize-elements
   const handleCardSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (cardStatus !== 'ready') return;
@@ -101,7 +131,7 @@ export default function PaymentForm() {
     setErrorMsg('');
 
     try {
-      // Set billing address on cart before tokenizing
+      // Set billing address on cart
       if (sameAsShipping && address) {
         await swell.cart.update({
           billing: {
@@ -115,35 +145,32 @@ export default function PaymentForm() {
         } as any);
       }
 
-      // Tokenize the card using the correct Swell API signature
+      // Tokenize
       await (swell as any).payment.tokenize({
         card: {
           onError: (err: any) => {
             console.error('Tokenize error:', err);
-            setErrorMsg(err?.message || 'Payment failed. Please check your card details and try again.');
+            setErrorMsg(err?.message || 'Payment failed. Please check your card details.');
             setIsSubmitting(false);
           },
           onSuccess: async () => {
-            // Card tokenized successfully — submit the order
             try {
               const orderId = await submitOrder();
               if (orderId) {
                 router.push(`/checkout/success?order_id=${orderId}`);
               } else {
-                setErrorMsg('Order could not be placed. Please try again.');
+                setErrorMsg('Order could not be placed.');
                 setIsSubmitting(false);
               }
             } catch (orderErr: any) {
-              console.error('Order submit error:', orderErr);
-              setErrorMsg(orderErr?.message || 'Order submission failed. Please try again.');
+              setErrorMsg(orderErr?.message || 'Order submission failed.');
               setIsSubmitting(false);
             }
           },
         },
       });
     } catch (err: any) {
-      console.error('Card payment error:', err);
-      setErrorMsg(err?.message || 'Payment failed. Please check your card details and try again.');
+      setErrorMsg(err?.message || 'Payment failed.');
       setIsSubmitting(false);
     }
   };
@@ -168,7 +195,7 @@ export default function PaymentForm() {
       {step === 4 && (
         <div className="px-6 py-6 space-y-6">
 
-          {/* Review summary before payment */}
+          {/* Review summary */}
           <div className="bg-cream/40 border border-gold-pale/20 rounded-xl px-5 py-4 text-sm font-sans text-espresso/70 space-y-1.5">
             <p className="font-semibold text-espresso text-xs uppercase tracking-wider mb-2">Review Before Paying</p>
             <p>📧 {contact.email}</p>
@@ -180,10 +207,12 @@ export default function PaymentForm() {
           <form onSubmit={handleCardSubmit} className="space-y-4">
             <div className="bg-white border border-gold-pale/40 rounded-lg p-4">
               {cardStatus === 'loading' && (
-                <div className="w-full h-[44px] bg-gray-100 rounded animate-pulse" />
+                <div className="w-full h-[44px] bg-gray-100 rounded animate-pulse flex items-center justify-center text-xs text-gray-400">
+                  Loading payment form...
+                </div>
               )}
               {cardStatus === 'error' && (
-                <p className="text-red-500 text-xs">Could not load card input. Please refresh or try another method.</p>
+                <p className="text-red-500 text-xs">Could not load card input. See debug log below.</p>
               )}
               <div id="card-element-container" className={`min-h-[44px] ${cardStatus === 'loading' ? 'hidden' : 'block'}`} />
             </div>
@@ -200,12 +229,6 @@ export default function PaymentForm() {
                 Billing address is same as shipping
               </label>
             </div>
-
-            {!sameAsShipping && (
-              <div className="text-xs text-espresso/60 italic px-2">
-                (Billing address updates will be prompted by your bank if needed, or matched automatically.)
-              </div>
-            )}
 
             <button
               type="submit"
@@ -229,9 +252,6 @@ export default function PaymentForm() {
               <span>·</span>
               <span>✦ Safe & Secure Checkout</span>
             </div>
-            <p className="text-[10px] font-sans text-espresso/30 text-center max-w-xs">
-              Your payment is processed through Stripe's secure infrastructure. Your full card details are never saved on our servers.
-            </p>
           </div>
 
           {/* Error message */}
@@ -239,6 +259,18 @@ export default function PaymentForm() {
             <div className="bg-red-50 border border-red-200 rounded-lg px-4 py-3 text-sm font-sans text-red-700">
               ⚠ {errorMsg}
             </div>
+          )}
+
+          {/* Debug log (visible on page for debugging, remove later) */}
+          {debugLog.length > 0 && (
+            <details className="border border-gray-200 rounded-lg">
+              <summary className="px-3 py-2 text-xs font-sans text-gray-400 cursor-pointer">Debug Log ({debugLog.length} entries)</summary>
+              <div className="bg-gray-900 text-green-400 px-3 py-2 text-[10px] font-mono max-h-48 overflow-auto rounded-b-lg">
+                {debugLog.map((line, i) => (
+                  <div key={i} className={line.includes('❌') ? 'text-red-400' : line.includes('✅') ? 'text-green-300' : ''}>{line}</div>
+                ))}
+              </div>
+            </details>
           )}
 
           {/* Back button */}
