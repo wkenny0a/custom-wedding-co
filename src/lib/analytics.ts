@@ -2,11 +2,16 @@
  * Analytics & Pixel Event Helpers
  * ────────────────────────────────
  * Centralised utility for firing e-commerce events across all installed pixels:
- *   • Meta Pixel (Facebook / Instagram)
+ *   • Meta Pixel (Facebook / Instagram) — browser-side
+ *   • Meta Conversions API (CAPI) — server-side via /api/track proxy
  *   • Google Analytics 4 (GA4)
  *   • TikTok Pixel
  *   • Pinterest Tag
  *   • Microsoft Clarity (session recording only — no custom events needed)
+ *
+ * DEDUPLICATION: Every Meta event gets a unique `event_id` that is sent to
+ * both the browser pixel AND the CAPI proxy. Meta matches them and keeps
+ * only one record, giving you ~100% conversion visibility.
  *
  * Usage:
  *   import { trackAddToCart, trackPurchase } from '@/lib/analytics'
@@ -44,6 +49,49 @@ const pintrk = (...args: any[]) => {
   if (typeof window !== 'undefined' && window.pintrk) window.pintrk(...args);
 };
 
+/** Generate a unique event ID for pixel ↔ CAPI deduplication */
+function generateEventId(): string {
+  if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+    return crypto.randomUUID();
+  }
+  // Fallback for older browsers
+  return `${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
+}
+
+/**
+ * Send event to /api/track (CAPI server proxy).
+ * Fire-and-forget — never blocks the UI or throws.
+ */
+function sendToCapiProxy(eventName: string, eventId: string, customData?: any) {
+  if (typeof window === 'undefined') return;
+  try {
+    // Extract _fbc and _fbp cookies for enhanced matching
+    const cookies = document.cookie.split(';').reduce((acc, c) => {
+      const [key, val] = c.trim().split('=');
+      if (key) acc[key] = val;
+      return acc;
+    }, {} as Record<string, string>);
+
+    fetch('/api/track', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        eventName,
+        eventId,
+        sourceUrl: window.location.href,
+        userData: {
+          fbc: cookies['_fbc'] || undefined,
+          fbp: cookies['_fbp'] || undefined,
+        },
+        customData,
+      }),
+      keepalive: true, // Ensures the request completes even if the page navigates
+    }).catch(() => {}); // Silently swallow network errors
+  } catch (_) {
+    // Analytics should never break the app
+  }
+}
+
 /* ─── Page View ──────────────────────────────────────────────────────────── */
 
 export function trackPageView() {
@@ -61,10 +109,21 @@ export function trackViewContent(product: {
   price: number;
   category?: string;
 }) {
+  const eventId = generateEventId();
+
   fbq('track', 'ViewContent', {
     content_ids: [product.id],
     content_name: product.name,
     content_type: 'product',
+    value: product.price,
+    currency: 'USD',
+  }, { eventID: eventId });
+
+  // CAPI deduplication
+  sendToCapiProxy('ViewContent', eventId, {
+    contentIds: [product.id],
+    contentName: product.name,
+    contentType: 'product',
     value: product.price,
     currency: 'USD',
   });
@@ -111,6 +170,7 @@ export function trackAddToCart(product: {
   category?: string;
 }) {
   const value = product.price * product.quantity;
+  const eventId = generateEventId();
 
   fbq('track', 'AddToCart', {
     content_ids: [product.id],
@@ -118,6 +178,16 @@ export function trackAddToCart(product: {
     content_type: 'product',
     value,
     currency: 'USD',
+  }, { eventID: eventId });
+
+  // CAPI deduplication
+  sendToCapiProxy('AddToCart', eventId, {
+    contentIds: [product.id],
+    contentName: product.name,
+    contentType: 'product',
+    value,
+    currency: 'USD',
+    numItems: product.quantity,
   });
 
   gtag('event', 'add_to_cart', {
@@ -163,11 +233,22 @@ export function trackInitiateCheckout(cart: {
   items: { id: string; name: string; price: number; quantity: number }[];
   total: number;
 }) {
+  const eventId = generateEventId();
+
   fbq('track', 'InitiateCheckout', {
     content_ids: cart.items.map((i) => i.id),
     num_items: cart.items.length,
     value: cart.total,
     currency: 'USD',
+  }, { eventID: eventId });
+
+  // CAPI deduplication
+  sendToCapiProxy('InitiateCheckout', eventId, {
+    contentIds: cart.items.map((i) => i.id),
+    contentType: 'product',
+    value: cart.total,
+    currency: 'USD',
+    numItems: cart.items.length,
   });
 
   gtag('event', 'begin_checkout', {
@@ -206,11 +287,23 @@ export function trackPurchase(order: {
   total: number;
   items: { id: string; name: string; price: number; quantity: number }[];
 }) {
+  const eventId = generateEventId();
+
   fbq('track', 'Purchase', {
     content_ids: order.items.map((i) => i.id),
     content_type: 'product',
     value: order.total,
     currency: 'USD',
+  }, { eventID: eventId });
+
+  // CAPI deduplication
+  sendToCapiProxy('Purchase', eventId, {
+    contentIds: order.items.map((i) => i.id),
+    contentType: 'product',
+    value: order.total,
+    currency: 'USD',
+    numItems: order.items.length,
+    orderId: order.orderId,
   });
 
   gtag('event', 'purchase', {
@@ -247,7 +340,13 @@ export function trackPurchase(order: {
 /* ─── Lead / Email Capture ───────────────────────────────────────────────── */
 
 export function trackLead(data?: { email?: string }) {
-  fbq('track', 'Lead');
+  const eventId = generateEventId();
+
+  fbq('track', 'Lead', {}, { eventID: eventId });
+
+  // CAPI deduplication
+  sendToCapiProxy('Lead', eventId);
+
   gtag('event', 'generate_lead', { currency: 'USD', value: 0 });
   ttq('SubmitForm');
   pintrk('track', 'lead');
