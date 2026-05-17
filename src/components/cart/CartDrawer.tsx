@@ -3,7 +3,7 @@
 import { useCart } from '@/context/CartContext'
 import { X, Minus, Plus, ShoppingBag, Trash2, ShieldCheck, HeartHandshake, Sparkles, Zap, PackagePlus, Crown } from 'lucide-react'
 import Image from 'next/image'
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 
 // --- CONFIGURATION ---
 const FREE_SHIPPING_THRESHOLD = 99;
@@ -11,9 +11,9 @@ const RUSH_PROCESSING_FEE = 19.00;
 
 // Tiered Discount System
 const DISCOUNT_TIERS = [
-    { min: 150, discount: 15, label: '15% OFF' },
-    { min: 300, discount: 20, label: '20% OFF' },
-    { min: 500, discount: 25, label: '25% OFF' },
+    { min: 150, discount: 15, label: '15% OFF', coupon: 'savebig15' },
+    { min: 300, discount: 20, label: '20% OFF', coupon: 'savebig20' },
+    { min: 500, discount: 25, label: '25% OFF', coupon: 'savebig25' },
 ];
 
 // TODO: Replace with real Swell Product IDs when available in the dashboard
@@ -21,12 +21,65 @@ const RUSH_PROCESSING_PRODUCT_ID = '69e9a9c652ca2a001272aa14';
 const UPSELL_PRODUCT_ID = '69e9cbd8bb3d1b001278c282';
 
 export function CartDrawer() {
-    const { cart, isCartOpen, setIsCartOpen, updateQuantity, removeFromCart, addToCart, isLoading } = useCart()
+    const { cart, isCartOpen, setIsCartOpen, updateQuantity, removeFromCart, addToCart, applyCoupon, removeCoupon, isLoading } = useCart()
     
     // Fallback UI states if API integration for dummy IDs fails
     const [mockRushAdded, setMockRushAdded] = useState(false)
     const [mockUpsellAdded, setMockUpsellAdded] = useState(false)
     const [isActionLoading, setIsActionLoading] = useState(false)
+
+    // Track auto-applied coupon to prevent redundant calls
+    const appliedAutoCode = useRef<string | null>(null)
+    const isApplyingCoupon = useRef(false)
+
+    const items = cart?.items || []
+    
+    // Calculate display subtotal including mock items if API isn't ready
+    let subtotal = cart?.sub_total ?? cart?.subTotal ?? items.reduce((sum: number, item: any) => sum + (item.price_total ?? ((item.price ?? 0) * (item.quantity ?? 1))), 0)
+    
+    if (mockRushAdded) subtotal += RUSH_PROCESSING_FEE;
+    if (mockUpsellAdded) subtotal += 9.99; // mock heirloom rose set price
+
+    // Tiered Discount Progress
+    const currentTier = [...DISCOUNT_TIERS].reverse().find(t => subtotal >= t.min) || null;
+    const ALL_AUTO_COUPONS = DISCOUNT_TIERS.map(t => t.coupon);
+    const currentCartCoupon = cart?.coupon_code || '';
+    const isCartCouponAuto = ALL_AUTO_COUPONS.includes(currentCartCoupon);
+
+    // Auto-apply / swap / remove coupon based on subtotal
+    useEffect(() => {
+        if (!cart || isLoading || isApplyingCoupon.current) return;
+
+        const targetCode = currentTier?.coupon || null;
+
+        // Skip if the correct coupon is already applied
+        if (targetCode === appliedAutoCode.current && targetCode === currentCartCoupon) return;
+        // Skip if a non-auto (manual) coupon is applied and we shouldn't override it
+        if (currentCartCoupon && !isCartCouponAuto && !targetCode) return;
+
+        const syncCoupon = async () => {
+            isApplyingCoupon.current = true;
+            try {
+                if (!targetCode && isCartCouponAuto) {
+                    await removeCoupon();
+                    appliedAutoCode.current = null;
+                } else if (targetCode && targetCode !== currentCartCoupon) {
+                    if (currentCartCoupon && isCartCouponAuto) {
+                        await removeCoupon();
+                    }
+                    await applyCoupon(targetCode);
+                    appliedAutoCode.current = targetCode;
+                }
+            } catch (e) {
+                console.warn('[AutoDiscount] Coupon sync failed:', e);
+            } finally {
+                isApplyingCoupon.current = false;
+            }
+        };
+
+        const timer = setTimeout(syncCoupon, 500);
+        return () => clearTimeout(timer);
+    }, [subtotal, currentCartCoupon, currentTier, isLoading, cart]);
 
     if (!isCartOpen) return null
 
@@ -74,21 +127,12 @@ export function CartDrawer() {
         }
     }
 
-    const items = cart?.items || []
-    
-    // Calculate display subtotal including mock items if API isn't ready
-    let subtotal = cart?.sub_total ?? cart?.subTotal ?? items.reduce((sum: number, item: any) => sum + (item.price_total ?? ((item.price ?? 0) * (item.quantity ?? 1))), 0)
-    
-    if (mockRushAdded) subtotal += RUSH_PROCESSING_FEE;
-    if (mockUpsellAdded) subtotal += 9.99; // mock heirloom rose set price
-
     // Free Shipping Progress
     const amountAwayFromFreeShipping = Math.max(0, FREE_SHIPPING_THRESHOLD - subtotal)
     const progressPercentage = Math.min(100, (subtotal / FREE_SHIPPING_THRESHOLD) * 100)
     const hasFreeShipping = subtotal >= FREE_SHIPPING_THRESHOLD;
 
-    // Tiered Discount Progress
-    const currentTier = [...DISCOUNT_TIERS].reverse().find(t => subtotal >= t.min) || null;
+    // Tiered Discount Display
     const nextTier = DISCOUNT_TIERS.find(t => subtotal < t.min) || null;
     const currentDiscount = currentTier?.discount || 0;
     const savingsAmount = subtotal * (currentDiscount / 100);
@@ -364,8 +408,33 @@ export function CartDrawer() {
                                     <span className="font-sans text-xs font-semibold uppercase tracking-wider text-espresso/70">Subtotal</span>
                                     <span className="font-sans text-[10px] text-gray-400 mt-0.5">Shipping & taxes calculated at checkout</span>
                                 </div>
-                                <span className="font-serif text-2xl font-medium">${subtotal.toFixed(2)}</span>
+                                <div className="flex flex-col items-end">
+                                    {currentDiscount > 0 && (
+                                        <span className="font-sans text-xs text-espresso/40 line-through">${subtotal.toFixed(2)}</span>
+                                    )}
+                                    <span className="font-serif text-2xl font-medium">
+                                        ${currentDiscount > 0 ? (subtotal * (1 - currentDiscount / 100)).toFixed(2) : subtotal.toFixed(2)}
+                                    </span>
+                                </div>
                             </div>
+
+                            {/* Applied discount badge */}
+                            {currentDiscount > 0 && isCartCouponAuto && (
+                                <div className="flex items-center justify-between bg-green-50 border border-green-200 rounded-lg px-4 py-2.5 -mt-1">
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-green-600 text-sm">🎉</span>
+                                        <div>
+                                            <span className="font-sans text-xs font-bold text-green-800 uppercase tracking-wider">
+                                                {currentTier?.coupon}
+                                            </span>
+                                            <span className="font-sans text-[10px] text-green-600 ml-1.5">applied</span>
+                                        </div>
+                                    </div>
+                                    <span className="font-sans text-sm font-bold text-green-700">
+                                        −${savingsAmount.toFixed(2)}
+                                    </span>
+                                </div>
+                            )}
 
                             <a
                                 href="/checkout"
