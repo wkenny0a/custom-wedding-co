@@ -9,11 +9,10 @@ import { useCart } from '@/context/CartContext';
 
 // ─── Volume Discount Tiers ───────────────────────────────────────────────────
 const TIERS = [
-  { min: 5,   discount: 0 },
-  { min: 20,  discount: 10 },
-  { min: 30,  discount: 20 },
-  { min: 50,  discount: 40 },
-  { min: 100, discount: 50 },
+  { min: 5,   discount: 10 },
+  { min: 20,  discount: 20 },
+  { min: 30,  discount: 30 },
+  { min: 50,  discount: 45 },
 ];
 
 const getDiscount = (qty: number): number => {
@@ -32,11 +31,11 @@ const getDiscountLabel = (qty: number): string => {
 
 // ─── Quantity Presets ─────────────────────────────────────────────────────────
 const PRESETS = [
-  { qty: 5,   label: '5 boxes',   discount: 'No discount' },
-  { qty: 20,  label: '20 boxes',  discount: '10% OFF' },
-  { qty: 30,  label: '30 boxes',  discount: '20% OFF' },
-  { qty: 50,  label: '50 boxes',  discount: '40% OFF' },
-  { qty: 100, label: '100 boxes', discount: '50% OFF' },
+  { qty: 5,   label: '5 boxes',   discount: '10% OFF' },
+  { qty: 20,  label: '20 boxes',  discount: '20% OFF' },
+  { qty: 30,  label: '30 boxes',  discount: '30% OFF' },
+  { qty: 50,  label: '50 boxes',  discount: '45% OFF' },
+  { qty: 100, label: '100 boxes', discount: '45% OFF' },
 ];
 
 // ─── Social Proof Data ───────────────────────────────────────────────────────
@@ -58,7 +57,7 @@ const REVIEWS = [
   {
     name: 'Rachel M.',
     location: 'Denver, CO',
-    text: "The volume pricing made it actually affordable. We got 50% off at 100 boxes and the quality was still amazing.",
+    text: "The volume pricing made it actually affordable. We got 45% off at 100 boxes and the quality was still amazing.",
     rating: 5,
     date: 'April 2025',
   },
@@ -111,7 +110,7 @@ export default function WelcomeBoxConfigurator({
   const [boxQuantity, setBoxQuantity] = useState<number>(5);
   const [isCustomQuantity, setIsCustomQuantity] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
-  const { addToCart, removeFromCart, setIsCartOpen, cart } = useCart();
+  const { addToCart, removeFromCart, setIsCartOpen, cart, applyCoupon } = useCart();
 
   const [state, setState] = useState<WelcomeBoxState>({
     boxColor: null,
@@ -127,6 +126,14 @@ export default function WelcomeBoxConfigurator({
   });
 
   const discountAmount = getDiscount(boxQuantity);
+
+  const getCouponCode = (qty: number) => {
+    if (qty >= 50) return 'welcome45';
+    if (qty >= 30) return 'welcome30';
+    if (qty >= 20) return 'welcome20';
+    if (qty >= 5) return 'welcome10';
+    return null;
+  };
 
   // ─── Handlers ──────────────────────────────────────────────────────────────
   const handleInjectBaseBox = async () => {
@@ -152,6 +159,15 @@ export default function WelcomeBoxConfigurator({
       if (updatedCart && updatedCart.items && updatedCart.items.length > 0) {
         const newestItem = updatedCart.items[updatedCart.items.length - 1];
         setState(s => ({ ...s, baseBoxCartItemId: newestItem.id }));
+      }
+
+      const couponCode = getCouponCode(boxQuantity);
+      if (couponCode) {
+        try {
+          await applyCoupon(couponCode);
+        } catch (e) {
+          console.warn('Coupon auto-apply skipped:', couponCode, e);
+        }
       }
     } catch (error) {
       console.error('Failed to inject base box silently:', error);
@@ -240,7 +256,7 @@ export default function WelcomeBoxConfigurator({
           <div className="hidden sm:block w-px h-4 bg-cream/20" />
           <span className="text-cream/90">🎁 <strong>8,500+</strong> welcome boxes delivered</span>
           <div className="hidden sm:block w-px h-4 bg-cream/20" />
-          <span className="text-cream/90">✦ Volume discounts up to 50% off</span>
+          <span className="text-cream/90">✦ Volume discounts up to 45% off</span>
           <div className="hidden sm:block w-px h-4 bg-cream/20" />
           <span className="text-cream/90">🚚 Ships in 5–7 business days</span>
         </div>
@@ -266,7 +282,7 @@ export default function WelcomeBoxConfigurator({
             <div className="max-w-2xl mx-auto mb-10">
               <div className="text-center mb-6">
                 <h3 className="font-serif text-2xl mb-1">🎁 How many welcome boxes do you need?</h3>
-                <p className="text-sm text-espresso-light/70">The more you order, the more you save! Volume discounts up to 50% off.</p>
+                <p className="text-sm text-espresso-light/70">The more you order, the more you save! Volume discounts up to 45% off.</p>
               </div>
 
               {/* 3×2 Preset Grid */}

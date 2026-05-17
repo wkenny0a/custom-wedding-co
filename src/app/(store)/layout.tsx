@@ -6,6 +6,7 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { CartProvider } from "@/context/CartContext";
 import { CartDrawer } from "@/components/cart/CartDrawer";
+import { SupportChatWidget } from "@/components/support/SupportChatWidget";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -44,6 +45,7 @@ export default function RootLayout({
         </main>
         <Footer />
         <CartDrawer />
+        <SupportChatWidget />
       </CartProvider>
     </div>
   );
