@@ -104,6 +104,68 @@ export default function OrderSummaryPanel() {
         </div>
       )}
 
+      {/* Tiered Discount Progress — only after free shipping threshold */}
+      {subtotal >= 99 && (() => {
+        const TIERS = [
+          { min: 150, discount: 15, label: '15% OFF' },
+          { min: 300, discount: 20, label: '20% OFF' },
+          { min: 500, discount: 25, label: '25% OFF' },
+        ];
+        const currentTier = [...TIERS].reverse().find(t => subtotal >= t.min) || null;
+        const nextTier = TIERS.find(t => subtotal < t.min) || null;
+        const currentDiscount = currentTier?.discount || 0;
+        const savingsAmt = subtotal * (currentDiscount / 100);
+        const maxTier = TIERS[TIERS.length - 1];
+        const progress = Math.min(100, (subtotal / maxTier.min) * 100);
+        const amtToNext = nextTier ? nextTier.min - subtotal : 0;
+
+        return (
+          <div className="px-6 pb-4">
+            <div className="bg-cream-dark/20 rounded-xl px-4 py-3">
+              <div className="flex justify-between items-center mb-2">
+                <span className="font-sans text-[10px] font-semibold text-espresso uppercase tracking-wider">
+                  {currentTier && !nextTier
+                    ? `🎉 Max discount — ${currentTier.label}!`
+                    : nextTier
+                      ? `$${amtToNext.toFixed(2)} from ${nextTier.label}`
+                      : 'Spend more, save more!'}
+                </span>
+                {currentDiscount > 0 && (
+                  <span className="font-sans text-[10px] font-bold text-green-700 bg-green-50 px-2 py-0.5 rounded-full">
+                    −${savingsAmt.toFixed(2)}
+                  </span>
+                )}
+              </div>
+              <div className="h-1.5 w-full bg-espresso/8 rounded-full overflow-hidden">
+                <div
+                  className="h-full rounded-full transition-all duration-700 ease-out"
+                  style={{
+                    width: `${progress}%`,
+                    background: currentDiscount >= 25
+                      ? 'linear-gradient(90deg, #C5A467, #A67C3D, #7C5C28)'
+                      : currentDiscount >= 20
+                        ? 'linear-gradient(90deg, #C5A467, #A67C3D)'
+                        : '#C5A467',
+                  }}
+                />
+              </div>
+              <div className="flex justify-between mt-1.5">
+                {TIERS.map((tier) => {
+                  const isReached = subtotal >= tier.min;
+                  return (
+                    <span key={tier.min} className={`font-sans text-[9px] font-semibold transition-colors ${
+                      isReached ? 'text-gold' : 'text-espresso/25'
+                    }`}>
+                      {isReached ? '✓ ' : ''}${tier.min} · {tier.label}
+                    </span>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        );
+      })()}
+
       {/* Trust Badges */}
       <div className="px-6 pb-5 flex justify-center gap-6 border-t border-gold-pale/20 pt-4">
         {[

@@ -9,6 +9,13 @@ import { useState } from 'react'
 const FREE_SHIPPING_THRESHOLD = 99;
 const RUSH_PROCESSING_FEE = 19.00;
 
+// Tiered Discount System
+const DISCOUNT_TIERS = [
+    { min: 150, discount: 15, label: '15% OFF' },
+    { min: 300, discount: 20, label: '20% OFF' },
+    { min: 500, discount: 25, label: '25% OFF' },
+];
+
 // TODO: Replace with real Swell Product IDs when available in the dashboard
 const RUSH_PROCESSING_PRODUCT_ID = '69e9a9c652ca2a001272aa14'; 
 const UPSELL_PRODUCT_ID = '69e9cbd8bb3d1b001278c282';
@@ -78,6 +85,16 @@ export function CartDrawer() {
     // Free Shipping Progress
     const amountAwayFromFreeShipping = Math.max(0, FREE_SHIPPING_THRESHOLD - subtotal)
     const progressPercentage = Math.min(100, (subtotal / FREE_SHIPPING_THRESHOLD) * 100)
+    const hasFreeShipping = subtotal >= FREE_SHIPPING_THRESHOLD;
+
+    // Tiered Discount Progress
+    const currentTier = [...DISCOUNT_TIERS].reverse().find(t => subtotal >= t.min) || null;
+    const nextTier = DISCOUNT_TIERS.find(t => subtotal < t.min) || null;
+    const currentDiscount = currentTier?.discount || 0;
+    const savingsAmount = subtotal * (currentDiscount / 100);
+    const maxTier = DISCOUNT_TIERS[DISCOUNT_TIERS.length - 1];
+    const discountProgress = Math.min(100, (subtotal / maxTier.min) * 100);
+    const amountToNextTier = nextTier ? nextTier.min - subtotal : 0;
     
     // To identify if real upsells/rush are in the items array
     const hasRealRush = items.some((i: any) => i.product?.id === RUSH_PROCESSING_PRODUCT_ID)
@@ -106,7 +123,7 @@ export function CartDrawer() {
 
                 {/* Free Shipping Progress Bar */}
                 {items.length > 0 && (
-                    <div className="px-6 py-4 bg-white border-b border-gold/10">
+                    <div className={`px-6 py-4 bg-white ${hasFreeShipping ? '' : 'border-b border-gold/10'}`}>
                         <div className="flex justify-between items-center mb-2">
                             <span className="font-sans text-xs font-semibold text-espresso uppercase tracking-wider">
                                 {amountAwayFromFreeShipping > 0 
@@ -119,6 +136,77 @@ export function CartDrawer() {
                                 className="h-full bg-gold transition-all duration-700 ease-out"
                                 style={{ width: `${progressPercentage}%` }}
                             />
+                        </div>
+                    </div>
+                )}
+
+                {/* Tiered Discount Progress Bar — only shows after free shipping unlocked */}
+                {items.length > 0 && hasFreeShipping && (
+                    <div className="px-6 pt-1 pb-4 bg-white border-b border-gold/10">
+                        {/* Header text */}
+                        <div className="flex justify-between items-center mb-2">
+                            <span className="font-sans text-xs font-semibold text-espresso uppercase tracking-wider">
+                                {currentTier && !nextTier
+                                    ? `🎉 Max discount unlocked — ${currentTier.label}!`
+                                    : nextTier
+                                        ? `$${amountToNextTier.toFixed(2)} away from ${nextTier.label}`
+                                        : 'Spend more, save more!'}
+                            </span>
+                            {currentDiscount > 0 && (
+                                <span className="font-sans text-[10px] font-bold text-green-700 bg-green-50 px-2 py-0.5 rounded-full">
+                                    −${savingsAmount.toFixed(2)}
+                                </span>
+                            )}
+                        </div>
+
+                        {/* Multi-tier progress bar */}
+                        <div className="relative">
+                            {/* Track background */}
+                            <div className="h-2 w-full bg-espresso/8 rounded-full overflow-hidden">
+                                <div
+                                    className="h-full rounded-full transition-all duration-700 ease-out"
+                                    style={{
+                                        width: `${discountProgress}%`,
+                                        background: currentDiscount >= 25
+                                            ? 'linear-gradient(90deg, #C5A467, #A67C3D, #7C5C28)'
+                                            : currentDiscount >= 20
+                                                ? 'linear-gradient(90deg, #C5A467, #A67C3D)'
+                                                : currentDiscount >= 15
+                                                    ? 'linear-gradient(90deg, #C5A467, #D4B87A)'
+                                                    : '#C5A467',
+                                    }}
+                                />
+                            </div>
+
+                            {/* Tier markers */}
+                            <div className="relative h-5 mt-1">
+                                {DISCOUNT_TIERS.map((tier) => {
+                                    const position = (tier.min / maxTier.min) * 100;
+                                    const isReached = subtotal >= tier.min;
+                                    return (
+                                        <div
+                                            key={tier.min}
+                                            className="absolute flex flex-col items-center"
+                                            style={{ left: `${position}%`, transform: 'translateX(-50%)' }}
+                                        >
+                                            {/* Dot / checkmark */}
+                                            <div className={`w-4 h-4 rounded-full flex items-center justify-center text-[8px] font-bold transition-all duration-500 ${
+                                                isReached
+                                                    ? 'bg-gold text-white shadow-sm shadow-gold/40 scale-110'
+                                                    : 'bg-espresso/10 text-espresso/40'
+                                            }`}>
+                                                {isReached ? '✓' : ''}
+                                            </div>
+                                            {/* Label */}
+                                            <span className={`font-sans text-[9px] font-semibold mt-0.5 whitespace-nowrap transition-colors duration-300 ${
+                                                isReached ? 'text-gold' : 'text-espresso/30'
+                                            }`}>
+                                                ${tier.min} · {tier.label}
+                                            </span>
+                                        </div>
+                                    );
+                                })}
+                            </div>
                         </div>
                     </div>
                 )}
