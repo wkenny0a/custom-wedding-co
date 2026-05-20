@@ -1,9 +1,10 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@sanity/client';
+import { dataset, projectId } from '@/sanity/env';
 // swell-node import removed to prevent Next.js build errors with native deasync dependencies
 const sanityClient = createClient({
-  projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID,
-  dataset: process.env.NEXT_PUBLIC_SANITY_DATASET,
+  projectId,
+  dataset,
   apiVersion: '2024-03-01',
   token: process.env.SANITY_API_TOKEN,
   useCdn: false, // Must be false for uploads
@@ -44,7 +45,7 @@ export async function POST(request: Request) {
       if (!res.ok || !cart || !cart.id) {
         throw new Error('Invalid Cart');
       }
-    } catch (e) {
+    } catch {
       return NextResponse.json(
         { error: 'Forbidden. The provided Cart ID is invalid or expired. Bot traffic detected.' },
         { status: 403 }
@@ -83,10 +84,11 @@ export async function POST(request: Request) {
     });
 
     return NextResponse.json({ url: asset.url, id: asset._id }, { status: 200 });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error uploading file:', error);
+    const message = error instanceof Error ? error.message : 'Error uploading file';
     return NextResponse.json(
-      { error: error.message || 'Error uploading file' },
+      { error: message },
       { status: 500 }
     );
   }
