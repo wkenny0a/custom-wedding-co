@@ -1,9 +1,14 @@
 'use client';
 
+import { useState } from 'react';
 import { useCart } from '@/context/CartContext';
 
 export default function OrderSummaryPanel() {
-  const { cart } = useCart();
+  const { cart, applyCoupon, removeCoupon } = useCart();
+  const [couponCode, setCouponCode] = useState('');
+  const [couponLoading, setCouponLoading] = useState(false);
+  const [couponError, setCouponError] = useState('');
+  const [couponSuccess, setCouponSuccess] = useState('');
 
   if (!cart) return null;
 
@@ -94,6 +99,106 @@ export default function OrderSummaryPanel() {
         </div>
       </div>
 
+      {/* Coupon Code Field */}
+      <div className="px-6 py-4 border-t border-gold-pale/20">
+        {cart?.coupon_code ? (
+          <div className="flex items-center justify-between bg-green-50 border border-green-200 rounded-xl px-4 py-3">
+            <div className="flex items-center gap-2">
+              <span className="text-green-600 text-sm">🎉</span>
+              <div>
+                <span className="font-sans text-xs font-bold text-green-800 uppercase tracking-wider">
+                  {cart.coupon_code}
+                </span>
+                <span className="font-sans text-[10px] text-green-600 ml-1.5">applied</span>
+              </div>
+            </div>
+            <button
+              onClick={async () => {
+                setCouponLoading(true);
+                setCouponError('');
+                try {
+                  await removeCoupon();
+                  setCouponSuccess('');
+                  setCouponCode('');
+                } catch {
+                  setCouponError('Failed to remove coupon');
+                } finally {
+                  setCouponLoading(false);
+                }
+              }}
+              disabled={couponLoading}
+              className="font-sans text-[10px] font-semibold text-red-500 hover:text-red-700 uppercase tracking-wider transition-colors disabled:opacity-50"
+            >
+              Remove
+            </button>
+          </div>
+        ) : (
+          <div>
+            <label className="font-sans text-[10px] font-semibold text-espresso/60 uppercase tracking-wider block mb-2">
+              Have a coupon code?
+            </label>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={couponCode}
+                onChange={(e) => {
+                  setCouponCode(e.target.value.toUpperCase());
+                  setCouponError('');
+                }}
+                placeholder="Enter code"
+                className="flex-1 px-4 py-2.5 bg-white border border-gold-pale/30 rounded-xl font-sans text-sm text-espresso placeholder:text-espresso/30 focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold/20 transition-all uppercase tracking-wider"
+              />
+              <button
+                onClick={async () => {
+                  if (!couponCode.trim()) return;
+                  setCouponLoading(true);
+                  setCouponError('');
+                  setCouponSuccess('');
+                  try {
+                    const result = await applyCoupon(couponCode.trim());
+                    if (result?.errors) {
+                      const msg = Object.values(result.errors).map((e: any) => e.message).join(', ');
+                      setCouponError(msg || 'Invalid coupon code');
+                    } else if (result?.coupon_code) {
+                      setCouponSuccess(`${result.coupon_code} applied!`);
+                      setCouponCode('');
+                    } else {
+                      setCouponError('Invalid or expired coupon code');
+                    }
+                  } catch {
+                    setCouponError('Invalid or expired coupon code');
+                  } finally {
+                    setCouponLoading(false);
+                  }
+                }}
+                disabled={couponLoading || !couponCode.trim()}
+                className="px-5 py-2.5 bg-espresso text-cream font-sans text-xs font-bold uppercase tracking-wider rounded-xl hover:bg-espresso-light transition-all duration-300 disabled:opacity-40 disabled:cursor-not-allowed whitespace-nowrap"
+              >
+                {couponLoading ? (
+                  <span className="flex items-center gap-1.5">
+                    <svg className="w-3.5 h-3.5 animate-spin" viewBox="0 0 24 24" fill="none">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                    </svg>
+                    ...
+                  </span>
+                ) : 'Apply'}
+              </button>
+            </div>
+            {couponError && (
+              <p className="font-sans text-[11px] text-red-600 mt-2 flex items-center gap-1">
+                <span>✕</span> {couponError}
+              </p>
+            )}
+            {couponSuccess && (
+              <p className="font-sans text-[11px] text-green-700 mt-2 flex items-center gap-1">
+                <span>✓</span> {couponSuccess}
+              </p>
+            )}
+          </div>
+        )}
+      </div>
+
       {/* Free Shipping Progress */}
       {subtotal < 99 && (
         <div className="px-6 pb-4">
@@ -178,6 +283,41 @@ export default function OrderSummaryPanel() {
             <span className="text-[9px] font-sans uppercase tracking-wider text-espresso/50">{b.label}</span>
           </div>
         ))}
+      </div>
+
+      {/* Proof Approval Notice */}
+      <div className="px-6 pb-5">
+        <div className="bg-gradient-to-br from-cream-dark/30 to-cream-dark/10 border border-gold-pale/25 rounded-2xl px-5 py-4">
+          <div className="flex items-start gap-3">
+            <div className="w-9 h-9 rounded-full bg-gold/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+              <span className="text-lg">📸</span>
+            </div>
+            <div>
+              <h4 className="font-serif text-sm text-espresso font-medium leading-tight">
+                Proof Photo Before We Ship
+              </h4>
+              <p className="font-sans text-[11px] text-espresso/60 mt-1.5 leading-relaxed">
+                Within <strong className="text-espresso">24 hours</strong> of your order, we'll email you a 
+                <strong className="text-espresso"> proof photo</strong> of your personalized item for your approval. 
+                We won't ship until you're 100% happy with how it looks.
+              </p>
+              <div className="flex items-center gap-4 mt-3">
+                <div className="flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-gold"></span>
+                  <span className="font-sans text-[10px] text-espresso/50 uppercase tracking-wider">Review</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-gold"></span>
+                  <span className="font-sans text-[10px] text-espresso/50 uppercase tracking-wider">Approve</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-gold"></span>
+                  <span className="font-sans text-[10px] text-espresso/50 uppercase tracking-wider">Ship</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
