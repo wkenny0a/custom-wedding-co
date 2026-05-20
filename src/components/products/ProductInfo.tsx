@@ -514,19 +514,35 @@ export function ProductInfo({ product, onStyleImageSelect }: { product: any, onS
                             )}
                         </div>
 
-                        {/* Proximity Trust Signals */}
-                        <div className="flex items-center justify-between mt-4 pt-4 border-t border-gold/20">
-                            <div className="flex items-center gap-1.5 text-espresso/80">
-                                <ShieldCheck size={15} className="text-gold" />
-                                <span className="font-sans text-[10px] sm:text-xs uppercase tracking-wider font-semibold">Secure<br className="sm:hidden" /> Checkout</span>
+                        {/* Reassurance Module */}
+                        <div className="mt-6 border-t border-gold/20 pt-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div className="flex items-start gap-3">
+                                <Truck size={18} className="text-gold mt-0.5 flex-shrink-0" />
+                                <div>
+                                    <h4 className="font-sans text-xs font-bold uppercase tracking-widest text-espresso">Fast Production</h4>
+                                    <p className="font-sans text-xs text-espresso/70 mt-1">Estimated delivery in 5-7 business days.</p>
+                                </div>
                             </div>
-                            <div className="flex items-center gap-1.5 text-espresso/80">
-                                <Truck size={15} className="text-gold" />
-                                <span className="font-sans text-[10px] sm:text-xs uppercase tracking-wider font-semibold">Secure<br className="sm:hidden" /> Shipping</span>
+                            <div className="flex items-start gap-3">
+                                <Clock size={18} className="text-gold mt-0.5 flex-shrink-0" />
+                                <div>
+                                    <h4 className="font-sans text-xs font-bold uppercase tracking-widest text-espresso">Quick Proofing</h4>
+                                    <p className="font-sans text-xs text-espresso/70 mt-1">Digital proof sent within 24 hours.</p>
+                                </div>
                             </div>
-                            <div className="flex items-center gap-1.5 text-espresso/80">
-                                <Check size={15} className="text-gold" />
-                                <span className="font-sans text-[10px] sm:text-xs uppercase tracking-wider font-semibold">Satisfaction<br className="sm:hidden" /> Guarantee</span>
+                            <div className="flex items-start gap-3">
+                                <ShieldCheck size={18} className="text-gold mt-0.5 flex-shrink-0" />
+                                <div>
+                                    <h4 className="font-sans text-xs font-bold uppercase tracking-widest text-espresso">Personalization Guarantee</h4>
+                                    <p className="font-sans text-xs text-espresso/70 mt-1">We print exactly what you approve.</p>
+                                </div>
+                            </div>
+                            <div className="flex items-start gap-3">
+                                <Gift size={18} className="text-gold mt-0.5 flex-shrink-0" />
+                                <div>
+                                    <h4 className="font-sans text-xs font-bold uppercase tracking-widest text-espresso">Bulk Pricing</h4>
+                                    <p className="font-sans text-xs text-espresso/70 mt-1">Need 10+? Bulk discounts automatically applied.</p>
+                                </div>
                             </div>
                         </div>
                     </>

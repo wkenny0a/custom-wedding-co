@@ -98,20 +98,20 @@ export default function ReviewsPage() {
                             Real notes from wedding days, proposal boxes, and party gifts.
                         </h1>
                         <p className="mt-6 max-w-2xl font-sans text-lg leading-relaxed text-gray-600">
-                            Browse 300 verified reviews from customers who trusted Custom Wedding Co. with personalized keepsakes, favors, and wedding party gifts.
+                            Browse a curated wall from 1,300+ verified reviews by customers who trusted Custom Wedding Co. with personalized keepsakes, favors, and wedding party gifts.
                         </p>
 
                         <div className="mt-8 grid grid-cols-3 gap-3 border-y border-gold/25 py-5 sm:max-w-xl">
                             <div>
-                                <p className="font-display text-3xl text-espresso">{summary.reviewCount}</p>
-                                <p className="font-sans text-xs uppercase tracking-widest text-gray-600">Reviews shown</p>
+                                <p className="font-display text-3xl text-espresso">{summary.reviewCountLabel}</p>
+                                <p className="font-sans text-xs uppercase tracking-widest text-gray-600">Reviews</p>
                             </div>
                             <div>
                                 <p className="font-display text-3xl text-espresso">{summary.averageRating.toFixed(1)}</p>
                                 <p className="font-sans text-xs uppercase tracking-widest text-gray-600">Avg. rating</p>
                             </div>
                             <div>
-                                <p className="font-display text-3xl text-espresso">{summary.productCount}</p>
+                                <p className="font-display text-3xl text-espresso">{summary.productCountLabel}</p>
                                 <p className="font-sans text-xs uppercase tracking-widest text-gray-600">Products</p>
                             </div>
                         </div>
@@ -167,7 +167,7 @@ export default function ReviewsPage() {
                             The Wall
                         </span>
                         <h2 className="mt-3 font-display text-4xl leading-tight text-espresso sm:text-5xl">
-                            300 customer reviews
+                            1,300+ customer reviews
                         </h2>
                     </div>
                     <p className="max-w-xl font-sans text-sm leading-relaxed text-gray-600">

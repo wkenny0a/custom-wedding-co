@@ -20,11 +20,11 @@ import Script from 'next/script';
  */
 
 // ── Replace these with your real IDs ────────────────────────────────────────
-const META_PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID || 'YOUR_META_PIXEL_ID';
-const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || 'YOUR_GA4_MEASUREMENT_ID';
-const TIKTOK_PIXEL_ID = process.env.NEXT_PUBLIC_TIKTOK_PIXEL_ID || 'YOUR_TIKTOK_PIXEL_ID';
+const META_PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID || '1015898647784042';
+const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || 'G-ELHESWVYET';
+const TIKTOK_PIXEL_ID = process.env.NEXT_PUBLIC_TIKTOK_PIXEL_ID || 'D83CTS3C77U1Q23ABHH0';
 const PINTEREST_TAG_ID = process.env.NEXT_PUBLIC_PINTEREST_TAG_ID || 'YOUR_PINTEREST_TAG_ID';
-const CLARITY_PROJECT_ID = process.env.NEXT_PUBLIC_CLARITY_PROJECT_ID || 'YOUR_CLARITY_PROJECT_ID';
+const CLARITY_PROJECT_ID = process.env.NEXT_PUBLIC_CLARITY_PROJECT_ID || 'wrdli04tz0';
 
 export function AnalyticsScripts() {
   return (

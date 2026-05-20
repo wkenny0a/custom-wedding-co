@@ -56,8 +56,11 @@ export function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
                     <Link href="/shop/favors-party-extras" onClick={onClose} className="font-serif text-2xl text-espresso hover:text-gold transition-colors">Wedding Favors</Link>
 
                     <div className="mt-8 pt-8 border-t border-gold/20 flex flex-col gap-4">
-                        <Link href="/our-story" onClick={onClose} className="font-sans tracking-wide uppercase text-sm text-gray-600 hover:text-gold">Our Story</Link>
+                        <Link href="/about" onClick={onClose} className="font-sans tracking-wide uppercase text-sm text-gray-600 hover:text-gold">About Us</Link>
                         <Link href="/how-to-order" onClick={onClose} className="font-sans tracking-wide uppercase text-sm text-gray-600 hover:text-gold">How to Order</Link>
+                        <Link href="/proofing-process" onClick={onClose} className="font-sans tracking-wide uppercase text-sm text-gray-600 hover:text-gold">Proofing Process</Link>
+                        <Link href="/shipping-returns" onClick={onClose} className="font-sans tracking-wide uppercase text-sm text-gray-600 hover:text-gold">Shipping & Returns</Link>
+                        <Link href="/faq" onClick={onClose} className="font-sans tracking-wide uppercase text-sm text-gray-600 hover:text-gold">FAQ</Link>
                         <Link href="/contact" onClick={onClose} className="font-sans tracking-wide uppercase text-sm text-gray-600 hover:text-gold">Contact Us</Link>
                     </div>
                 </nav>

@@ -13,6 +13,8 @@ export type ProductReview = {
 }
 
 const REVIEW_LIMIT = 300
+export const REVIEW_COUNT_LABEL = '1,300+'
+export const PRODUCT_COUNT_LABEL = '200+'
 
 function parseCsvRows(csv: string) {
     const rows: string[][] = []
@@ -152,5 +154,7 @@ export function getReviewSummary(reviews: ProductReview[]) {
         productCount: products.size,
         imageCount,
         reviewCount: reviews.length,
+        reviewCountLabel: REVIEW_COUNT_LABEL,
+        productCountLabel: PRODUCT_COUNT_LABEL,
     }
 }
