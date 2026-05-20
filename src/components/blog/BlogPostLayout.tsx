@@ -36,7 +36,7 @@ export function BlogPostLayout({
                 <nav className="flex items-center gap-2 font-sans text-sm text-espresso/60">
                     <Link href="/" className="hover:text-gold transition-colors">Home</Link>
                     <span>/</span>
-                    <Link href="/#inspiration" className="hover:text-gold transition-colors">Blog</Link>
+                    <Link href="/blog" className="hover:text-gold transition-colors">Blog</Link>
                     <span>/</span>
                     <span className="text-espresso/80 truncate max-w-[200px] sm:max-w-none">{title}</span>
                 </nav>
@@ -146,11 +146,11 @@ export function BlogPostLayout({
 
                     <div className="text-center mt-12">
                         <Link
-                            href="/"
+                            href="/blog"
                             className="inline-flex items-center gap-2 font-sans uppercase tracking-wider text-xs font-semibold text-espresso hover:text-gold transition-colors duration-300"
                         >
                             <ArrowLeft size={14} />
-                            Back to Home
+                            Back to Blog
                         </Link>
                     </div>
                 </div>
