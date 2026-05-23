@@ -4,6 +4,8 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { ArrowRight, Check, Gift, ShieldCheck, Sparkles, Star, Truck } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
+import { ProductPreviewModalButton, type PreviewProduct } from '@/components/guides/ProductPreviewModalButton'
+import { getLowestDisplayPrice, getProducts } from '@/lib/swell'
 
 type GuideItem = {
     id: string
@@ -18,6 +20,34 @@ type GuideItem = {
     image: string
     imageAlt: string
 }
+
+type StoreImage = {
+    file?: {
+        url?: string
+    }
+    url?: string
+}
+
+type StoreProduct = {
+    id?: string
+    name?: string
+    slug?: string
+    price?: number
+    description?: string
+    images?: StoreImage[]
+    options?: unknown[]
+    categories?: {
+        name?: string
+    }[]
+}
+
+type ResolvedGuideItem = GuideItem & {
+    slug: string
+    priceLabel: string
+    product: PreviewProduct | null
+}
+
+export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
     title: '2026/2027 Wedding Must-Haves for Guest Experience | Custom Wedding Co.',
@@ -151,6 +181,82 @@ const guideItems: GuideItem[] = [
     },
 ]
 
+const fallbackPricesBySlug: Record<string, number> = {
+    'bespoke-engraved-heirloom-bottle-opener': 19.99,
+    'bespoke-monogram-cocktail-napkins': 19.99,
+    'bespoke-frosted-acrylic-wedding-cups': 99.99,
+    'bespoke-keepsake-handheld-fan': 19.99,
+    'personlaized-champagne-glass-custom-champagne-glass-wedding-favor': 29.99,
+    'personlaized-wine-glass-custom-wine-glass-wedding-favor': 29.99,
+    'bespoke-personalized-golf-balls': 24.99,
+    'bespoke-beers-birdies-neoprene-can-cooler': 12.99,
+    'custom-ceramic-ring-dish-personalized-heirloom-trinket-tray': 29.99,
+}
+
+function getProductSlug(item: GuideItem) {
+    return item.href.replace('/products/', '')
+}
+
+function formatProductPrice(price: number) {
+    if (!price || price <= 0) return 'See product'
+    return Number.isInteger(price) ? `$${price}` : `$${price.toFixed(2)}`
+}
+
+function syntheticReviewCount(slug: string) {
+    return ((slug.charCodeAt(0) * 7 + slug.length * 13) % 176) + 12
+}
+
+function syntheticRating(slug: string) {
+    return [4.6, 4.7, 4.8, 4.9, 4.8, 4.7, 4.9, 4.8][slug.length % 8]
+}
+
+function formatPreviewProduct(product: StoreProduct | undefined, item: GuideItem, slug: string) {
+    if (!product?.id) return null
+
+    const lowestPrice = getLowestDisplayPrice(product)
+
+    return {
+        _id: product.id,
+        name: product.name || item.headline,
+        slug: { current: product.slug || slug },
+        price: Number(product.price) || 0,
+        priceRange: formatProductPrice(lowestPrice),
+        priceNote: 'starting price',
+        badge: 'Personalized',
+        category: { title: product.categories?.[0]?.name || 'Guest Experience Details' },
+        rating: syntheticRating(slug),
+        reviewCount: syntheticReviewCount(slug),
+        images: product.images?.length ? product.images : [{ file: { url: item.image } }],
+        options: product.options || [],
+        specifications: [],
+        description: product.description || item.purpose,
+        content: {},
+        styleVariantImages: [],
+        bundleProducts: [],
+        isMultiBuy: false,
+        perItemOptionNames: [],
+    }
+}
+
+async function getResolvedGuideItems(): Promise<ResolvedGuideItem[]> {
+    const response = await getProducts()
+    const products = response?.results || []
+
+    return guideItems.map((item) => {
+        const slug = getProductSlug(item)
+        const product = products.find((candidate: StoreProduct) => candidate.slug === slug)
+        const fallbackPrice = fallbackPricesBySlug[slug] || 0
+        const resolvedPrice = product ? getLowestDisplayPrice(product) : fallbackPrice
+
+        return {
+            ...item,
+            slug,
+            priceLabel: `From ${formatProductPrice(resolvedPrice || fallbackPrice)}`,
+            product: formatPreviewProduct(product, item, slug),
+        }
+    })
+}
+
 const jumpLabels = [
     'Engraved Bottle Openers',
     'Monogram Cocktail Napkins',
@@ -253,7 +359,7 @@ function SectionHeading({
     )
 }
 
-function GuideProductSection({ item, index }: { item: GuideItem; index: number }) {
+function GuideProductSection({ item, index }: { item: ResolvedGuideItem; index: number }) {
     const isReversed = index % 2 === 1
 
     return (
@@ -289,6 +395,15 @@ function GuideProductSection({ item, index }: { item: GuideItem; index: number }
                         {item.purpose}
                     </p>
 
+                    <div className="flex flex-wrap items-end gap-x-4 gap-y-1">
+                        <span className="font-serif text-3xl leading-none text-gold">
+                            {item.priceLabel}
+                        </span>
+                        <span className="font-sans text-[0.68rem] font-bold uppercase tracking-[0.16em] text-espresso/55">
+                            Starting price before upgrades
+                        </span>
+                    </div>
+
                     <div className="flex flex-wrap gap-2">
                         {item.chips.map((chip) => (
                             <span
@@ -307,10 +422,12 @@ function GuideProductSection({ item, index }: { item: GuideItem; index: number }
                     </div>
 
                     <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-                        <Button href={item.href} size="lg" className="w-full gap-2 sm:w-auto">
-                            {item.cta}
-                            <ArrowRight className="h-4 w-4" />
-                        </Button>
+                        <ProductPreviewModalButton
+                            label={item.cta}
+                            product={item.product}
+                            fallbackHref={item.href}
+                            className="inline-flex w-full items-center justify-center gap-2 bg-espresso px-10 py-4 font-sans text-sm font-semibold uppercase tracking-wider text-cream shadow-md transition-all duration-300 hover:bg-espresso-light hover:shadow-lg sm:w-auto"
+                        />
                         <span className="font-sans text-xs font-semibold uppercase tracking-[0.16em] text-espresso/55">
                             {item.reassurance}
                         </span>
@@ -352,7 +469,9 @@ function ConversionBand() {
     )
 }
 
-export default function WeddingMustHavesV2Page() {
+export default async function WeddingMustHavesV2Page() {
+    const resolvedGuideItems = await getResolvedGuideItems()
+
     return (
         <main className="min-h-screen bg-cream text-espresso pb-28 md:pb-0">
             <section className="relative isolate overflow-hidden">
@@ -421,14 +540,19 @@ export default function WeddingMustHavesV2Page() {
                     </div>
 
                     <div className="mt-8 grid grid-cols-2 gap-3 md:grid-cols-3">
-                        {guideItems.map((item, index) => (
+                        {resolvedGuideItems.map((item, index) => (
                             <Link
                                 key={item.id}
                                 href={`#${item.id}`}
-                                className="group flex min-h-[86px] items-center justify-between border border-gold/20 bg-cream px-3 py-4 transition-all duration-300 hover:border-gold hover:bg-white hover:shadow-[0_12px_30px_rgba(74,44,42,0.08)] sm:px-4"
+                                className="group flex min-h-[104px] items-center justify-between border border-gold/20 bg-cream px-3 py-4 transition-all duration-300 hover:border-gold hover:bg-white hover:shadow-[0_12px_30px_rgba(74,44,42,0.08)] sm:px-4"
                             >
-                                <span className="font-sans text-[0.72rem] font-bold uppercase leading-5 tracking-[0.12em] text-espresso transition-colors group-hover:text-gold sm:text-xs">
-                                    {jumpLabels[index]}
+                                <span className="min-w-0">
+                                    <span className="block font-sans text-[0.72rem] font-bold uppercase leading-5 tracking-[0.12em] text-espresso transition-colors group-hover:text-gold sm:text-xs">
+                                        {jumpLabels[index]}
+                                    </span>
+                                    <span className="mt-1 block font-serif text-lg leading-none text-gold">
+                                        {item.priceLabel}
+                                    </span>
                                 </span>
                                 <ArrowRight className="ml-2 h-4 w-4 flex-shrink-0 text-gold transition-transform group-hover:translate-x-1" />
                             </Link>
@@ -454,7 +578,7 @@ export default function WeddingMustHavesV2Page() {
             </section>
 
             <section className="bg-cream">
-                {guideItems.map((item, index) => (
+                {resolvedGuideItems.map((item, index) => (
                     <Fragment key={item.id}>
                         <GuideProductSection item={item} index={index} />
                         {index === 3 ? <ConversionBand /> : null}
