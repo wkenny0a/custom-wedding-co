@@ -1,6 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any, react/no-unescaped-entities */
 import Image from 'next/image';
 import Link from 'next/link';
 import { getProducts, getLowestDisplayPrice } from '@/lib/swell';
+import { ProductPreviewModalButton, type PreviewProduct } from '@/components/guides/ProductPreviewModalButton';
 
 export const metadata = {
     title: '2026/2027 Wedding Must-Haves for Guest Experience | Custom Wedding Co.',
@@ -9,6 +11,8 @@ export const metadata = {
         images: ['/images/campaigns/wedding-must-haves-2026-2027/hero.png'],
     }
 };
+
+export const dynamic = 'force-dynamic';
 
 const FEATURED_SLUGS = [
     'bespoke-engraved-heirloom-bottle-opener',
@@ -21,6 +25,18 @@ const FEATURED_SLUGS = [
     'bespoke-beers-birdies-neoprene-can-cooler',
     'custom-ceramic-ring-dish-personalized-heirloom-trinket-tray'
 ];
+
+const PRICE_FALLBACKS: Record<string, number> = {
+    'bespoke-engraved-heirloom-bottle-opener': 19.99,
+    'bespoke-monogram-cocktail-napkins': 19.99,
+    'bespoke-frosted-acrylic-wedding-cups': 99.99,
+    'bespoke-keepsake-handheld-fan': 19.99,
+    'personlaized-champagne-glass-custom-champagne-glass-wedding-favor': 29.99,
+    'personlaized-wine-glass-custom-wine-glass-wedding-favor': 29.99,
+    'bespoke-personalized-golf-balls': 24.99,
+    'bespoke-beers-birdies-neoprene-can-cooler': 12.99,
+    'custom-ceramic-ring-dish-personalized-heirloom-trinket-tray': 29.99,
+};
 
 const SECTIONS_DATA = [
     {
@@ -106,14 +122,50 @@ const SECTIONS_DATA = [
     }
 ];
 
+function formatGuidePrice(price: number | null | undefined) {
+    return price && price > 0 ? `From $${price.toFixed(2)}` : 'Price available in preview';
+}
+
+function createPreviewProduct(product: any, price: number | null | undefined): PreviewProduct | null {
+    if (!product) return null;
+
+    return {
+        ...product,
+        _id: product._id || product.id,
+        slug: { current: product.slug },
+        price: Number(product.price) || 0,
+        priceRange: price && price > 0 ? `$${price.toFixed(2)}` : product.priceRange,
+        priceNote: product.priceNote || '',
+        badge: product.badge || 'Personalized',
+        category: product.category || { title: 'Wedding Guest Details' },
+        rating: product.rating || 4.9,
+        reviewCount: product.reviewCount || 128,
+        styleVariantImages: product.styleVariantImages || [],
+        bundleProducts: product.bundleProducts || [],
+        isMultiBuy: product.isMultiBuy || false,
+        perItemOptionNames: product.perItemOptionNames || [],
+    };
+}
+
 export default async function WeddingMustHavesGuide() {
     const swellResponse = await getProducts();
     const allProducts = swellResponse?.results || [];
 
-    const productsBySlug = FEATURED_SLUGS.reduce((acc: any, slug: string) => {
+    const productsBySlug = FEATURED_SLUGS.reduce((acc: Record<string, any>, slug: string) => {
         acc[slug] = allProducts.find((p: any) => p.slug === slug);
         return acc;
     }, {});
+
+    const guideSections = SECTIONS_DATA.map((section) => {
+        const product = productsBySlug[section.slug];
+        const resolvedPrice = product ? getLowestDisplayPrice(product) : PRICE_FALLBACKS[section.slug];
+
+        return {
+            ...section,
+            priceLabel: formatGuidePrice(resolvedPrice || PRICE_FALLBACKS[section.slug]),
+            previewProduct: createPreviewProduct(product, resolvedPrice || PRICE_FALLBACKS[section.slug]),
+        };
+    });
 
     return (
         <main className="w-full bg-cream min-h-screen pb-24 md:pb-0 scroll-smooth">
@@ -177,7 +229,7 @@ export default async function WeddingMustHavesGuide() {
                     </div>
                     
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 md:gap-4">
-                        {SECTIONS_DATA.map((section) => (
+                        {guideSections.map((section) => (
                             <Link 
                                 key={section.id} 
                                 href={`#${section.id}`}
@@ -185,6 +237,9 @@ export default async function WeddingMustHavesGuide() {
                             >
                                 <span className="font-sans text-xs font-medium text-espresso group-hover:text-gold transition-colors">
                                     {section.headline.split(' for')[0]}
+                                </span>
+                                <span className="mt-2 font-serif text-lg leading-none text-gold">
+                                    {section.priceLabel}
                                 </span>
                             </Link>
                         ))}
@@ -202,7 +257,7 @@ export default async function WeddingMustHavesGuide() {
 
             {/* SHOPPABLE GUIDE SECTIONS */}
             <div className="max-w-6xl mx-auto px-6 pb-20 space-y-32">
-                {SECTIONS_DATA.map((section, index) => {
+                {guideSections.map((section, index) => {
                     const product = productsBySlug[section.slug];
                     const imageUrl = product?.images?.[0]?.file?.url || '/assets/logo.png';
                     
@@ -268,25 +323,33 @@ export default async function WeddingMustHavesGuide() {
                                     <div className="bg-cream-dark/50 p-4 rounded-xl border border-gold/10">
                                         <div className="flex gap-3 items-start">
                                             <span className="text-gold mt-0.5">✨</span>
-                                            <p className="font-sans text-sm text-espresso/80 font-medium leading-relaxed">
-                                                {section.cue.split('·').map((part, i) => (
-                                                    <span key={i}>
-                                                        {i > 0 && <span className="mx-2 text-gold/40">•</span>}
-                                                        {part.trim()}
-                                                    </span>
-                                                ))}
-                                            </p>
+                                            <div className="space-y-2">
+                                                <p className="font-serif text-2xl leading-none text-gold">
+                                                    {section.priceLabel}
+                                                </p>
+                                                <p className="font-sans text-sm text-espresso/80 font-medium leading-relaxed">
+                                                    {section.cue.split('·').map((part, i) => (
+                                                        <span key={i}>
+                                                            {i > 0 && <span className="mx-2 text-gold/40">•</span>}
+                                                            {part.trim()}
+                                                        </span>
+                                                    ))}
+                                                </p>
+                                                <p className="font-sans text-[10px] font-bold uppercase tracking-widest text-espresso/45">
+                                                    Starting price before upgrades
+                                                </p>
+                                            </div>
                                         </div>
                                     </div>
 
                                     {/* CTA */}
                                     <div className="pt-4 space-y-4">
-                                        <Link 
-                                            href={`/products/${section.slug}`}
-                                            className="block w-full text-center px-8 py-4 bg-espresso text-cream font-sans text-sm font-bold uppercase tracking-wider hover:bg-espresso-light transition-colors rounded-sm shadow-md"
-                                        >
-                                            {section.cta}
-                                        </Link>
+                                        <ProductPreviewModalButton
+                                            label={section.cta}
+                                            product={section.previewProduct}
+                                            fallbackHref={`/products/${section.slug}`}
+                                            className="inline-flex w-full items-center justify-center gap-2 text-center px-8 py-4 bg-espresso text-cream font-sans text-sm font-bold uppercase tracking-wider hover:bg-espresso-light transition-colors rounded-sm shadow-md"
+                                        />
                                         <p className="text-center font-sans text-[11px] text-espresso/50 uppercase tracking-widest">
                                             ✓ Personalized proof included before production
                                         </p>
