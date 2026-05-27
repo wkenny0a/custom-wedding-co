@@ -22,6 +22,23 @@ type BaseBoxProduct = {
   id?: string;
   name?: string;
   price?: number | string;
+  options?: SwellProductOption[];
+};
+
+type SwellProductOptionValue = {
+  id?: string;
+  name?: string;
+  value?: string;
+  price?: number;
+};
+
+type SwellProductOption = {
+  id?: string;
+  name?: string;
+  input_type?: string;
+  type?: string;
+  required?: boolean;
+  values?: SwellProductOptionValue[];
 };
 
 type RewardTier = {
@@ -201,6 +218,19 @@ const getCouponCode = (qty: number) => {
   return null;
 };
 
+const getSwellOptions = (product: { options?: SwellProductOption[]; swellData?: unknown } | null | undefined) => {
+  const directOptions = product?.options;
+  if (Array.isArray(directOptions)) return directOptions;
+
+  const swellData = product?.swellData as { options?: SwellProductOption[] } | undefined;
+  return Array.isArray(swellData?.options) ? swellData.options : [];
+};
+
+const findOptionByName = (options: SwellProductOption[], targetName: string) =>
+  options.find((option) => option.name?.trim().toLowerCase() === targetName.toLowerCase());
+
+const getOptionValueName = (value: SwellProductOptionValue | undefined) => value?.name || value?.value || '';
+
 function StarRating({ count }: { count: number }) {
   return (
     <div className="flex items-center gap-0.5" aria-label={`${count} star rating`}>
@@ -361,29 +391,34 @@ export default function WelcomeBoxConfigurator({
 
   const buildBaseOptions = () => {
     const options: { name: string; value: string }[] = [];
-    if (state.boxColor) options.push({ name: 'Box Color', value: state.boxColor.name });
-    if (state.selectedDesign) options.push({ name: 'Lid Design', value: state.selectedDesign.name });
-    if (state.namesOrInitials.trim()) options.push({ name: 'Names / Initials', value: state.namesOrInitials.trim() });
-    if (state.eventDate.trim()) options.push({ name: 'Event Date', value: state.eventDate.trim() });
-    if (state.customUploadUrl) options.push({ name: 'Custom Design URL', value: state.customUploadUrl });
-    if (state.welcomeMessage.trim()) options.push({ name: 'Welcome Message', value: state.welcomeMessage.trim() });
-    if (state.includeMatchingBag) options.push({ name: 'Matching Custom Welcome Bag', value: 'Yes (+$2 per box)' });
-    options.push({ name: 'Selected Items', value: state.selectedProducts.map((product) => product.name).join(', ') });
-    if (unlockedRewards.length > 0) {
-      options.push({
-        name: 'Free Box Value',
-        value: unlockedRewards
-          .map((reward) => `${reward.shortTitle} (${reward.valueLabel(boxQuantity)})`)
-          .join(' + '),
-      });
+
+    const matchingBagOption = findOptionByName(getSwellOptions(baseBoxProduct), 'Matching Custom Welcome Bag');
+    if (matchingBagOption) {
+      const targetValue = matchingBagOption.values?.find((value) =>
+        state.includeMatchingBag
+          ? /yes/i.test(getOptionValueName(value))
+          : /^no$/i.test(getOptionValueName(value)),
+      );
+      const fallbackValue = matchingBagOption.values?.[state.includeMatchingBag ? 1 : 0];
+      const value = getOptionValueName(targetValue || fallbackValue);
+      if (matchingBagOption.name && value) {
+        options.push({ name: matchingBagOption.name, value });
+      }
     }
-    options.push({ name: 'Volume Discount', value: `${discountAmount}% off` });
-    options.push({ name: 'Total Savings', value: formatCurrency(totalSavings) });
+
     return options;
   };
 
   const buildBaseMetadata = () => ({
     welcome_box_builder: true,
+    welcome_box_box_color: state.boxColor?.name || '',
+    welcome_box_lid_design: state.selectedDesign?.name || '',
+    welcome_box_names_or_initials: state.namesOrInitials.trim(),
+    welcome_box_event_date: state.eventDate.trim(),
+    welcome_box_custom_upload_url: state.customUploadUrl,
+    welcome_box_welcome_message: state.welcomeMessage.trim(),
+    welcome_box_matching_bag: state.includeMatchingBag ? 'Yes (+$2 per box)' : 'No',
+    welcome_box_selected_items: state.selectedProducts.map((product) => product.name).join(', '),
     welcome_box_item_count: selectedCount,
     welcome_box_quantity: boxQuantity,
     welcome_box_free_value: unlockedRewards.length
@@ -396,13 +431,57 @@ export default function WelcomeBoxConfigurator({
   });
 
   const buildProductOptions = (product: ProductItem) => {
-    const options: { name: string; value: string }[] = [{ name: 'Welcome Box Item', value: 'Included in custom welcome box' }];
-    if (product.isCustomizable && product.customOptions?.length) {
-      options.push(...product.customOptions.map((option) => ({ name: option.name, value: option.value })));
+    const options: { name: string; value: string }[] = [];
+
+    for (const option of getSwellOptions(product)) {
+      if (!option.name) continue;
+      const inputType = option.input_type || option.type || '';
+      const optionName = option.name.toLowerCase();
+
+      if (Array.isArray(option.values) && option.values.length > 0) {
+        let selectedValue: SwellProductOptionValue | undefined;
+
+        if (optionName.includes('design')) {
+          selectedValue = option.values.find((value) =>
+            getOptionValueName(value).toLowerCase() === `design #${state.selectedDesign?.id || 1}`.toLowerCase(),
+          );
+        }
+
+        selectedValue = selectedValue || option.values[0];
+        const value = getOptionValueName(selectedValue);
+        if (value) options.push({ name: option.name, value });
+        continue;
+      }
+
+      if (optionName.includes('names') || optionName.includes('initials')) {
+        options.push({
+          name: option.name,
+          value: state.namesOrInitials.trim() || 'Custom artwork uploaded',
+        });
+        continue;
+      }
+
+      if (optionName.includes('event date') || optionName === 'date') {
+        options.push({
+          name: option.name,
+          value: state.eventDate.trim() || 'See custom artwork',
+        });
+        continue;
+      }
+
+      if (optionName.includes('upload') || optionName.includes('artwork')) {
+        options.push({
+          name: option.name,
+          value: state.customUploadUrl || 'Provided with welcome box',
+        });
+        continue;
+      }
+
+      if (option.required || inputType === 'short_text' || inputType === 'text') {
+        options.push({ name: option.name, value: 'Provided with welcome box' });
+      }
     }
-    if (state.namesOrInitials.trim()) options.push({ name: 'Names / Initials', value: state.namesOrInitials.trim() });
-    if (state.eventDate.trim()) options.push({ name: 'Event Date', value: state.eventDate.trim() });
-    if (state.customUploadUrl) options.push({ name: 'Custom Design URL', value: state.customUploadUrl });
+
     return options;
   };
 
@@ -417,12 +496,16 @@ export default function WelcomeBoxConfigurator({
         await addToCart(product.id, boxQuantity, buildProductOptions(product), null, true);
       }
 
+      setIsCartOpen(true);
+
       const couponCode = getCouponCode(boxQuantity);
       if (couponCode) {
-        await applyCoupon(couponCode);
+        try {
+          await applyCoupon(couponCode);
+        } catch (couponError) {
+          console.warn('Welcome box coupon auto-apply skipped:', couponCode, couponError);
+        }
       }
-
-      setIsCartOpen(true);
     } catch (error) {
       console.error('Failed to add welcome box bundle:', error);
       alert('We could not add the welcome box to cart. Please try again or contact us for help.');

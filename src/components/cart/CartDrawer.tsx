@@ -24,6 +24,14 @@ type CartItem = {
     quantity?: number;
     options?: CartOption[];
     metadata?: {
+        welcome_box_box_color?: string;
+        welcome_box_lid_design?: string;
+        welcome_box_names_or_initials?: string;
+        welcome_box_event_date?: string;
+        welcome_box_custom_upload_url?: string;
+        welcome_box_welcome_message?: string;
+        welcome_box_matching_bag?: string;
+        welcome_box_selected_items?: string;
         welcome_box_free_value?: string;
         welcome_box_total_savings?: string;
         welcome_box_volume_discount?: string;
@@ -346,6 +354,46 @@ export function CartDrawer() {
                                                     <span className="font-semibold text-espresso">{opt.name}:</span> {opt.value}
                                                 </span>
                                             ))}
+                                            {item.metadata?.welcome_box_box_color && (
+                                                <span className="font-sans text-[11px] text-gray-500">
+                                                    <span className="font-semibold text-espresso">Box Color:</span> {item.metadata.welcome_box_box_color}
+                                                </span>
+                                            )}
+                                            {item.metadata?.welcome_box_lid_design && (
+                                                <span className="font-sans text-[11px] text-gray-500">
+                                                    <span className="font-semibold text-espresso">Lid Design:</span> {item.metadata.welcome_box_lid_design}
+                                                </span>
+                                            )}
+                                            {item.metadata?.welcome_box_names_or_initials && (
+                                                <span className="font-sans text-[11px] text-gray-500">
+                                                    <span className="font-semibold text-espresso">Names / Initials:</span> {item.metadata.welcome_box_names_or_initials}
+                                                </span>
+                                            )}
+                                            {item.metadata?.welcome_box_event_date && (
+                                                <span className="font-sans text-[11px] text-gray-500">
+                                                    <span className="font-semibold text-espresso">Event Date:</span> {item.metadata.welcome_box_event_date}
+                                                </span>
+                                            )}
+                                            {item.metadata?.welcome_box_custom_upload_url && (
+                                                <span className="font-sans text-[11px] text-gray-500">
+                                                    <span className="font-semibold text-espresso">Custom Design URL:</span> {item.metadata.welcome_box_custom_upload_url}
+                                                </span>
+                                            )}
+                                            {item.metadata?.welcome_box_welcome_message && (
+                                                <span className="font-sans text-[11px] text-gray-500">
+                                                    <span className="font-semibold text-espresso">Welcome Message:</span> {item.metadata.welcome_box_welcome_message}
+                                                </span>
+                                            )}
+                                            {item.metadata?.welcome_box_matching_bag && (
+                                                <span className="font-sans text-[11px] text-gray-500">
+                                                    <span className="font-semibold text-espresso">Matching Custom Welcome Bag:</span> {item.metadata.welcome_box_matching_bag}
+                                                </span>
+                                            )}
+                                            {item.metadata?.welcome_box_selected_items && (
+                                                <span className="font-sans text-[11px] text-gray-500">
+                                                    <span className="font-semibold text-espresso">Selected Items:</span> {item.metadata.welcome_box_selected_items}
+                                                </span>
+                                            )}
                                             {item.metadata?.welcome_box_free_value && (
                                                 <span className="font-sans text-[11px] text-gray-500">
                                                     <span className="font-semibold text-espresso">Free Box Value:</span> {item.metadata.welcome_box_free_value}
