@@ -91,8 +91,17 @@ export default function GroomBoxConfigurator({
   const [boxQuantity, setBoxQuantity] = useState<number>(1);
   const [isCustomQuantity, setIsCustomQuantity] = useState<boolean>(false);
   const [selectedColor, setSelectedColor] = useState<BoxColorOption>(GROOM_BOX_COLORS[2]); // Default to Premium Cream
-  const [personalizationMessage, setPersonalizationMessage] = useState<string>(presetMessage);
   const [personNames, setPersonNames] = useState<string[]>(['']);
+  const [personalizationMessages, setPersonalizationMessages] = useState<string[]>(['']);
+
+  // Sync personalizationMessages array length when quantity changes
+  useEffect(() => {
+    setPersonalizationMessages(prev => {
+      const next = [...prev];
+      while (next.length < boxQuantity) next.push(presetMessage);
+      return next.slice(0, boxQuantity);
+    });
+  }, [boxQuantity, presetMessage]);
   const [includeShreddedPaper, setIncludeShreddedPaper] = useState<boolean>(false);
   const [includeBowTie, setIncludeBowTie] = useState<boolean>(false);
   const [selectedProducts, setSelectedProducts] = useState<ProductItem[]>([]);
@@ -202,7 +211,9 @@ export default function GroomBoxConfigurator({
       if (selectedColor) baseOptions.push({ name: 'Box Color', value: selectedColor.name });
       if (includeShreddedPaper) baseOptions.push({ name: 'Matching Shredded Paper', value: 'Yes' });
       if (includeBowTie) baseOptions.push({ name: 'Exterior Bow Tie Ribbon', value: 'Yes' });
-      if (personalizationMessage.trim()) baseOptions.push({ name: 'Inner Lid Message', value: personalizationMessage });
+      
+      const formattedMessages = personalizationMessages.map((msg, i) => `Box ${i + 1}: ${msg}`).join(' | ');
+      if (formattedMessages.trim()) baseOptions.push({ name: 'Inner Lid Message', value: formattedMessages });
       
       const filledNames = personNames.filter(n => n.trim()).join(', ');
       if (filledNames) baseOptions.push({ name: 'Groomsmen Names', value: filledNames });
@@ -373,7 +384,7 @@ export default function GroomBoxConfigurator({
                   <div className="w-full h-full flex flex-col items-center justify-center text-center p-8 bg-white">
                     <div className="w-5/6 max-w-sm text-espresso">
                       <h4 className="font-serif text-2xl md:text-3xl leading-tight font-semibold italic animate-in fade-in duration-500">
-                        {personalizationMessage || 'Will you be my groomsman?'}
+                        {personalizationMessages[previewIndex] || 'Will you be my groomsman?'}
                       </h4>
                       <p className="mt-6 text-[10px] tracking-[0.2em] uppercase text-espresso-light border-t border-gold-pale/30 pt-3">
                         {boxQuantity > 1
@@ -633,54 +644,79 @@ export default function GroomBoxConfigurator({
             <div className="bg-white/60 backdrop-blur-sm border border-gold-pale/20 rounded-3xl p-6 md:p-8 shadow-md">
               <span className="text-xs uppercase tracking-widest text-gold font-bold block mb-2">Step 3</span>
               <h2 className="font-serif text-2xl text-espresso mb-1">Names & Secret Lid Message</h2>
-              <p className="text-xs text-espresso-light/60 mb-6">Create the surprise with gold-embossed personalization.</p>
+              <p className="text-xs text-espresso-light/60 mb-6">Enter each recipient's name and their custom hidden message for the inner lid.</p>
               
-              {/* Inner Lid Message */}
-              <div className="mb-6">
-                <label className="block text-xs uppercase tracking-widest font-sans font-bold text-espresso/70 mb-2">
-                  Inner Lid Message
-                </label>
-                <input
-                  type="text"
-                  value={personalizationMessage}
-                  onChange={e => setPersonalizationMessage(e.target.value)}
-                  placeholder="e.g. Will you be my groomsman, Brady?"
-                  className="w-full px-4 py-3 bg-white border border-gold-pale/40 rounded-xl font-serif text-base text-espresso focus:outline-none focus:ring-1 focus:ring-gold transition-shadow"
-                />
-              </div>
-
-              {/* Recipient Names inputs grid */}
-              <div>
-                <label className="block text-xs uppercase tracking-widest font-sans font-bold text-espresso/70 mb-2">
-                  {boxQuantity > 1 ? 'Enter Recipient Names' : "Recipient's Name"}
-                </label>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {Array.from({ length: boxQuantity }).map((_, idx) => (
-                    <div
-                      key={idx}
-                      onClick={() => setPreviewIndex(idx)}
-                      className={`relative flex items-center border rounded-xl overflow-hidden bg-white px-3 transition-all ${
-                        previewIndex === idx ? 'border-gold shadow-sm ring-1 ring-gold/20' : 'border-gold-pale/30'
-                      }`}
-                    >
-                      <span className="text-[10px] font-sans font-bold text-gold/60 mr-2 flex-shrink-0">
-                        #{idx + 1}
-                      </span>
-                      <input
-                        type="text"
-                        value={personNames[idx] || ''}
-                        onChange={e => handleNameChange(idx, e.target.value)}
-                        placeholder={`Name ${idx + 1}`}
-                        className="w-full py-3 text-sm text-espresso font-serif bg-transparent focus:outline-none"
-                      />
+              <div className="flex flex-col gap-6">
+                {Array.from({ length: boxQuantity }).map((_, idx) => (
+                  <div
+                    key={idx}
+                    onClick={() => setPreviewIndex(idx)}
+                    className={`p-5 rounded-2xl border-2 transition-all duration-300 bg-white/70 ${
+                      previewIndex === idx
+                        ? 'border-gold shadow-md bg-white scale-[1.01]'
+                        : 'border-gold-pale/20 hover:border-gold-pale/40 hover:bg-white/90'
+                    }`}
+                  >
+                    {/* Header line for each box */}
+                    <div className="flex items-center justify-between pb-3 mb-4 border-b border-gold-pale/20">
+                      <div className="flex items-center gap-2">
+                        <span className="w-6 h-6 bg-gold text-white rounded-full font-sans text-xs font-bold flex items-center justify-center shadow-sm">
+                          {idx + 1}
+                        </span>
+                        <span className="font-serif text-base text-espresso font-semibold">
+                          Groomsman Box #{idx + 1}
+                        </span>
+                      </div>
                       {previewIndex === idx && boxQuantity > 1 && (
-                        <span className="text-[8px] font-sans font-bold text-gold uppercase tracking-wider flex-shrink-0 animate-pulse">
-                          Previewing
+                        <span className="text-[9px] font-sans font-bold text-gold uppercase tracking-wider animate-pulse">
+                          Previewing Live ⬅
                         </span>
                       )}
                     </div>
-                  ))}
-                </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      {/* Name input */}
+                      <div>
+                        <label
+                          htmlFor={`name-${idx}`}
+                          className="block text-[10px] font-sans font-bold uppercase tracking-widest text-espresso/60 mb-1.5"
+                        >
+                          Enter Recipient Names #{idx + 1}
+                        </label>
+                        <input
+                          id={`name-${idx}`}
+                          type="text"
+                          value={personNames[idx] || ''}
+                          onChange={e => handleNameChange(idx, e.target.value)}
+                          placeholder="e.g. Brady"
+                          className="w-full px-3 py-2 bg-white border border-gold-pale/30 rounded-xl font-serif text-sm text-espresso focus:outline-none focus:ring-1 focus:ring-gold"
+                        />
+                      </div>
+
+                      {/* Message input */}
+                      <div>
+                        <label
+                          htmlFor={`msg-${idx}`}
+                          className="block text-[10px] font-sans font-bold uppercase tracking-widest text-espresso/60 mb-1.5"
+                        >
+                          Inner Lid Message #{idx + 1}
+                        </label>
+                        <input
+                          id={`msg-${idx}`}
+                          type="text"
+                          value={personalizationMessages[idx] || ''}
+                          onChange={e => {
+                            const next = [...personalizationMessages];
+                            next[idx] = e.target.value;
+                            setPersonalizationMessages(next);
+                          }}
+                          placeholder="e.g. Will you be my groomsman?"
+                          className="w-full px-3 py-2 bg-white border border-gold-pale/30 rounded-xl font-serif text-sm text-espresso focus:outline-none focus:ring-1 focus:ring-gold"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
 
