@@ -514,38 +514,54 @@ export default function GroomBoxConfigurator({
             <div className="bg-white/60 backdrop-blur-sm border border-gold-pale/20 rounded-3xl p-6 md:p-8 shadow-md">
               <span className="text-xs uppercase tracking-widest text-gold font-bold block mb-2">Step 1</span>
               <h2 className="font-serif text-2xl text-espresso mb-1">How many groomsmen are you gifting?</h2>
-              <p className="text-xs text-espresso-light/60 mb-6">The more you build, the bigger the volume discount applied!</p>
+              <p className="text-xs text-espresso-light/60 mb-8">The more you build, the bigger the volume discount applied!</p>
               
-              <div className="grid grid-cols-3 sm:grid-cols-6 gap-3 mb-6">
-                {[1, 2, 3, 4, 5].map(q => (
-                  <button
-                    key={q}
-                    type="button"
-                    onClick={() => { setBoxQuantity(q); setIsCustomQuantity(false); }}
-                    className={`py-4 rounded-xl text-xl font-serif border-2 transition-all duration-300 hover:-translate-y-0.5 ${
-                      !isCustomQuantity && boxQuantity === q
-                        ? 'border-gold bg-gold/10 text-espresso shadow-md scale-102 font-bold'
-                        : 'border-gold-pale/30 bg-white text-espresso-light hover:border-gold hover:bg-white/80'
-                    }`}
-                  >
-                    {q}
-                  </button>
-                ))}
+              <div className="grid grid-cols-3 sm:grid-cols-6 gap-3 mb-6 pt-3">
+                {[1, 2, 3, 4, 5].map(q => {
+                  const discount = getVolumeDiscountPercent(q);
+                  return (
+                    <button
+                      key={q}
+                      type="button"
+                      onClick={() => { setBoxQuantity(q); setIsCustomQuantity(false); }}
+                      className={`py-4 rounded-xl text-xl font-serif border-2 transition-all duration-300 hover:-translate-y-0.5 relative ${
+                        !isCustomQuantity && boxQuantity === q
+                          ? 'border-gold bg-gold/10 text-espresso shadow-md scale-102 font-bold'
+                          : 'border-gold-pale/30 bg-white text-espresso-light hover:border-gold hover:bg-white/80'
+                      }`}
+                    >
+                      {discount > 0 && (
+                        <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-gold text-white text-[8px] font-sans font-bold uppercase tracking-wider px-2 py-0.5 rounded-full shadow-sm whitespace-nowrap z-10 animate-pulse">
+                          {discount}% OFF
+                        </span>
+                      )}
+                      {q}
+                    </button>
+                  );
+                })}
 
                 {isCustomQuantity ? (
-                  <input
-                    type="number"
-                    min="6"
-                    value={boxQuantity >= 6 ? boxQuantity : 6}
-                    onChange={(e) => setBoxQuantity(Math.max(1, parseInt(e.target.value) || 6))}
-                    className="py-4 w-full rounded-xl text-xl font-serif border-2 border-gold bg-gold/10 text-center text-espresso font-bold shadow-md focus:outline-none focus:ring-1 focus:ring-gold"
-                  />
+                  <div className="relative w-full">
+                    <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-gold text-white text-[8px] font-sans font-bold uppercase tracking-wider px-2 py-0.5 rounded-full shadow-sm whitespace-nowrap z-10 animate-pulse">
+                      45% OFF
+                    </span>
+                    <input
+                      type="number"
+                      min="6"
+                      value={boxQuantity >= 6 ? boxQuantity : 6}
+                      onChange={(e) => setBoxQuantity(Math.max(1, parseInt(e.target.value) || 6))}
+                      className="py-4 w-full rounded-xl text-xl font-serif border-2 border-gold bg-gold/10 text-center text-espresso font-bold shadow-md focus:outline-none focus:ring-1 focus:ring-gold"
+                    />
+                  </div>
                 ) : (
                   <button
                     type="button"
                     onClick={() => { setBoxQuantity(6); setIsCustomQuantity(true); }}
-                    className="py-4 rounded-xl text-xl font-serif border-2 border-gold-pale/30 bg-white text-espresso-light hover:border-gold hover:bg-white/80 transition-all duration-300"
+                    className="py-4 rounded-xl text-xl font-serif border-2 border-gold-pale/30 bg-white text-espresso-light hover:border-gold hover:bg-white/80 transition-all duration-300 relative"
                   >
+                    <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-gold text-white text-[8px] font-sans font-bold uppercase tracking-wider px-2 py-0.5 rounded-full shadow-sm whitespace-nowrap z-10 animate-pulse">
+                      45% OFF
+                    </span>
                     6+
                   </button>
                 )}
@@ -557,6 +573,25 @@ export default function GroomBoxConfigurator({
                   <span>Qualifies for a heavy <strong>{volumeDiscountPercent}% volume discount</strong> automatically at checkout!</span>
                 </div>
               )}
+
+              {/* UGC Review Images added back at Step One */}
+              <div className="mt-8 border-t border-gold-pale/10 pt-6">
+                <p className="text-[10px] uppercase tracking-widest text-espresso-light/60 font-sans font-bold mb-3 text-center">
+                  See What Real Grooms Created
+                </p>
+                <div className="grid grid-cols-3 gap-3">
+                  {[1, 2, 3].map((num) => (
+                    <div key={num} className="relative aspect-[4/5] rounded-xl overflow-hidden shadow-sm border border-gold-pale/20 group">
+                      <img 
+                        src={`/images/ugc/groom-review-${num}.jpeg`}
+                        alt={`Real groom box review ${num}`}
+                        className="object-cover w-full h-full transform transition-transform duration-700 group-hover:scale-105"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
 
             {/* Section 2: Box Color */}
