@@ -1,17 +1,14 @@
-import React, { useState, useEffect } from 'react';
+/* eslint-disable @next/next/no-img-element */
+import React, { useState } from 'react';
 import { BoxColorOption } from './types';
 
 export const BOX_COLORS: BoxColorOption[] = [
   { id: 'c1', name: 'Navy Blue', hexCode: '#3b5998', imageUrl: '/images/boxes/box_closed_navy_blue.png' },
   { id: 'c2', name: 'Sky Blue', hexCode: '#88d8ed', imageUrl: '/images/boxes/box_closed_sky_blue.png' },
-  { id: 'c3', name: 'Vibrant Red', hexCode: '#e32636', imageUrl: '/images/boxes/box_closed_vibrant_red.png' },
   { id: 'c4', name: 'Premium Cream', hexCode: '#f3f1ea', imageUrl: '/images/boxes/box_closed_premium_cream.png', mostPopular: true },
   { id: 'c5', name: 'Light Pink', hexCode: '#f5c4c9', imageUrl: '/images/boxes/box_closed_light_pink.png' },
-  { id: 'c6', name: 'Orange', hexCode: '#e64a19', imageUrl: '/images/boxes/box_closed_orange.png' },
   { id: 'c7', name: 'Yellow', hexCode: '#ffd54f', imageUrl: '/images/boxes/box_closed_yellow.png' },
-  { id: 'c8', name: 'Matte Black', hexCode: '#212121', imageUrl: '/images/boxes/box_closed_matte_black.png' },
-  { id: 'c9', name: 'Champagne Gold', hexCode: '#d1b777', imageUrl: '/images/boxes/box_closed_champagne_gold.png' },
-  { id: 'c10', name: 'Forest Green', hexCode: '#2e4333', imageUrl: '/images/boxes/box_closed_forest_green.png' }
+  { id: 'c8', name: 'Matte Black', hexCode: '#212121', imageUrl: '/images/boxes/box_closed_matte_black.png' }
 ];
 
 export interface BoxColorOptionExtended extends BoxColorOption {
@@ -26,13 +23,8 @@ interface StepBoxColorProps {
 }
 
 export default function StepBoxColor({ selectedColor, onSelectColor, onNext, onPrev }: StepBoxColorProps) {
-  const [imageLoading, setImageLoading] = useState(false);
-
-  useEffect(() => {
-    if (selectedColor) {
-      setImageLoading(true);
-    }
-  }, [selectedColor?.id]);
+  const [loadedColorId, setLoadedColorId] = useState<string | null>(selectedColor?.id || null);
+  const imageLoading = Boolean(selectedColor && loadedColorId !== selectedColor.id);
 
   return (
     <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
@@ -58,7 +50,7 @@ export default function StepBoxColor({ selectedColor, onSelectColor, onNext, onP
               <img 
                 src={selectedColor.imageUrl} 
                 alt={`${selectedColor.name} Box`} 
-                onLoad={() => setImageLoading(false)}
+                onLoad={() => setLoadedColorId(selectedColor.id)}
                 className={`relative z-10 w-full h-full object-cover transition-all duration-700 group-hover:scale-105 ${imageLoading ? 'opacity-0 scale-95' : 'opacity-100 scale-100'}`} 
               />
             ) : (

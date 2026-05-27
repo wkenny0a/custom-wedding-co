@@ -1,9 +1,34 @@
 'use client'
 
 import { useCart } from '@/context/CartContext'
-import { X, Minus, Plus, ShoppingBag, Trash2, ShieldCheck, HeartHandshake, Sparkles, Zap, PackagePlus, Crown } from 'lucide-react'
+import { X, Minus, Plus, Trash2, ShieldCheck, HeartHandshake, Sparkles, Crown } from 'lucide-react'
 import Image from 'next/image'
+import Link from 'next/link'
 import { useState, useEffect, useRef } from 'react'
+
+type CartOption = {
+    name?: string;
+    value?: string;
+}
+
+type CartItem = {
+    id: string;
+    product_id?: string;
+    product?: {
+        id?: string;
+        name?: string;
+        images?: Array<{ file?: { url?: string } }>;
+    };
+    price?: number;
+    price_total?: number;
+    quantity?: number;
+    options?: CartOption[];
+    metadata?: {
+        welcome_box_free_value?: string;
+        welcome_box_total_savings?: string;
+        welcome_box_volume_discount?: string;
+    };
+}
 
 // --- CONFIGURATION ---
 const FREE_SHIPPING_THRESHOLD = 99;
@@ -32,10 +57,10 @@ export function CartDrawer() {
     const appliedAutoCode = useRef<string | null>(null)
     const isApplyingCoupon = useRef(false)
 
-    const items = cart?.items || []
+    const items: CartItem[] = cart?.items || []
     
     // Calculate display subtotal including mock items if API isn't ready
-    let subtotal = cart?.sub_total ?? cart?.subTotal ?? items.reduce((sum: number, item: any) => sum + (item.price_total ?? ((item.price ?? 0) * (item.quantity ?? 1))), 0)
+    let subtotal = cart?.sub_total ?? cart?.subTotal ?? items.reduce((sum: number, item) => sum + (item.price_total ?? ((item.price ?? 0) * (item.quantity ?? 1))), 0)
     
     if (mockRushAdded) subtotal += RUSH_PROCESSING_FEE;
     if (mockUpsellAdded) subtotal += 9.99; // mock heirloom rose set price
@@ -79,7 +104,7 @@ export function CartDrawer() {
 
         const timer = setTimeout(syncCoupon, 500);
         return () => clearTimeout(timer);
-    }, [subtotal, currentCartCoupon, currentTier, isLoading, cart]);
+    }, [subtotal, currentCartCoupon, currentTier, isLoading, cart, applyCoupon, isCartCouponAuto, removeCoupon]);
 
     if (!isCartOpen) return null
 
@@ -95,7 +120,7 @@ export function CartDrawer() {
     const handleToggleRushProcessing = async () => {
         setIsActionLoading(true)
         try {
-            const existingItem = items.find((i: any) => i.product?.id === RUSH_PROCESSING_PRODUCT_ID)
+            const existingItem = items.find((i) => i.product?.id === RUSH_PROCESSING_PRODUCT_ID)
             
             if (existingItem) {
                 // Remove it if it is already in the cart
@@ -119,7 +144,7 @@ export function CartDrawer() {
         setIsActionLoading(true)
         try {
             await addToCart(UPSELL_PRODUCT_ID, 1)
-        } catch (e) {
+        } catch {
             console.warn("Upsell Product ID not configured in Swell. Using mock state.")
             setMockUpsellAdded(true)
         } finally {
@@ -141,7 +166,7 @@ export function CartDrawer() {
     const amountToNextTier = nextTier ? nextTier.min - subtotal : 0;
     
     // To identify if real upsells/rush are in the items array
-    const hasRealRush = items.some((i: any) => i.product?.id === RUSH_PROCESSING_PRODUCT_ID)
+    const hasRealRush = items.some((i) => i.product?.id === RUSH_PROCESSING_PRODUCT_ID)
     const isRushActive = hasRealRush || mockRushAdded;
 
     return (
@@ -268,7 +293,7 @@ export function CartDrawer() {
                             </div>
                             <h3 className="font-display text-2xl text-espresso">Your cart is empty</h3>
                             <p className="font-sans text-espresso/70 text-sm max-w-[250px]">
-                                Let's create something beautiful for your special day.
+                                Let&apos;s create something beautiful for your special day.
                             </p>
                             <button
                                 onClick={() => setIsCartOpen(false)}
@@ -280,14 +305,14 @@ export function CartDrawer() {
                     ) : (
                         <div className="flex flex-col gap-6">
                             {/* Line Items */}
-                            {items.map((item: any) => (
+                            {items.map((item) => (
                                 <div key={item.id} className="flex gap-4 border-b border-gold/10 pb-6 group">
                                     {/* Product Image */}
                                     <div className="relative w-20 h-28 bg-gray-100 flex-shrink-0 overflow-hidden">
                                         {item.product?.images?.[0]?.file?.url ? (
                                             <Image
                                                 src={item.product.images[0].file.url}
-                                                alt={item.product.name}
+                                                alt={item.product?.name || 'Cart item'}
                                                 fill
                                                 className="object-cover group-hover:scale-105 transition-transform duration-700"
                                             />
@@ -316,28 +341,43 @@ export function CartDrawer() {
 
                                         {/* Selected Options */}
                                         <div className="mt-1.5 flex flex-col gap-0.5">
-                                            {item.options?.map((opt: any, idx: number) => (
+                                            {item.options?.map((opt, idx) => (
                                                 <span key={idx} className="font-sans text-[11px] text-gray-500">
                                                     <span className="font-semibold text-espresso">{opt.name}:</span> {opt.value}
                                                 </span>
                                             ))}
+                                            {item.metadata?.welcome_box_free_value && (
+                                                <span className="font-sans text-[11px] text-gray-500">
+                                                    <span className="font-semibold text-espresso">Free Box Value:</span> {item.metadata.welcome_box_free_value}
+                                                </span>
+                                            )}
+                                            {item.metadata?.welcome_box_total_savings && (
+                                                <span className="font-sans text-[11px] text-gray-500">
+                                                    <span className="font-semibold text-espresso">Total Savings:</span> {item.metadata.welcome_box_total_savings}
+                                                </span>
+                                            )}
+                                            {item.metadata?.welcome_box_volume_discount && (
+                                                <span className="font-sans text-[11px] text-gray-500">
+                                                    <span className="font-semibold text-espresso">Volume Discount:</span> {item.metadata.welcome_box_volume_discount}
+                                                </span>
+                                            )}
                                         </div>
 
                                         <div className="mt-auto pt-4 flex items-center justify-between">
                                             {/* Quantity Selector */}
                                             <div className="flex items-center border border-espresso/20 bg-white">
                                                 <button
-                                                    onClick={() => handleQuantityChange(item.id, item.quantity, -1)}
+                                                    onClick={() => handleQuantityChange(item.id, item.quantity ?? 1, -1)}
                                                     disabled={isLoading}
                                                     className="p-1.5 text-espresso/70 hover:text-gold hover:bg-cream-dark transition-colors duration-300 disabled:opacity-50"
                                                 >
                                                     <Minus size={14} />
                                                 </button>
                                                 <span className="font-sans text-xs font-semibold text-espresso w-8 text-center">
-                                                    {item.quantity}
+                                                    {item.quantity ?? 1}
                                                 </span>
                                                 <button
-                                                    onClick={() => handleQuantityChange(item.id, item.quantity, 1)}
+                                                    onClick={() => handleQuantityChange(item.id, item.quantity ?? 1, 1)}
                                                     disabled={isLoading}
                                                     className="p-1.5 text-espresso/70 hover:text-gold hover:bg-cream-dark transition-colors duration-300 disabled:opacity-50"
                                                 >
@@ -354,7 +394,7 @@ export function CartDrawer() {
                             ))}
 
                             {/* One-Click Upsell Block */}
-                            {!mockUpsellAdded && !items.some((i: any) => i.product?.id === UPSELL_PRODUCT_ID) && (
+                            {!mockUpsellAdded && !items.some((i) => i.product?.id === UPSELL_PRODUCT_ID) && (
                                 <div className="mt-2 bg-cream-dark/40 p-4 border border-gold/20 flex gap-4 items-center">
                                     <div className="w-16 h-16 bg-white relative flex-shrink-0 overflow-hidden border border-espresso/10">
                                         <Image src="https://cdn.swell.store/customweddingco/69ea40d08a8d0f0012a7ec2e/f15db5b27a760f4da5bf0d3ba6b75970/roses-classic-cream.jpg" alt="Heirloom Rose Set" fill className="object-cover" />
@@ -436,12 +476,12 @@ export function CartDrawer() {
                                 </div>
                             )}
 
-                            <a
+                            <Link
                                 href="/checkout"
                                 className="w-full bg-espresso text-cream font-sans font-bold uppercase tracking-widest text-sm py-4 mt-2 text-center hover:bg-espresso-light transition-all duration-500 shadow-md hover:shadow-lg block"
                             >
                                 Secure Checkout
-                            </a>
+                            </Link>
 
                             {/* Trust & Reassurance Zone */}
                             <div className="flex justify-center items-center gap-6 mt-2">
