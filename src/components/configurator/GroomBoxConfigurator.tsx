@@ -111,6 +111,15 @@ export default function GroomBoxConfigurator({
   const [currentImageIndex, setCurrentImageIndex] = useState<number>(0);
   const [activeTab, setActiveTab] = useState<'closed' | 'open' | 'lid'>('closed');
   const [previewIndex, setPreviewIndex] = useState<number>(0);
+  const [showFloatingBar, setShowFloatingBar] = useState<boolean>(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowFloatingBar(window.scrollY > 300);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   // Sync preview names index when quantity/names array updates
   useEffect(() => {
@@ -1033,6 +1042,76 @@ export default function GroomBoxConfigurator({
         </div>,
         document.body
       )}
+
+      {/* ─── FLOATING BOTTOM BAR (Sticky on scroll) ─── */}
+      <div className={`fixed bottom-0 left-0 right-0 z-[45] bg-white/95 backdrop-blur-md border-t border-gold-pale/30 shadow-[0_-10px_30px_rgba(74,44,42,0.12)] transition-all duration-500 ease-out transform pb-[calc(0.5rem+env(safe-area-inset-bottom,0px))] ${
+        showFloatingBar ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0 pointer-events-none'
+      }`}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex items-center justify-between gap-4">
+          
+          {/* Price & Savings */}
+          <div className="flex flex-col">
+            <span className="text-[10px] text-gray-400 font-sans uppercase tracking-widest leading-none">
+              Groom Bundle ({boxQuantity} {boxQuantity > 1 ? 'Boxes' : 'Box'})
+            </span>
+            <div className="flex items-baseline gap-2 mt-1">
+              {volumeDiscountPercent > 0 ? (
+                <>
+                  <span className="font-sans text-xs text-espresso/40 line-through">
+                    ${totalSubtotalBeforeDiscount.toFixed(2)}
+                  </span>
+                  <span className="font-serif text-xl sm:text-2xl text-espresso font-bold">
+                    ${discountedSubtotal.toFixed(2)}
+                  </span>
+                </>
+              ) : (
+                <span className="font-serif text-xl sm:text-2xl text-espresso font-bold">
+                  ${totalSubtotalBeforeDiscount.toFixed(2)}
+                </span>
+              )}
+            </div>
+            {totalMoneySaved > 0 && (
+              <span className="text-[10px] text-gold font-sans font-bold flex items-center gap-1 mt-0.5">
+                🎉 Saved ${totalMoneySaved.toFixed(2)}!
+              </span>
+            )}
+          </div>
+
+          {/* Action Button */}
+          <div className="flex items-center gap-3">
+            {selectedProducts.length === 0 && (
+              <span className="hidden md:inline text-xs text-espresso-light/60 font-sans italic">
+                Add stuffers to unlock bundle discounts!
+              </span>
+            )}
+            <button
+              type="button"
+              onClick={handleAddToCart}
+              disabled={isSubmitting || selectedProducts.length === 0}
+              className={`px-6 py-3 bg-espresso text-cream uppercase tracking-widest text-xs font-semibold rounded-xl transition-all duration-300 shadow-md hover:shadow-lg flex items-center justify-center gap-2 ${
+                (isSubmitting || selectedProducts.length === 0)
+                  ? 'bg-gray-200 text-gray-400 cursor-not-allowed shadow-none'
+                  : 'hover:bg-espresso-light hover:-translate-y-0.5'
+              }`}
+            >
+              {isSubmitting ? (
+                <>
+                  <svg className="animate-spin h-4 w-4 text-current" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  <span>Securing...</span>
+                </>
+              ) : selectedProducts.length === 0 ? (
+                <span>Add Stuffers to Box</span>
+              ) : (
+                <span>Add to Cart & Checkout</span>
+              )}
+            </button>
+          </div>
+
+        </div>
+      </div>
     </div>
   );
 }
