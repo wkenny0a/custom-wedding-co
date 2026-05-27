@@ -54,10 +54,10 @@ const SECTIONS_DATA = [
     {
         slug: 'bespoke-frosted-acrylic-wedding-cups',
         id: 'frosted-acrylic-cups',
-        shortTitle: 'Custom Frosted Acrylic Cups (100 Pack)',
+        shortTitle: 'Custom Frosted Acrylic Cups (10 Pack)',
         bestFor: 'Welcome parties, outdoor bars, pool weekends, and guest favors',
         favoriteLabel: 'Most clicked idea tile',
-        headline: 'Custom Frosted Acrylic Cups (100 Pack)',
+        headline: 'Custom Frosted Acrylic Cups (10 Pack)',
         purpose: 'Personalized cups are one of the easiest ways to make a bar, welcome party, pool party, or after-party feel custom. They are practical, visible in photos, and easy for guests to take home.',
         chips: ['Welcome Party', 'Outdoor Wedding', 'Barware', 'Guest Favor'],
         cue: 'Personalized drinkware · Great for outdoor events · Bulk-friendly',
