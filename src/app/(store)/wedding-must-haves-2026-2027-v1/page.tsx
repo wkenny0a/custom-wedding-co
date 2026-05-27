@@ -15,15 +15,15 @@ export const metadata = {
 export const dynamic = 'force-dynamic';
 
 const FEATURED_SLUGS = [
-    'bespoke-engraved-heirloom-bottle-opener',
-    'bespoke-monogram-cocktail-napkins',
-    'bespoke-frosted-acrylic-wedding-cups',
     'bespoke-keepsake-handheld-fan',
+    'bespoke-frosted-acrylic-wedding-cups',
+    'bespoke-monogram-cocktail-napkins',
     'personlaized-champagne-glass-custom-champagne-glass-wedding-favor',
-    'personlaized-wine-glass-custom-wine-glass-wedding-favor',
     'bespoke-personalized-golf-balls',
     'bespoke-beers-birdies-neoprene-can-cooler',
-    'custom-ceramic-ring-dish-personalized-heirloom-trinket-tray'
+    'bespoke-engraved-heirloom-bottle-opener',
+    'custom-ceramic-ring-dish-personalized-heirloom-trinket-tray',
+    'personlaized-wine-glass-custom-wine-glass-wedding-favor'
 ];
 
 const PRICE_FALLBACKS: Record<string, number> = {
@@ -40,35 +40,11 @@ const PRICE_FALLBACKS: Record<string, number> = {
 
 const SECTIONS_DATA = [
     {
-        slug: 'bespoke-engraved-heirloom-bottle-opener',
-        id: 'engraved-bottle-openers',
-        headline: 'Engraved Bottle Openers for the Home Bar',
-        purpose: 'A useful wedding favor or groomsmen-adjacent gift that guests can keep long after the reception. It works especially well for bar-focused weddings, welcome parties, golf weekends, and cocktail-hour gifting.',
-        chips: ['Bar Details', 'Groomsmen Gifts', 'Wedding Favors', 'Keepsake Favor'],
-        cue: 'Personalized engraving · Great for bulk orders · Useful after the wedding',
-        cta: 'Shop Engraved Bottle Openers',
-    },
-    {
-        slug: 'bespoke-monogram-cocktail-napkins',
-        id: 'monogram-cocktail-napkins',
-        headline: 'Monogram Cocktail Napkins for a Polished Bar Moment',
-        purpose: 'Custom cocktail napkins make the bar feel designed instead of generic. They are affordable, photo-friendly, and perfect for tying the couple’s monogram, date, or wedding style into the reception.',
-        chips: ['Cocktail Hour', 'Reception Bar', 'Monogram Detail', 'Bulk Eligible'],
-        cue: 'Pack-friendly reception detail · Custom monogram or artwork · Easy bar upgrade',
-        cta: 'Shop Monogram Napkins',
-    },
-    {
-        slug: 'bespoke-frosted-acrylic-wedding-cups',
-        id: 'frosted-acrylic-cups',
-        headline: 'Frosted Acrylic Wedding Cups Guests Actually Use',
-        purpose: 'Personalized cups are one of the easiest ways to make a bar, welcome party, pool party, or after-party feel custom. They are practical, visible in photos, and easy for guests to take home.',
-        chips: ['Welcome Party', 'Outdoor Wedding', 'Barware', 'Guest Favor'],
-        cue: 'Personalized drinkware · Great for outdoor events · Bulk-friendly',
-        cta: 'Shop Frosted Acrylic Cups',
-    },
-    {
         slug: 'bespoke-keepsake-handheld-fan',
         id: 'handheld-fans',
+        shortTitle: 'Handheld Fans',
+        bestFor: 'Outdoor ceremonies, summer weddings, and guest comfort',
+        favoriteLabel: 'Top clicked product',
         headline: 'Handheld Fans for Ceremony Comfort',
         purpose: 'For warm-weather weddings, ceremony fans are both practical and beautiful. They help guests stay comfortable while doubling as a personalized ceremony detail.',
         chips: ['Outdoor Ceremony', 'Summer Weddings', 'Guest Comfort', 'Personalized Detail'],
@@ -76,8 +52,35 @@ const SECTIONS_DATA = [
         cta: 'Shop Handheld Fans',
     },
     {
+        slug: 'bespoke-frosted-acrylic-wedding-cups',
+        id: 'frosted-acrylic-cups',
+        shortTitle: 'Frosted Acrylic Cups',
+        bestFor: 'Welcome parties, outdoor bars, pool weekends, and guest favors',
+        favoriteLabel: 'Most clicked idea tile',
+        headline: 'Frosted Acrylic Wedding Cups Guests Actually Use',
+        purpose: 'Personalized cups are one of the easiest ways to make a bar, welcome party, pool party, or after-party feel custom. They are practical, visible in photos, and easy for guests to take home.',
+        chips: ['Welcome Party', 'Outdoor Wedding', 'Barware', 'Guest Favor'],
+        cue: 'Personalized drinkware · Great for outdoor events · Bulk-friendly',
+        cta: 'Shop Frosted Acrylic Cups',
+    },
+    {
+        slug: 'bespoke-monogram-cocktail-napkins',
+        id: 'monogram-cocktail-napkins',
+        shortTitle: 'Monogram Napkins',
+        bestFor: 'Cocktail hour, reception bars, monograms, and bulk details',
+        favoriteLabel: 'Best bar upgrade',
+        headline: 'Monogram Cocktail Napkins for a Polished Bar Moment',
+        purpose: 'Custom cocktail napkins make the bar feel designed instead of generic. They are affordable, photo-friendly, and perfect for tying the couple’s monogram, date, or wedding style into the reception.',
+        chips: ['Cocktail Hour', 'Reception Bar', 'Monogram Detail', 'Bulk Eligible'],
+        cue: 'Pack-friendly reception detail · Custom monogram or artwork · Easy bar upgrade',
+        cta: 'Shop Monogram Napkins',
+    },
+    {
         slug: 'personlaized-champagne-glass-custom-champagne-glass-wedding-favor',
         id: 'champagne-glasses',
+        shortTitle: 'Champagne Glasses',
+        bestFor: 'Toasts, reception tables, favors, and keepsake glassware',
+        favoriteLabel: 'Toast-ready',
         headline: 'Personalized Champagne Glasses for Toasts and Tables',
         purpose: 'Custom champagne glasses create a more elevated toast and can double as a guest favor, table detail, or bridal party keepsake. They are ideal for receptions, welcome drinks, and celebratory moments.',
         chips: ['Champagne Toast', 'Reception Tables', 'Wedding Favors', 'Keepsake Glassware'],
@@ -85,17 +88,11 @@ const SECTIONS_DATA = [
         cta: 'Shop Champagne Glasses',
     },
     {
-        slug: 'personlaized-wine-glass-custom-wine-glass-wedding-favor',
-        id: 'wine-glasses',
-        headline: 'Personalized Wine Glasses for Reception Keepsakes',
-        purpose: 'Custom wine glasses bring personalization into the dinner table, wine bar, or guest favor display. They feel more elevated than disposable favors and are useful after the wedding.',
-        chips: ['Dinner Reception', 'Wine Bar', 'Guest Favor', 'Personalized Glassware'],
-        cue: 'Personalized wedding favor · Reception-ready · Keepsake drinkware',
-        cta: 'Shop Wine Glasses',
-    },
-    {
         slug: 'bespoke-personalized-golf-balls',
         id: 'golf-balls',
+        shortTitle: 'Golf Balls',
+        bestFor: 'Golf weekends, country club weddings, and groomsmen gifts',
+        favoriteLabel: 'Weekend gift',
         headline: 'Personalized Golf Balls for Golf Weekends and Groomsmen Gifts',
         purpose: 'A strong guest-experience detail for couples planning golf weekends, bachelor events, country club weddings, or groomsmen gifting. It makes the wedding feel personal beyond the reception.',
         chips: ['Golf Weekend', 'Groomsmen Gifts', 'Country Club Wedding', 'Personalized Favor'],
@@ -105,6 +102,9 @@ const SECTIONS_DATA = [
     {
         slug: 'bespoke-beers-birdies-neoprene-can-cooler',
         id: 'can-coolers',
+        shortTitle: 'Can Coolers',
+        bestFor: 'Golf weekends, welcome parties, outdoor bars, and casual favors',
+        favoriteLabel: 'Easy bulk favor',
         headline: 'Beers & Birdies Can Coolers for the Golf Weekend',
         purpose: 'A custom can cooler is a fun, useful detail for golf weekends, bachelor parties, welcome parties, outdoor receptions, and casual bar moments. It adds personality without feeling overdone.',
         chips: ['Golf Weekend', 'Welcome Party', 'Outdoor Bar', 'Casual Favor'],
@@ -112,13 +112,40 @@ const SECTIONS_DATA = [
         cta: 'Shop Can Coolers',
     },
     {
+        slug: 'bespoke-engraved-heirloom-bottle-opener',
+        id: 'engraved-bottle-openers',
+        shortTitle: 'Bottle Openers',
+        bestFor: 'Bar details, groomsmen gifts, wedding favors, and keepsakes',
+        favoriteLabel: 'Home bar keepsake',
+        headline: 'Engraved Bottle Openers for the Home Bar',
+        purpose: 'A useful wedding favor or groomsmen-adjacent gift that guests can keep long after the reception. It works especially well for bar-focused weddings, welcome parties, golf weekends, and cocktail-hour gifting.',
+        chips: ['Bar Details', 'Groomsmen Gifts', 'Wedding Favors', 'Keepsake Favor'],
+        cue: 'Personalized engraving · Great for bulk orders · Useful after the wedding',
+        cta: 'Shop Engraved Bottle Openers',
+    },
+    {
         slug: 'custom-ceramic-ring-dish-personalized-heirloom-trinket-tray',
         id: 'ceramic-ring-dishes',
+        shortTitle: 'Ring Dishes',
+        bestFor: 'Bridal party gifting, flat-lay photos, and thank-you gifts',
+        favoriteLabel: 'Gift-ready',
         headline: 'Custom Ceramic Ring Dishes for Keepsake Gifting',
         purpose: 'A ceramic ring dish is a thoughtful keepsake for bridal party gifting, wedding detail boxes, flat-lay photos, and meaningful thank-you gifts. It feels personal and useful after the wedding.',
         chips: ['Bridal Party Gift', 'Keepsake Detail', 'Flat-Lay Photos', 'Personalized Gift'],
         cue: 'Custom keepsake · Great for bridesmaids and VIP guests · Gift-ready detail',
         cta: 'Shop Ceramic Ring Dishes',
+    },
+    {
+        slug: 'personlaized-wine-glass-custom-wine-glass-wedding-favor',
+        id: 'wine-glasses',
+        shortTitle: 'Wine Glasses',
+        bestFor: 'Dinner receptions, wine bars, guest favors, and glassware displays',
+        favoriteLabel: 'Reception keepsake',
+        headline: 'Personalized Wine Glasses for Reception Keepsakes',
+        purpose: 'Custom wine glasses bring personalization into the dinner table, wine bar, or guest favor display. They feel more elevated than disposable favors and are useful after the wedding.',
+        chips: ['Dinner Reception', 'Wine Bar', 'Guest Favor', 'Personalized Glassware'],
+        cue: 'Personalized wedding favor · Reception-ready · Keepsake drinkware',
+        cta: 'Shop Wine Glasses',
     }
 ];
 
@@ -159,13 +186,16 @@ export default async function WeddingMustHavesGuide() {
     const guideSections = SECTIONS_DATA.map((section) => {
         const product = productsBySlug[section.slug];
         const resolvedPrice = product ? getLowestDisplayPrice(product) : PRICE_FALLBACKS[section.slug];
+        const imageUrl = product?.images?.[0]?.file?.url || '/assets/logo.png';
 
         return {
             ...section,
+            imageUrl,
             priceLabel: formatGuidePrice(resolvedPrice || PRICE_FALLBACKS[section.slug]),
             previewProduct: createPreviewProduct(product, resolvedPrice || PRICE_FALLBACKS[section.slug]),
         };
     });
+    const topPickSections = guideSections.slice(0, 3);
 
     return (
         <main className="w-full bg-cream min-h-screen pb-24 md:pb-0 scroll-smooth">
@@ -191,17 +221,17 @@ export default async function WeddingMustHavesGuide() {
                         Personalized wedding details guests notice, use, and remember, from ceremony comfort to cocktail hour keepsakes.
                     </p>
                     <div className="flex flex-col sm:flex-row items-center gap-4 pt-4 justify-center lg:justify-start">
-                        <Link 
-                            href="#must-haves" 
+                        <Link
+                            href="#top-picks"
                             className="w-full sm:w-auto px-8 py-3.5 bg-gold text-espresso font-sans text-xs font-bold uppercase tracking-wider hover:bg-gold-light transition-colors text-center shadow-lg"
                         >
-                            Shop Guest Experience Details
+                            Shop Guest Favorites
                         </Link>
-                        <Link 
-                            href="/shop/favors-party-extras" 
+                        <Link
+                            href="#shop-ideas"
                             className="w-full sm:w-auto px-8 py-3.5 bg-white/10 backdrop-blur-md border border-white/30 text-cream font-sans text-xs font-bold uppercase tracking-wider hover:bg-white/20 transition-colors text-center"
                         >
-                            Explore Barware & Favors
+                            Compare All Ideas
                         </Link>
                     </div>
                     <div className="pt-6 flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start">
@@ -220,28 +250,101 @@ export default async function WeddingMustHavesGuide() {
                 </div>
             </section>
 
+            {/* TOP CLICKED PICKS */}
+            <section id="top-picks" className="scroll-mt-32 bg-cream px-5 py-14 sm:px-6 lg:px-12">
+                <div className="mx-auto max-w-6xl">
+                    <div className="mb-8 flex flex-col gap-3 text-center sm:mb-10">
+                        <span className="font-sans text-xs font-bold uppercase tracking-[0.2em] text-gold">
+                            Guest Favorites
+                        </span>
+                        <h2 className="font-display text-3xl leading-tight text-espresso sm:text-4xl lg:text-5xl">
+                            Start with the details couples are choosing first.
+                        </h2>
+                        <p className="mx-auto max-w-2xl font-sans text-sm leading-6 text-espresso/70 sm:text-base">
+                            These high-intent favorites are the fastest paths from inspiration to customization.
+                        </p>
+                    </div>
+
+                    <div className="grid gap-4 md:grid-cols-3">
+                        {topPickSections.map((section, index) => (
+                            <article key={section.id} className="group flex h-full flex-col overflow-hidden border border-gold/20 bg-white shadow-sm transition-all duration-500 hover:-translate-y-1 hover:border-gold hover:shadow-xl">
+                                <a href={`#${section.id}`} className="relative block aspect-[4/3] overflow-hidden bg-cream-dark">
+                                    <Image
+                                        src={section.imageUrl}
+                                        alt={section.headline}
+                                        fill
+                                        className="object-cover transition-transform duration-700 group-hover:scale-105"
+                                        sizes="(max-width: 768px) 100vw, 33vw"
+                                    />
+                                    <span className="absolute left-3 top-3 bg-cream px-3 py-1 font-sans text-[10px] font-bold uppercase tracking-[0.16em] text-espresso shadow-sm">
+                                        0{index + 1} · {section.favoriteLabel}
+                                    </span>
+                                </a>
+                                <div className="flex flex-1 flex-col p-5">
+                                    <div className="mb-4">
+                                        <h3 className="font-serif text-2xl leading-tight text-espresso">{section.shortTitle}</h3>
+                                        <p className="mt-2 font-sans text-sm leading-6 text-espresso/70">{section.bestFor}</p>
+                                    </div>
+                                    <div className="mt-auto space-y-4">
+                                        <div className="flex items-center justify-between border-t border-gold/15 pt-4">
+                                            <span className="font-serif text-2xl text-gold">{section.priceLabel}</span>
+                                            <span className="font-sans text-[10px] font-bold uppercase tracking-[0.14em] text-espresso/45">
+                                                Proof included
+                                            </span>
+                                        </div>
+                                        <ProductPreviewModalButton
+                                            label={section.cta}
+                                            product={section.previewProduct}
+                                            fallbackHref={`/products/${section.slug}`}
+                                            className="inline-flex w-full items-center justify-center gap-2 bg-espresso px-5 py-3.5 text-center font-sans text-xs font-bold uppercase tracking-[0.14em] text-cream shadow-md transition-colors hover:bg-espresso-light"
+                                        />
+                                    </div>
+                                </div>
+                            </article>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
             {/* JUMP LINKS / SHOP THE IDEAS */}
-            <section className="bg-white border-y border-gold/10 py-12 px-6">
+            <section id="shop-ideas" className="scroll-mt-32 bg-white border-y border-gold/10 py-12 px-6">
                 <div className="max-w-6xl mx-auto">
                     <div className="text-center mb-8">
                         <h2 className="font-serif text-3xl text-espresso">Shop the Ideas</h2>
-                        <p className="font-sans text-sm text-espresso/70 mt-2">Choose the guest-experience detail your ad brought you here for.</p>
+                        <p className="font-sans text-sm text-espresso/70 mt-2">Preview pricing, see the product, and start customization without leaving the guide.</p>
                     </div>
                     
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 md:gap-4">
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                         {guideSections.map((section) => (
-                            <Link 
-                                key={section.id} 
-                                href={`#${section.id}`}
-                                className="group flex flex-col items-center justify-center text-center bg-cream-dark/30 hover:bg-gold/5 border border-gold/10 rounded-xl p-4 transition-all duration-300"
+                            <article
+                                key={section.id}
+                                className="group grid grid-cols-[92px_1fr] gap-4 border border-gold/15 bg-cream p-3 transition-all duration-300 hover:border-gold hover:bg-cream-dark/60 hover:shadow-md"
                             >
-                                <span className="font-sans text-xs font-medium text-espresso group-hover:text-gold transition-colors">
-                                    {section.headline.split(' for')[0]}
-                                </span>
-                                <span className="mt-2 font-serif text-lg leading-none text-gold">
-                                    {section.priceLabel}
-                                </span>
-                            </Link>
+                                <a href={`#${section.id}`} className="relative aspect-square overflow-hidden bg-white">
+                                    <Image
+                                        src={section.imageUrl}
+                                        alt={section.headline}
+                                        fill
+                                        className="object-cover transition-transform duration-700 group-hover:scale-105"
+                                        sizes="92px"
+                                    />
+                                </a>
+                                <div className="min-w-0">
+                                    <a href={`#${section.id}`} className="font-sans text-xs font-bold uppercase leading-5 tracking-[0.12em] text-espresso transition-colors hover:text-gold">
+                                        {section.shortTitle}
+                                    </a>
+                                    <p className="mt-1 font-sans text-xs leading-5 text-espresso/65">{section.bestFor}</p>
+                                    <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                                        <span className="font-serif text-xl leading-none text-gold">{section.priceLabel}</span>
+                                        <ProductPreviewModalButton
+                                            label="Preview"
+                                            product={section.previewProduct}
+                                            fallbackHref={`/products/${section.slug}`}
+                                            className="inline-flex items-center justify-center gap-1.5 bg-espresso px-3 py-2 font-sans text-[10px] font-bold uppercase tracking-[0.12em] text-cream transition-colors hover:bg-espresso-light"
+                                        />
+                                    </div>
+                                </div>
+                            </article>
                         ))}
                     </div>
                 </div>
@@ -258,26 +361,26 @@ export default async function WeddingMustHavesGuide() {
             {/* SHOPPABLE GUIDE SECTIONS */}
             <div className="max-w-6xl mx-auto px-6 pb-20 space-y-32">
                 {guideSections.map((section, index) => {
-                    const product = productsBySlug[section.slug];
-                    const imageUrl = product?.images?.[0]?.file?.url || '/assets/logo.png';
-                    
                     const isMidPage = index === 3; // After the 4th item
 
                     return (
                         <div key={section.id} className="scroll-mt-32 relative">
                             {isMidPage && (
                                 <div className="w-full bg-espresso text-cream rounded-2xl p-10 md:p-16 mb-32 text-center shadow-xl">
-                                    <h3 className="font-display text-3xl md:text-4xl mb-4">Make Every Guest Detail Feel Intentional</h3>
+                                    <h3 className="font-display text-3xl md:text-4xl mb-4">Not Sure Where to Start?</h3>
                                     <p className="font-sans text-cream/80 max-w-2xl mx-auto mb-10 font-light leading-relaxed">
-                                        From ceremony comfort to cocktail hour keepsakes, every piece can be personalized to your names, date, monogram, artwork, or wedding style.
+                                        Start with the three details visitors are showing the strongest intent for: ceremony comfort, custom cups, and cocktail-hour polish.
                                     </p>
-                                    <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                                        <Link href="/shop/favors-party-extras" className="w-full sm:w-auto px-8 py-3.5 bg-gold text-espresso font-sans text-xs font-bold uppercase tracking-wider hover:bg-gold-light transition-colors">
-                                            Shop Wedding Favors
-                                        </Link>
-                                        <Link href="/shop/barware-drinkware" className="w-full sm:w-auto px-8 py-3.5 border border-cream/30 text-cream hover:bg-white/10 font-sans text-xs font-bold uppercase tracking-wider transition-colors">
-                                            Explore Barware
-                                        </Link>
+                                    <div className="grid gap-3 sm:grid-cols-3">
+                                        {topPickSections.map((pick, pickIndex) => (
+                                            <ProductPreviewModalButton
+                                                key={pick.id}
+                                                label={`${pickIndex + 1}. ${pick.shortTitle}`}
+                                                product={pick.previewProduct}
+                                                fallbackHref={`/products/${pick.slug}`}
+                                                className={`${pickIndex === 0 ? 'bg-gold text-espresso hover:bg-gold-light' : 'border border-cream/30 text-cream hover:bg-white/10'} inline-flex w-full items-center justify-center gap-2 px-5 py-3.5 font-sans text-[11px] font-bold uppercase tracking-wider transition-colors`}
+                                            />
+                                        ))}
                                     </div>
                                 </div>
                             )}
@@ -288,7 +391,7 @@ export default async function WeddingMustHavesGuide() {
                                     <div className="absolute -inset-4 bg-gold/5 rounded-3xl -z-10 group-hover:bg-gold/10 transition-colors duration-500"></div>
                                     <div className="relative aspect-square md:aspect-[4/5] rounded-2xl overflow-hidden shadow-lg border border-gold/10 bg-white">
                                         <Image
-                                            src={imageUrl}
+                                            src={section.imageUrl}
                                             alt={section.headline}
                                             fill
                                             className="object-cover hover:scale-105 transition-transform duration-700"
@@ -311,9 +414,10 @@ export default async function WeddingMustHavesGuide() {
                                     </p>
 
                                     {/* Chips */}
-                                    <div className="flex flex-wrap gap-2 pt-2">
+                                    <div className="flex flex-wrap gap-x-4 gap-y-2 pt-2">
                                         {section.chips.map(chip => (
-                                            <span key={chip} className="px-3 py-1 bg-white border border-gold/20 rounded-full font-sans text-[10px] uppercase tracking-widest text-espresso/70 shadow-sm">
+                                            <span key={chip} className="inline-flex items-center gap-1.5 font-sans text-[10px] font-bold uppercase tracking-widest text-espresso/60">
+                                                <span className="h-1 w-1 rounded-full bg-gold"></span>
                                                 {chip}
                                             </span>
                                         ))}
@@ -471,27 +575,31 @@ export default async function WeddingMustHavesGuide() {
                     <h2 className="font-display text-4xl md:text-5xl lg:text-6xl mb-12 leading-tight">
                         Ready to Create the Guest Details Everyone Remembers?
                     </h2>
-                    <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                        <Link href="/shop/favors-party-extras" className="w-full sm:w-auto px-8 py-4 bg-gold text-espresso font-sans text-sm font-bold uppercase tracking-wider hover:bg-gold-light transition-colors shadow-lg">
-                            Shop Guest Experience Details
-                        </Link>
-                        <Link href="/shop/barware-drinkware" className="w-full sm:w-auto px-8 py-4 border border-cream/30 hover:bg-white/10 text-cream font-sans text-sm font-bold uppercase tracking-wider transition-colors">
-                            Explore Barware
-                        </Link>
-                        <Link href="/gifts/welcome-gift-box" className="w-full sm:w-auto px-8 py-4 border border-cream/30 hover:bg-white/10 text-cream font-sans text-sm font-bold uppercase tracking-wider transition-colors">
-                            Build Welcome Boxes
-                        </Link>
+                    <div className="grid gap-4 sm:grid-cols-3">
+                        {topPickSections.map((section, index) => (
+                            <ProductPreviewModalButton
+                                key={section.id}
+                                label={section.cta}
+                                product={section.previewProduct}
+                                fallbackHref={`/products/${section.slug}`}
+                                className={`${index === 0 ? 'bg-gold text-espresso hover:bg-gold-light' : 'border border-cream/30 text-cream hover:bg-white/10'} inline-flex w-full items-center justify-center gap-2 px-6 py-4 font-sans text-xs font-bold uppercase tracking-wider transition-colors shadow-lg`}
+                            />
+                        ))}
                     </div>
+                    <Link href="#shop-ideas" className="mt-8 inline-flex font-sans text-xs font-bold uppercase tracking-[0.16em] text-gold-pale transition-colors hover:text-gold">
+                        Compare all guest experience ideas
+                    </Link>
                 </div>
             </section>
 
             {/* MOBILE STICKY CTA */}
             <div className="md:hidden fixed bottom-0 left-0 w-full p-4 bg-white/90 backdrop-blur-md border-t border-gold/20 shadow-[0_-10px_20px_rgba(0,0,0,0.05)] z-50">
                 <Link 
-                    href="#must-haves"
-                    className="block w-full px-6 py-3.5 bg-espresso text-cream font-sans text-[13px] font-bold uppercase tracking-widest text-center shadow-lg active:scale-[0.98] transition-transform rounded-sm"
+                    href="#top-picks"
+                    className="flex w-full flex-col items-center justify-center px-6 py-3.5 bg-espresso text-cream font-sans text-center shadow-lg active:scale-[0.98] transition-transform rounded-sm"
                 >
-                    Shop the Must-Haves
+                    <span className="text-[13px] font-bold uppercase tracking-widest">Shop Top Picks</span>
+                    <span className="mt-1 text-[10px] uppercase tracking-[0.16em] text-gold-pale">Fans · Cups · Napkins</span>
                 </Link>
             </div>
         </main>

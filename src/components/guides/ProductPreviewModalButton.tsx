@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { createPortal } from 'react-dom'
 import Link from 'next/link'
 import { ArrowRight, ExternalLink, X } from 'lucide-react'
 import { ProductGallery } from '@/components/products/ProductGallery'
@@ -17,6 +18,15 @@ type ProductPreviewModalButtonProps = {
     product: PreviewProduct | null
     fallbackHref: string
     className?: string
+}
+
+function getProductSlug(product: PreviewProduct) {
+    const slug = product.slug
+    if (typeof slug === 'string') return slug
+    if (slug && typeof slug === 'object' && 'current' in slug && typeof slug.current === 'string') {
+        return slug.current
+    }
+    return product.name || 'unknown-product'
 }
 
 export function ProductPreviewModalButton({
@@ -55,20 +65,48 @@ export function ProductPreviewModalButton({
         )
     }
 
+    const handleOpen = () => {
+        setIsOpen(true)
+
+        const productSlug = getProductSlug(product)
+        const productPrice = Number(product.price) || 0
+        const analyticsWindow = window as Window & {
+            gtag?: (...args: unknown[]) => void
+            fbq?: (...args: unknown[]) => void
+            clarity?: (command: string, value: string) => void
+        }
+
+        analyticsWindow.gtag?.('event', 'product_preview_open', {
+            item_id: product._id,
+            item_name: product.name,
+            item_slug: productSlug,
+            value: productPrice,
+            currency: 'USD',
+        })
+        analyticsWindow.fbq?.('trackCustom', 'ProductPreviewOpen', {
+            content_ids: [product._id],
+            content_name: product.name,
+            content_type: 'product',
+            value: productPrice,
+            currency: 'USD',
+        })
+        analyticsWindow.clarity?.('event', `product_preview_open_${productSlug}`)
+    }
+
     return (
         <>
             <button
                 type="button"
-                onClick={() => setIsOpen(true)}
+                onClick={handleOpen}
                 className={className}
             >
                 {label}
                 <ArrowRight className="h-4 w-4" />
             </button>
 
-            {isOpen ? (
+            {isOpen && typeof document !== 'undefined' ? createPortal((
                 <div
-                    className="fixed inset-0 z-[90] flex items-end justify-center bg-espresso/70 px-0 py-0 backdrop-blur-sm sm:items-center sm:px-6 sm:py-8"
+                    className="fixed inset-0 z-[1000] flex items-end justify-center bg-espresso/70 px-0 py-0 backdrop-blur-sm sm:items-center sm:px-6 sm:py-8"
                     role="dialog"
                     aria-modal="true"
                     aria-label={`Customize ${product.name || 'product'}`}
@@ -126,7 +164,7 @@ export function ProductPreviewModalButton({
                         </div>
                     </div>
                 </div>
-            ) : null}
+            ), document.body) : null}
         </>
     )
 }
