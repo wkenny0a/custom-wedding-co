@@ -14,6 +14,7 @@ import {
   Sparkles,
   Truck,
   WalletCards,
+  X,
 } from 'lucide-react';
 import { BoxColorOption, DesignOption, ProductItem, WelcomeBoxState } from './WelcomeBoxTypes';
 import { useCart } from '@/context/CartContext';
@@ -231,6 +232,26 @@ const findOptionByName = (options: SwellProductOption[], targetName: string) =>
 
 const getOptionValueName = (value: SwellProductOptionValue | undefined) => value?.name || value?.value || '';
 
+const getProductImages = (product: ProductItem | null) => {
+  if (!product) return [];
+  const swellImages = product.swellData?.images || [];
+  const images = Array.isArray(swellImages)
+    ? swellImages
+        .map((image: { file?: { url?: string } }) => image.file?.url)
+        .filter((url: string | undefined): url is string => Boolean(url))
+    : [];
+  return images.length ? images : [product.image || '/images/box_closed.png'];
+};
+
+const getProductDescription = (product: ProductItem | null) => {
+  if (!product) return '';
+  return (
+    product.swellData?.description ||
+    product.swellData?.meta_description ||
+    'A curated welcome-box item selected for guest gifting, wedding weekends, and personalized event details.'
+  );
+};
+
 function StarRating({ count }: { count: number }) {
   return (
     <div className="flex items-center gap-0.5" aria-label={`${count} star rating`}>
@@ -260,6 +281,9 @@ export default function WelcomeBoxConfigurator({
   const [isUploading, setIsUploading] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [failedDesignImages, setFailedDesignImages] = useState<Set<number>>(new Set());
+  const [activePreviewTab, setActivePreviewTab] = useState<'closed' | 'inside' | 'lid'>('closed');
+  const [viewingProduct, setViewingProduct] = useState<ProductItem | null>(null);
+  const [detailImageIndex, setDetailImageIndex] = useState(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [state, setState] = useState<WelcomeBoxState>({
@@ -293,6 +317,7 @@ export default function WelcomeBoxConfigurator({
   const unlockedRewards = REWARDS.filter((reward) => selectedCount >= reward.threshold);
   const rewardSavings = unlockedRewards.reduce((sum, reward) => sum + reward.value(boxQuantity), 0);
   const totalSavings = volumeSavings + rewardSavings;
+  const estimatedTotal = Math.max(0, subtotalBeforeDiscount - volumeSavings);
   const progressPercent = Math.min(100, (selectedCount / 5) * 100);
   const nextReward = REWARDS.find((reward) => selectedCount < reward.threshold);
   const isCustomDesign = state.selectedDesign?.isCustomUpload === true;
@@ -387,6 +412,11 @@ export default function WelcomeBoxConfigurator({
       ...s,
       selectedProducts: s.selectedProducts.filter((product) => product.id !== productId),
     }));
+  };
+
+  const openProductDetail = (product: ProductItem) => {
+    setDetailImageIndex(0);
+    setViewingProduct(product);
   };
 
   const buildBaseOptions = () => {
@@ -525,8 +555,12 @@ export default function WelcomeBoxConfigurator({
     return 'Ready to add your completed welcome box.';
   }, [baseBoxProduct?.id, hasPersonalization, isCustomDesign, selectedCount, state.boxColor, state.selectedDesign]);
 
+  const detailImages = getProductImages(viewingProduct);
+  const detailImage = detailImages[detailImageIndex] || viewingProduct?.image || '/images/box_closed.png';
+  const detailDescription = getProductDescription(viewingProduct);
+
   return (
-    <div className="w-full">
+    <div className="w-full pb-28 lg:pb-32">
       <div className="w-full bg-espresso text-cream">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-3 px-4 py-3 text-center font-sans text-[11px] uppercase tracking-[0.16em] sm:gap-6">
           <span className="flex items-center gap-2">
@@ -640,6 +674,13 @@ export default function WelcomeBoxConfigurator({
                           </>
                         )}
                       </button>
+                      <button
+                        type="button"
+                        onClick={() => openProductDetail(product)}
+                        className="mt-2 flex h-9 w-full items-center justify-center rounded-full border border-gold-pale/50 bg-white font-sans text-[10px] font-semibold uppercase tracking-[0.16em] text-espresso/65 transition-all duration-300 hover:border-gold hover:text-espresso"
+                      >
+                        View detail
+                      </button>
                     </div>
                   </article>
                 );
@@ -732,6 +773,113 @@ export default function WelcomeBoxConfigurator({
                           </span>
                         </button>
                       )}
+                    </div>
+                  </section>
+
+                  <section className="rounded-2xl border border-gold-pale/40 bg-white p-4 shadow-sm">
+                    <div className="mb-3 flex items-center justify-between gap-3">
+                      <div>
+                        <h3 className="font-sans text-xs font-semibold uppercase tracking-[0.18em] text-espresso">
+                          Live box preview
+                        </h3>
+                        <p className="mt-1 text-xs text-espresso-light/65">
+                          See the box, lid, and selected items update as you build.
+                        </p>
+                      </div>
+                      <Sparkles size={18} className="text-gold" strokeWidth={1.5} />
+                    </div>
+
+                    <div className="mb-3 grid grid-cols-3 gap-2 rounded-full bg-cream p-1">
+                      {[
+                        { id: 'closed', label: 'Box' },
+                        { id: 'inside', label: 'Inside' },
+                        { id: 'lid', label: 'Lid' },
+                      ].map((tab) => (
+                        <button
+                          key={tab.id}
+                          type="button"
+                          onClick={() => setActivePreviewTab(tab.id as 'closed' | 'inside' | 'lid')}
+                          className={`h-9 rounded-full font-sans text-[10px] font-semibold uppercase tracking-[0.14em] transition-all duration-300 ${
+                            activePreviewTab === tab.id
+                              ? 'bg-espresso text-cream shadow-sm'
+                              : 'text-espresso/55 hover:text-espresso'
+                          }`}
+                        >
+                          {tab.label}
+                        </button>
+                      ))}
+                    </div>
+
+                    <div className="relative aspect-square overflow-hidden rounded-2xl border border-gold-pale/30 bg-cream-dark/45">
+                      {activePreviewTab === 'closed' && (
+                        <div className="flex h-full w-full items-center justify-center p-5">
+                          <img
+                            src={state.boxColor?.imageUrl || '/images/box_closed.png'}
+                            alt={`${state.boxColor?.name || 'Welcome'} box preview`}
+                            className="h-full w-full object-contain"
+                          />
+                        </div>
+                      )}
+
+                      {activePreviewTab === 'inside' && (
+                        <div className="relative flex h-full w-full items-center justify-center p-5">
+                          <img
+                            src="/images/box_open.png"
+                            alt="Open welcome box preview"
+                            className="absolute inset-0 h-full w-full object-contain opacity-35"
+                          />
+                          {state.selectedProducts.length > 0 ? (
+                            <div className="relative z-10 grid max-h-[82%] w-[86%] grid-cols-3 gap-2 overflow-y-auto rounded-2xl border border-gold-pale/30 bg-white/80 p-2 shadow-sm backdrop-blur-sm">
+                              {state.selectedProducts.map((product) => (
+                                <div key={product.id} className="overflow-hidden rounded-lg border border-gold-pale/25 bg-white text-center shadow-sm">
+                                  <img src={product.image || '/images/box_closed.png'} alt={product.name} className="h-12 w-full object-cover" />
+                                  <span className="block truncate px-1 py-1 font-sans text-[9px] text-espresso/70">
+                                    {product.name}
+                                  </span>
+                                </div>
+                              ))}
+                            </div>
+                          ) : (
+                            <div className="relative z-10 flex flex-col items-center rounded-2xl bg-white/75 px-5 py-4 text-center shadow-sm">
+                              <Gift size={28} className="text-gold" strokeWidth={1.4} />
+                              <p className="mt-2 font-serif text-sm text-espresso">Choose items to fill the box</p>
+                            </div>
+                          )}
+                        </div>
+                      )}
+
+                      {activePreviewTab === 'lid' && (
+                        <div className="flex h-full w-full flex-col items-center justify-center bg-white p-5 text-center">
+                          <div className="relative mb-4 h-24 w-24 overflow-hidden rounded-2xl border border-gold-pale/40 bg-cream">
+                            <img
+                              src={
+                                state.selectedDesign?.isCustomUpload && state.customUploadUrl
+                                  ? state.customUploadUrl
+                                  : state.selectedDesign?.imageUrl || '/images/gift-boxes/monograms/2.png'
+                              }
+                              alt={state.selectedDesign?.name || 'Lid design preview'}
+                              className="h-full w-full object-cover"
+                            />
+                          </div>
+                          <p className="font-serif text-xl leading-tight text-espresso">
+                            {state.namesOrInitials || 'Names or initials'}
+                          </p>
+                          <p className="mt-2 font-sans text-[10px] font-semibold uppercase tracking-[0.18em] text-espresso-light/65">
+                            {state.eventDate || 'Event date'}
+                          </p>
+                          {state.welcomeMessage && (
+                            <p className="mt-3 max-h-16 max-w-[260px] overflow-hidden text-xs leading-5 text-espresso-light/75">
+                              {state.welcomeMessage}
+                            </p>
+                          )}
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="mt-3 flex flex-wrap gap-2 text-[10px] font-semibold uppercase tracking-[0.13em] text-espresso/55">
+                      <span className="rounded-full bg-cream px-2.5 py-1">Color: {state.boxColor?.name}</span>
+                      <span className="rounded-full bg-cream px-2.5 py-1">Design: {state.selectedDesign?.name}</span>
+                      <span className="rounded-full bg-cream px-2.5 py-1">{selectedCount} items</span>
                     </div>
                   </section>
 
@@ -1034,6 +1182,36 @@ export default function WelcomeBoxConfigurator({
                         <span className="text-espresso-light/70">Free-gift value</span>
                         <span className="font-semibold text-gold">{formatCurrency(rewardSavings)}</span>
                       </div>
+                      {unlockedRewards.length > 0 && (
+                        <div className="rounded-2xl border border-gold-pale/35 bg-cream/50 p-3">
+                          <p className="mb-2 font-sans text-[10px] font-semibold uppercase tracking-[0.16em] text-espresso/55">
+                            Gift value included
+                          </p>
+                          <div className="flex flex-wrap gap-2">
+                            {unlockedRewards.map((reward) => {
+                              const Icon = reward.icon;
+                              return (
+                                <div key={reward.threshold} className="flex items-center gap-2 rounded-xl border border-gold-pale/30 bg-white px-2 py-2">
+                                  {reward.imageUrl ? (
+                                    <img
+                                      src={reward.imageUrl}
+                                      alt={reward.title}
+                                      className="h-9 w-9 rounded-lg object-cover"
+                                    />
+                                  ) : (
+                                    <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-gold/10 text-gold">
+                                      <Icon size={16} strokeWidth={1.6} />
+                                    </span>
+                                  )}
+                                  <span className="max-w-[86px] font-sans text-[10px] font-semibold leading-4 text-espresso">
+                                    {reward.shortTitle}
+                                  </span>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      )}
                       <div className="border-t border-gold-pale/40 pt-3">
                         <div className="flex items-center justify-between gap-4">
                           <span className="font-sans text-xs font-semibold uppercase tracking-[0.16em] text-espresso">
@@ -1159,6 +1337,101 @@ export default function WelcomeBoxConfigurator({
           </div>
         </div>
       </section>
+
+      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-gold-pale/50 bg-cream/95 px-3 py-3 shadow-2xl shadow-espresso/15 backdrop-blur-md">
+        <div className="mx-auto flex max-w-5xl items-center gap-3">
+          <div className="min-w-0 flex-1">
+            <p className="font-sans text-[10px] font-semibold uppercase tracking-[0.16em] text-espresso/50">
+              Estimated total
+            </p>
+            <div className="mt-0.5 flex flex-wrap items-baseline gap-x-3 gap-y-0.5">
+              <span className="font-serif text-2xl leading-none text-espresso">
+                {formatCurrency(estimatedTotal)}
+              </span>
+              <span className="font-sans text-xs font-semibold text-gold">
+                Save {formatCurrency(totalSavings)}
+              </span>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={handleAddBundleToCart}
+            disabled={!isReadyToAdd}
+            className={`flex h-12 min-w-[156px] items-center justify-center gap-2 rounded-full px-4 font-sans text-xs font-semibold uppercase tracking-[0.16em] transition-all duration-300 sm:min-w-[220px] ${
+              isReadyToAdd
+                ? 'bg-espresso text-cream hover:bg-espresso-light'
+                : 'cursor-not-allowed bg-espresso/20 text-espresso/40'
+            }`}
+          >
+            <ShoppingBag size={16} strokeWidth={1.6} />
+            {isSubmitting ? 'Adding...' : 'Add to cart'}
+          </button>
+        </div>
+      </div>
+
+      {viewingProduct && (
+        <div className="fixed inset-0 z-50 flex items-end justify-center bg-espresso/55 p-0 backdrop-blur-sm sm:items-center sm:p-5">
+          <div className="max-h-[92vh] w-full max-w-4xl overflow-y-auto rounded-t-3xl border border-gold-pale/40 bg-cream shadow-2xl sm:rounded-3xl">
+            <div className="sticky top-0 z-10 flex items-center justify-between border-b border-gold-pale/40 bg-cream/95 px-5 py-4 backdrop-blur">
+              <div className="min-w-0 pr-4">
+                <p className="font-sans text-[10px] font-semibold uppercase tracking-[0.18em] text-gold">
+                  Product detail
+                </p>
+                <h3 className="truncate font-serif text-xl text-espresso sm:text-2xl">
+                  {viewingProduct.name}
+                </h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setViewingProduct(null)}
+                className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full border border-gold-pale/45 bg-white text-espresso transition-colors hover:border-gold"
+                aria-label="Close product detail"
+              >
+                <X size={18} strokeWidth={1.7} />
+              </button>
+            </div>
+
+            <div className="grid gap-6 p-5 sm:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] sm:p-7">
+              <div>
+                <div className="aspect-square overflow-hidden rounded-2xl border border-gold-pale/35 bg-white">
+                  <img
+                    src={detailImage}
+                    alt={viewingProduct.name}
+                    className="h-full w-full object-cover"
+                  />
+                </div>
+                {detailImages.length > 1 && (
+                  <div className="mt-3 grid grid-cols-5 gap-2">
+                    {detailImages.slice(0, 10).map((image, index) => (
+                      <button
+                        key={`${image}-${index}`}
+                        type="button"
+                        onClick={() => setDetailImageIndex(index)}
+                        className={`aspect-square overflow-hidden rounded-xl border bg-white transition-all ${
+                          detailImageIndex === index ? 'border-gold shadow-sm' : 'border-gold-pale/35 hover:border-gold/70'
+                        }`}
+                        aria-label={`View image ${index + 1}`}
+                      >
+                        <img src={image} alt="" className="h-full w-full object-cover" />
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <div className="flex flex-col">
+                <p className="font-sans text-sm font-semibold text-gold">
+                  {formatCurrency(Number(viewingProduct.price) || 0)} each
+                </p>
+                <div
+                  className="mt-4 text-sm leading-7 text-espresso-light/80 [&_p]:mb-4 [&_strong]:text-espresso [&_ul]:list-disc [&_ul]:pl-5"
+                  dangerouslySetInnerHTML={{ __html: detailDescription }}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
