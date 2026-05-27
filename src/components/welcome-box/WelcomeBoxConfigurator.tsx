@@ -139,6 +139,21 @@ const REVIEWS = [
   },
 ];
 
+const REVIEW_IMAGES = [
+  {
+    src: '/images/ugc/welcome-review-1.jpeg',
+    alt: 'Custom wedding welcome box styled for guests',
+  },
+  {
+    src: '/images/ugc/welcome-review-2.jpeg',
+    alt: 'Personalized welcome box contents from a real wedding order',
+  },
+  {
+    src: '/images/ugc/welcome-review-3.jpeg',
+    alt: 'Wedding welcome boxes prepared for a guest celebration',
+  },
+];
+
 const FAQS = [
   {
     q: "What's the minimum order?",
@@ -981,6 +996,39 @@ export default function WelcomeBoxConfigurator({
       </section>
 
       <section className="mx-auto max-w-6xl px-4 pb-20 sm:px-6 lg:px-10">
+        <div className="mb-12">
+          <div className="mb-6 text-center">
+            <span className="font-sans text-xs font-semibold uppercase tracking-[0.2em] text-gold">
+              Real Couples
+            </span>
+            <h2 className="mt-2 font-serif text-3xl text-espresso sm:text-4xl">
+              Welcome boxes guests remembered
+            </h2>
+            <p className="mx-auto mt-3 max-w-2xl text-sm leading-6 text-espresso-light/70">
+              A look at the personalized welcome-box details couples have created for wedding weekends, destination arrivals, and guest gifting moments.
+            </p>
+          </div>
+          <div className="grid gap-4 sm:grid-cols-3">
+            {REVIEW_IMAGES.map((image, index) => (
+              <figure
+                key={image.src}
+                className={`group overflow-hidden rounded-2xl border border-gold-pale/35 bg-white shadow-sm ${
+                  index === 1 ? 'sm:translate-y-5' : ''
+                }`}
+              >
+                <div className="aspect-[4/5] overflow-hidden bg-cream-dark">
+                  <img
+                    src={image.src}
+                    alt={image.alt}
+                    className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    loading="lazy"
+                  />
+                </div>
+              </figure>
+            ))}
+          </div>
+        </div>
+
         <div className="grid gap-5 md:grid-cols-3">
           {REVIEWS.map((review) => (
             <article key={`${review.name}-${review.date}`} className="rounded-2xl border border-gold-pale/35 bg-white/70 p-6 shadow-sm">
