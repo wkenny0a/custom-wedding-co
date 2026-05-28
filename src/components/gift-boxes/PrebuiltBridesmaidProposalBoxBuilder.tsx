@@ -204,7 +204,7 @@ export function PrebuiltBridesmaidProposalBoxBuilder({
   baseBox,
   products,
 }: PrebuiltBridesmaidProposalBoxBuilderProps) {
-  const { addToCart, cart } = useCart()
+  const { addToCart, applyCoupon, cart } = useCart()
   const [tierId, setTierId] = useState<Tier['id']>('signature')
   const [quantity, setQuantity] = useState(1)
   const [isCustomQuantity, setIsCustomQuantity] = useState(false)
@@ -233,7 +233,7 @@ export function PrebuiltBridesmaidProposalBoxBuilder({
         id: 'luxe',
         name: 'The Luxe Bridesmaid Proposal Box',
         eyebrow: 'Luxe tier',
-        price: 140,
+        price: 99,
         productKeys: ['compactMirror', 'hairbrush', 'jewelryCase', 'sleepCollection', 'robe', 'cosmeticPouch'],
         description: 'The full proposal and getting-ready gift experience with robe and cosmetic pouch upgrades.',
       },
@@ -293,6 +293,7 @@ export function PrebuiltBridesmaidProposalBoxBuilder({
         prebuilt_box_quantity: quantity,
         prebuilt_box_total_display: formatCurrency(subtotal),
         prebuilt_box_total_savings: formatCurrency(totalSavings),
+        prebuilt_box_coupon: activeTier.id === 'luxe' ? 'PREBUILT99' : 'PREBUILT70',
         prebuilt_box_names: names.trim(),
         prebuilt_box_color: selectedColor.label,
         prebuilt_box_lid_design: selectedDesign.name,
@@ -318,6 +319,12 @@ export function PrebuiltBridesmaidProposalBoxBuilder({
           },
           true,
         )
+      }
+
+      const couponCode = activeTier.id === 'luxe' ? 'PREBUILT99' : 'PREBUILT70'
+      const discountedCart = await applyCoupon(couponCode)
+      if (discountedCart) {
+        updatedCart = discountedCart
       }
 
       const checkoutUrl = getCheckoutUrl(updatedCart) || getCheckoutUrl(cart)
