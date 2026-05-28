@@ -7,6 +7,10 @@ import { Search, ShoppingBag, Menu, ChevronDown } from 'lucide-react'
 import { MobileDrawer } from './MobileDrawer'
 import { useCart } from '@/context/CartContext'
 
+type CartQuantityItem = {
+    quantity?: number
+}
+
 export function Header() {
     const [isScrolled, setIsScrolled] = useState(false)
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
@@ -41,7 +45,7 @@ export function Header() {
                             </button>
                             <div className="absolute top-full left-0 pt-2 opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-300">
                                 <div className="bg-cream border border-gold/20 shadow-xl rounded-md py-2 w-48 flex flex-col">
-                                    <Link href="/gifts/bridesmaid-box" className="px-4 py-2.5 font-sans text-xs uppercase tracking-widest hover:bg-gold/5 hover:text-gold transition-colors text-espresso">Bridesmaid Box</Link>
+                                    <Link href="/gifts/prebuilt-bridesmaid-boxs-test" className="px-4 py-2.5 font-sans text-xs uppercase tracking-widest hover:bg-gold/5 hover:text-gold transition-colors text-espresso">Bridesmaid Box</Link>
                                     <Link href="/gifts/groom-box" className="px-4 py-2.5 font-sans text-xs uppercase tracking-widest hover:bg-gold/5 hover:text-gold transition-colors text-espresso">Groomsman Box</Link>
                                     <Link href="/gifts/welcome-gift-box" className="px-4 py-2.5 font-sans text-xs uppercase tracking-widest hover:bg-gold/5 hover:text-gold transition-colors text-espresso">Welcome Box</Link>
                                 </div>
@@ -83,7 +87,7 @@ export function Header() {
                             >
                                 <ShoppingBag size={20} className="group-hover:text-gold w-5 h-5 sm:w-6 sm:h-6" strokeWidth={1.5} />
                                 <span className="absolute -top-1.5 -right-2 bg-gold text-cream text-[9px] sm:text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
-                                    {cart?.items?.reduce((acc: number, item: any) => acc + (item.quantity || 1), 0) || 0}
+                                    {cart?.items?.reduce((acc: number, item: CartQuantityItem) => acc + (item.quantity || 1), 0) || 0}
                                 </span>
                             </button>
                         </div>
