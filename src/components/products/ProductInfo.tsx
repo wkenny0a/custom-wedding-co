@@ -8,15 +8,7 @@ import { MultiItemBuilder } from './MultiItemBuilder'
 import Link from 'next/link'
 import imageCompression from 'browser-image-compression'
 
-export function ProductInfo({
-    product,
-    onStyleImageSelect,
-    hideMobileSticky = false,
-}: {
-    product: any,
-    onStyleImageSelect?: (url: string | null) => void,
-    hideMobileSticky?: boolean,
-}) {
+export function ProductInfo({ product, onStyleImageSelect }: { product: any, onStyleImageSelect?: (url: string | null) => void }) {
     const [quantity, setQuantity] = useState(1)
     const [isAdding, setIsAdding] = useState(false)
     const [customDesignFile, setCustomDesignFile] = useState<File | null>(null)
@@ -522,35 +514,19 @@ export function ProductInfo({
                             )}
                         </div>
 
-                        {/* Reassurance Module */}
-                        <div className="mt-6 border-t border-gold/20 pt-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div className="flex items-start gap-3">
-                                <Truck size={18} className="text-gold mt-0.5 flex-shrink-0" />
-                                <div>
-                                    <h4 className="font-sans text-xs font-bold uppercase tracking-widest text-espresso">Fast Production</h4>
-                                    <p className="font-sans text-xs text-espresso/70 mt-1">Estimated delivery in 5-7 business days.</p>
-                                </div>
+                        {/* Proximity Trust Signals */}
+                        <div className="flex items-center justify-between mt-4 pt-4 border-t border-gold/20">
+                            <div className="flex items-center gap-1.5 text-espresso/80">
+                                <ShieldCheck size={15} className="text-gold" />
+                                <span className="font-sans text-[10px] sm:text-xs uppercase tracking-wider font-semibold">Secure<br className="sm:hidden" /> Checkout</span>
                             </div>
-                            <div className="flex items-start gap-3">
-                                <Clock size={18} className="text-gold mt-0.5 flex-shrink-0" />
-                                <div>
-                                    <h4 className="font-sans text-xs font-bold uppercase tracking-widest text-espresso">Quick Proofing</h4>
-                                    <p className="font-sans text-xs text-espresso/70 mt-1">Digital proof sent within 24 hours.</p>
-                                </div>
+                            <div className="flex items-center gap-1.5 text-espresso/80">
+                                <Truck size={15} className="text-gold" />
+                                <span className="font-sans text-[10px] sm:text-xs uppercase tracking-wider font-semibold">Secure<br className="sm:hidden" /> Shipping</span>
                             </div>
-                            <div className="flex items-start gap-3">
-                                <ShieldCheck size={18} className="text-gold mt-0.5 flex-shrink-0" />
-                                <div>
-                                    <h4 className="font-sans text-xs font-bold uppercase tracking-widest text-espresso">Personalization Guarantee</h4>
-                                    <p className="font-sans text-xs text-espresso/70 mt-1">We print exactly what you approve.</p>
-                                </div>
-                            </div>
-                            <div className="flex items-start gap-3">
-                                <Gift size={18} className="text-gold mt-0.5 flex-shrink-0" />
-                                <div>
-                                    <h4 className="font-sans text-xs font-bold uppercase tracking-widest text-espresso">Bulk Pricing</h4>
-                                    <p className="font-sans text-xs text-espresso/70 mt-1">Need 10+? Bulk discounts automatically applied.</p>
-                                </div>
+                            <div className="flex items-center gap-1.5 text-espresso/80">
+                                <Check size={15} className="text-gold" />
+                                <span className="font-sans text-[10px] sm:text-xs uppercase tracking-wider font-semibold">Satisfaction<br className="sm:hidden" /> Guarantee</span>
                             </div>
                         </div>
                     </>
@@ -626,40 +602,39 @@ export function ProductInfo({
                 </div>
             )}
 
-            {!hideMobileSticky && (
-                <div className="fixed bottom-0 left-0 right-0 z-[60] bg-cream border-t border-gold/30 p-4 pb-6 shadow-[0_-10px_20px_-10px_rgba(74,44,42,0.15)] flex items-center justify-between gap-4 md:hidden animate-in slide-in-from-bottom duration-500">
-                    <div className="flex flex-col w-1/2">
-                        <span className="font-serif text-sm font-bold text-espresso line-clamp-1" dangerouslySetInnerHTML={{ __html: product.name }}></span>
-                        <span className="font-sans text-xs font-semibold text-gold">{displayPrice}</span>
-                    </div>
-
-                    <div className="flex-shrink-0 w-1/2">
-                        {quantity === 1 || !hasPerItemFieldsForOptionA ? (
-                            <button
-                                onClick={handleAddToCart}
-                                disabled={isAdding}
-                                className="w-full bg-espresso text-cream font-sans font-bold uppercase tracking-widest text-[10px] py-3 hover:bg-espresso-light transition-colors shadow-sm disabled:opacity-50"
-                            >
-                                {isAdding ? 'Adding...' : 'Add To Cart'}
-                            </button>
-                        ) : (
-                            <button
-                                onClick={itemsAdded >= quantity ? () => setIsCartOpen(true) : handleAddAndNext}
-                                disabled={isAdding || itemsAdded >= quantity && isAdding}
-                                className="w-full bg-espresso text-cream font-sans font-bold uppercase tracking-widest text-[10px] py-3 hover:bg-espresso-light transition-colors shadow-sm disabled:opacity-50 flex items-center justify-center gap-1"
-                            >
-                                {isAdding ? (
-                                    'Adding...'
-                                ) : itemsAdded >= quantity ? (
-                                    'View Cart'
-                                ) : (
-                                    `Add Next (${itemsAdded + 1}/${quantity})`
-                                )}
-                            </button>
-                        )}
-                    </div>
+            {/* Mobile Sticky Add to Cart Bar */}
+            <div className="fixed bottom-0 left-0 right-0 z-[60] bg-cream border-t border-gold/30 p-4 pb-6 shadow-[0_-10px_20px_-10px_rgba(74,44,42,0.15)] flex items-center justify-between gap-4 md:hidden animate-in slide-in-from-bottom duration-500">
+                <div className="flex flex-col w-1/2">
+                    <span className="font-serif text-sm font-bold text-espresso line-clamp-1" dangerouslySetInnerHTML={{ __html: product.name }}></span>
+                    <span className="font-sans text-xs font-semibold text-gold">{displayPrice}</span>
                 </div>
-            )}
+                
+                <div className="flex-shrink-0 w-1/2">
+                    {quantity === 1 || !hasPerItemFieldsForOptionA ? (
+                        <button
+                            onClick={handleAddToCart}
+                            disabled={isAdding}
+                            className="w-full bg-espresso text-cream font-sans font-bold uppercase tracking-widest text-[10px] py-3 hover:bg-espresso-light transition-colors shadow-sm disabled:opacity-50"
+                        >
+                            {isAdding ? 'Adding...' : 'Add To Cart'}
+                        </button>
+                    ) : (
+                        <button
+                            onClick={itemsAdded >= quantity ? () => setIsCartOpen(true) : handleAddAndNext}
+                            disabled={isAdding || itemsAdded >= quantity && isAdding}
+                            className="w-full bg-espresso text-cream font-sans font-bold uppercase tracking-widest text-[10px] py-3 hover:bg-espresso-light transition-colors shadow-sm disabled:opacity-50 flex items-center justify-center gap-1"
+                        >
+                            {isAdding ? (
+                                'Adding...'
+                            ) : itemsAdded >= quantity ? (
+                                'View Cart'
+                            ) : (
+                                `Add Next (${itemsAdded + 1}/${quantity})`
+                            )}
+                        </button>
+                    )}
+                </div>
+            </div>
         </div>
     )
 }

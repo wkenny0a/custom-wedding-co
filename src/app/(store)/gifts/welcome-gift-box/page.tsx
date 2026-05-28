@@ -2,13 +2,6 @@ import WelcomeBoxConfigurator from '@/components/welcome-box/WelcomeBoxConfigura
 import { getProducts, getLowestDisplayPrice, getProductBySlug } from '@/lib/swell';
 import { Metadata } from 'next';
 
-type SwellProduct = {
-  id: string;
-  name: string;
-  images?: Array<{ file?: { url?: string } }>;
-  options?: unknown[];
-};
-
 export const metadata: Metadata = {
   title: 'Custom Welcome Wedding Box | Bulk Event Favors | Custom Wedding Co.',
   description: 'Design personalized welcome boxes for your wedding guests. Choose a lid design, add names or initials, and fill with curated gifts. Volume discounts up to 50% off.',
@@ -23,7 +16,7 @@ export default async function WelcomeWeddingBoxPage() {
   ]);
 
   const swellProducts = result?.results || [];
-  const catalogProducts = (swellProducts as SwellProduct[]).map((p) => ({
+  const catalogProducts = swellProducts.map((p: any) => ({
     id: p.id,
     name: p.name,
     price: getLowestDisplayPrice(p),

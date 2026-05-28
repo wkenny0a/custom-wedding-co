@@ -14,6 +14,65 @@ export const dynamic = 'force-dynamic';
 
 const builderHref = '/gifts/bridesmaid-box';
 
+const adAngles = [
+  {
+    title: 'Top Bridesmaid Box Trends of 2026',
+    hook: 'A curated box that feels personal, useful, and made for the people standing beside you.',
+    visual: 'Flat lay of a finished bridesmaid box with ribbon, inner lid message, and 3 to 4 gift items.',
+    headline: 'Top Bridesmaid Box Trends',
+    description: 'Build a personalized bridesmaid box with gifts they will actually use.',
+  },
+  {
+    title: 'The Happy-Tears Proposal Box',
+    hook: 'Lead with the emotional reveal: her name, your message, and a box that makes the ask feel unforgettable.',
+    visual: 'Open bridesmaid box with a custom inner lid message and soft neutral packaging.',
+    headline: 'Ask Her in a Better Way',
+    description: 'Personalized boxes for bridesmaid proposals, maid of honor asks, and bridal party gifting.',
+  },
+  {
+    title: 'Bachelorette Weekend Survival Kit',
+    hook: 'Turn practical minis into a polished weekend box for travel, recovery, and photos.',
+    visual: 'Compact mirror, face mist, lip balm, sleep mask, and emergency kit styled for a weekend bag.',
+    headline: 'Bachelorette Weekend Ready',
+    description: 'Create a bridesmaid box with beauty, self-care, and travel-ready essentials.',
+  },
+  {
+    title: 'Getting-Ready Suite Gifts',
+    hook: 'Give her the details that make the morning feel coordinated: robes, pajamas, flutes, and small keepsakes.',
+    visual: 'Getting-ready suite with robes, champagne flutes, satin textures, and a gift box.',
+    headline: 'The Getting-Ready Edit',
+    description: 'Shop bridesmaid box ideas made for photos, toasts, and wedding morning moments.',
+  },
+  {
+    title: 'Destination Bride Boxes',
+    hook: 'For beach weekends, vineyard trips, and resort weddings, build boxes around travel-friendly gifts.',
+    visual: 'Canvas tote, Turkish towel, tumbler, sunglasses, and a soft destination palette.',
+    headline: 'Destination Wedding Gifts',
+    description: 'Build a box for travel, bachelorette weekends, and warm-weather wedding plans.',
+  },
+  {
+    title: 'Keepsakes They Use After the Wedding',
+    hook: 'The strongest gifts do not disappear after the wedding. They live on a vanity, nightstand, or desk.',
+    visual: 'Jewelry case, ring dish, candle, and pearl bracelet styled at home.',
+    headline: 'Keepsakes They Will Use',
+    description: 'Personalized bridal party gifts that feel meaningful beyond the wedding day.',
+  },
+  {
+    title: 'Personalized Everything',
+    hook: 'Names, initials, roles, and message details make the box feel made for her instead of pulled from a shelf.',
+    visual: 'Close-up of personalized pouch, tumbler, box lid, and name details.',
+    headline: 'Make Every Box Personal',
+    description: 'Add names, custom messages, and personalized gift details in one easy builder.',
+  },
+  {
+    title: 'Build Each Box Around Her',
+    hook: 'Choose the box color, write the message, and fill it with gifts that match her style.',
+    visual: 'Three different bridesmaid boxes, each styled for a different personality.',
+    headline: 'Build Her Box in Minutes',
+    description: 'Choose the box, personalize the message, add gifts, and checkout.',
+  },
+];
+
 const productGroups = [
   {
     eyebrow: 'Proposal Moment',
@@ -201,6 +260,55 @@ export default async function BridesmaidBoxTrendsPage() {
       </section>
 
       <section id="shop-the-box" className="px-4 py-16 sm:px-6 md:py-20 lg:px-12">
+        <SectionHeading
+          eyebrow="Shop the ad"
+          title="Turn each saved trend into a box she can open."
+          copy="Use these 2026 carousel angles to warm the buyer up, then let the page show real products from the bridesmaid box catalog."
+        />
+        <div className="mx-auto mt-12 grid max-w-[1180px] grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-4">
+          {adAngles.map((angle, index) => (
+            <article key={angle.title} className="rounded-lg border border-gold-pale/30 bg-white p-5 shadow-sm">
+              <span className="mb-4 flex h-9 w-9 items-center justify-center rounded-full bg-gold/10 font-serif text-lg text-gold">
+                {index + 1}
+              </span>
+              <h3 className="font-serif text-2xl leading-tight text-espresso">{angle.title}</h3>
+              <p className="mt-3 text-sm leading-6 text-espresso/70">{angle.hook}</p>
+              <div className="mt-5 border-t border-gold-pale/30 pt-4">
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-gold">Meta headline</p>
+                <p className="mt-1 font-serif text-lg text-espresso">{angle.headline}</p>
+                <p className="mt-3 text-xs font-semibold uppercase tracking-[0.18em] text-gold">Description</p>
+                <p className="mt-1 text-sm text-espresso/65">{angle.description}</p>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="bg-espresso px-4 py-16 text-cream sm:px-6 md:py-20 lg:px-12">
+        <div className="mx-auto grid max-w-[1180px] grid-cols-1 gap-10 lg:grid-cols-[0.86fr_1.14fr]">
+          <div>
+            <p className="mb-3 text-xs font-semibold uppercase tracking-[0.24em] text-gold">Campaign strategy</p>
+            <h2 className="font-serif text-3xl leading-tight sm:text-4xl md:text-5xl">
+              Do not sell a box first. Sell the moment she opens it.
+            </h2>
+          </div>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            {[
+              ['Hook', 'Use trend language to stop the scroll: 2026 bridesmaid boxes, bachelorette weekend boxes, getting-ready suite gifts.'],
+              ['Bridge', 'Show the box as the easiest way to recreate the trend without shopping from ten different places.'],
+              ['Proof', 'Lead with personalization, gift-ready packaging, volume savings, and real bride reactions.'],
+              ['Conversion', 'Send every CTA to the builder and repeat the same promise: choose, personalize, fill, checkout.'],
+            ].map(([title, copy]) => (
+              <div key={title} className="rounded-lg border border-cream/15 bg-cream/5 p-5">
+                <h3 className="font-serif text-2xl text-gold">{title}</h3>
+                <p className="mt-2 text-sm leading-6 text-cream/75">{copy}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="px-4 py-16 sm:px-6 md:py-20 lg:px-12">
         <SectionHeading
           eyebrow="What to put inside"
           title="Five box formulas that match the way brides shop."

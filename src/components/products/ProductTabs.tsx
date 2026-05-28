@@ -1,86 +1,55 @@
 'use client'
 
-import Image from 'next/image'
-import Link from 'next/link'
-import { useMemo, useState } from 'react'
-import { ArrowRight, Camera, Mail, ShieldCheck } from 'lucide-react'
-import { Button } from '@/components/ui/Button'
+import { useState } from 'react'
 import { StarRating } from '@/components/ui/StarRating'
-import type { ProductReview } from '@/lib/product-reviews'
 
-type ReviewSummary = {
-    averageRating: number
-    imageCount: number
-    productCount: number
-    reviewCount: number
-    reviewCountLabel?: string
-    productCountLabel?: string
-}
+export function ProductTabs({ product }: { product: any }) {
+    const hasSpecs = product.specifications && product.specifications.length > 0;
+    const hasReviews = product.slug !== 'personal-product-specialist';
+    
+    const [activeTab, setActiveTab] = useState(hasSpecs ? 'specifications' : (hasReviews ? 'reviews' : 'shipping'));
 
-type ProductTabsProps = {
-    product: any
-    siteReviews?: ProductReview[]
-    siteReviewSummary?: ReviewSummary
-}
-
-function getProductSlug(product: any) {
-    if (typeof product.slug === 'string') return product.slug
-    return product.slug?.current || ''
-}
-
-function getSeed(value: string) {
-    return value.split('').reduce((sum, char) => sum + char.charCodeAt(0), 0)
-}
-
-function pickRotatedReviews(reviews: ProductReview[], seed: number, count: number, step = 7) {
-    if (reviews.length === 0) return []
-
-    return Array.from({ length: Math.min(count, reviews.length) }, (_, index) => (
-        reviews[(seed + index * step) % reviews.length]
-    ))
-}
-
-export function ProductTabs({ product, siteReviews = [], siteReviewSummary }: ProductTabsProps) {
-    const slug = getProductSlug(product)
-    const hasSpecs = product.specifications && product.specifications.length > 0
-    const hasReviews = slug !== 'personal-product-specialist'
-
-    const [activeTab, setActiveTab] = useState(hasSpecs ? 'specifications' : (hasReviews ? 'reviews' : 'shipping'))
-
-    const tabs: { id: string, label: string }[] = []
+    const tabs: {id: string, label: string}[] = [];
 
     if (hasSpecs) {
         tabs.push({ id: 'specifications', label: 'Specifications' })
     }
 
-    if (hasReviews) {
+    if (product.slug !== 'personal-product-specialist') {
         tabs.push({ id: 'reviews', label: 'Reviews' })
     }
     tabs.push({ id: 'shipping', label: 'Shipping' })
 
-    const reviewPreview = useMemo(() => {
-        const seed = getSeed(slug || product.name || 'custom-wedding-co')
-        const photoPool = siteReviews.filter((review) => review.image)
-        const textPool = siteReviews.filter((review) => !review.image && review.rating >= 5)
-        const photoReviews = pickRotatedReviews(photoPool, seed, 3)
-        const featureReview = textPool[seed % Math.max(textPool.length, 1)] || siteReviews[seed % Math.max(siteReviews.length, 1)]
-
-        return {
-            featureReview,
-            photoReviews,
+    const reviews = product.content?.reviews || [
+        {
+            rating: 5,
+            date: 'Oct 12, 2025',
+            title: 'Absolutely Perfect',
+            text: '"This was exactly what we were looking for. The quality is exceptional and the personalization process was wonderfully easy. Highly recommend to any couple!"',
+            author: 'Sarah M.',
+            verified: true
+        },
+        {
+            rating: 5,
+            date: 'Sep 04, 2025',
+            title: 'Beautiful Quality',
+            text: '"I bought these as a wedding gift. They are stunning in person!"',
+            author: 'John D.',
+            verified: true
+        },
+        {
+            rating: 4,
+            date: 'Aug 22, 2025',
+            title: 'Very nice',
+            text: '"Great product. Shipping took a little longer than expected."',
+            author: 'Emily R.',
+            verified: true
         }
-    }, [product.name, siteReviews, slug])
+    ];
 
-    const fallbackSummary: ReviewSummary = {
-        averageRating: product.rating || 5,
-        imageCount: reviewPreview.photoReviews.length,
-        productCount: 1,
-        reviewCount: product.reviewCount || siteReviews.length || 0,
-        productCountLabel: '200+',
-    }
-
-    const summary = siteReviewSummary || fallbackSummary
-    const writeReviewHref = `mailto:info@customweddingco.com?subject=${encodeURIComponent(`Review for ${product.name}`)}&body=${encodeURIComponent(`Product: ${product.name}\n\nYour rating:\n\nYour review:\n\nOrder number, if you have it:`)}`
+    const averageRating = reviews.length > 0 
+        ? (reviews.reduce((acc: number, cur: any) => acc + cur.rating, 0) / reviews.length).toFixed(1)
+        : "5.0";
 
     return (
         <div className="w-full mt-16 pt-16 border-t border-gold/20">
@@ -101,7 +70,7 @@ export function ProductTabs({ product, siteReviews = [], siteReviewSummary }: Pr
             </div>
 
             {/* Tab Content */}
-            <div className={activeTab === 'reviews' ? 'mx-auto max-w-6xl' : 'mx-auto max-w-3xl'}>
+            <div className="max-w-3xl mx-auto">
                 {activeTab === 'specifications' && product.specifications && (
                     <div className="w-full overflow-x-auto">
                         <table className="w-full text-left font-sans text-sm text-espresso border-collapse">
@@ -119,125 +88,34 @@ export function ProductTabs({ product, siteReviews = [], siteReviewSummary }: Pr
 
                 {activeTab === 'reviews' && (
                     <div className="flex flex-col gap-8">
-                        <div className="rounded-lg border border-gold/20 bg-cream p-6 sm:p-8">
-                            <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-                                <div className="max-w-2xl">
-                                    <span className="mb-3 block font-sans text-xs font-bold uppercase tracking-[0.18em] text-gold">
-                                        Customer Reviews
-                                    </span>
-                                    <h3 className="font-display text-3xl leading-tight text-espresso sm:text-4xl">
-                                        Real notes from Custom Wedding Co. customers.
-                                    </h3>
-                                    <p className="mt-4 font-sans text-sm leading-relaxed text-gray-600 sm:text-base">
-                                        Browse verified feedback from couples and wedding parties, then share your own experience with this piece.
-                                    </p>
-                                </div>
-
-                                <div className="flex flex-col gap-4">
-                                    <div className="grid grid-cols-3 gap-4 border-y border-gold/25 py-4 text-left lg:min-w-[360px]">
-                                        <div>
-                                            <p className="font-display text-3xl text-espresso">{summary.averageRating.toFixed(1)}</p>
-                                            <p className="font-sans text-[10px] font-semibold uppercase tracking-[0.14em] text-gray-600">Avg rating</p>
-                                        </div>
-                                        <div>
-                                            <p className="font-display text-3xl text-espresso">{summary.reviewCountLabel || summary.reviewCount}</p>
-                                            <p className="font-sans text-[10px] font-semibold uppercase tracking-[0.14em] text-gray-600">Reviews</p>
-                                        </div>
-                                        <div>
-                                            <p className="font-display text-3xl text-espresso">{summary.productCountLabel || '200+'}</p>
-                                            <p className="font-sans text-[10px] font-semibold uppercase tracking-[0.14em] text-gray-600">Products</p>
-                                        </div>
-                                    </div>
-
-                                    <div className="flex flex-col gap-3 sm:flex-row lg:justify-end">
-                                        <a
-                                            href={writeReviewHref}
-                                            className="inline-flex items-center justify-center gap-2 bg-espresso px-6 py-3.5 font-sans text-xs font-semibold uppercase tracking-wider text-cream shadow-md transition-all duration-250 hover:bg-espresso-light hover:shadow-lg"
-                                        >
-                                            <Mail className="h-4 w-4" />
-                                            Write a Review
-                                        </a>
-                                        <Button href="/reviews" variant="outline" size="md" className="gap-2">
-                                            Read All
-                                            <ArrowRight className="h-4 w-4" />
-                                        </Button>
-                                    </div>
-                                </div>
+                        <div className="flex flex-col sm:flex-row items-center gap-6 justify-between bg-cream p-8 rounded border border-gold/10">
+                            <div className="flex flex-col items-center sm:items-start text-center sm:text-left gap-2">
+                                <span className="font-display text-4xl text-gold">{averageRating}</span>
+                                <StarRating rating={Number(averageRating)} />
+                                <span className="font-sans text-xs text-gray-500 uppercase tracking-widest mt-1">Based on {reviews.length} Reviews</span>
                             </div>
+                            <button className="font-sans text-sm font-bold uppercase tracking-widest text-espresso border border-espresso px-6 py-3 hover:bg-espresso hover:text-cream transition-colors">
+                                Write a Review
+                            </button>
                         </div>
 
-                        <div className="grid gap-5 lg:grid-cols-[1.1fr_0.9fr]">
-                            <div className="grid gap-5 sm:grid-cols-3">
-                                {reviewPreview.photoReviews.map((review) => (
-                                    <article key={review.id} className="overflow-hidden rounded-lg border border-gold/20 bg-cream shadow-[0_14px_34px_rgba(74,44,42,0.08)] transition-transform duration-500 hover:-translate-y-1">
-                                        {review.image && (
-                                            <div className="relative aspect-[4/5] bg-cream-dark">
-                                                <Image
-                                                    src={review.image}
-                                                    alt={`Customer photo for ${review.productName}`}
-                                                    fill
-                                                    sizes="(min-width: 1024px) 24vw, (min-width: 640px) 33vw, 100vw"
-                                                    className="object-cover"
-                                                />
-                                            </div>
-                                        )}
-                                        <div className="space-y-3 p-5">
-                                            <StarRating rating={review.rating} starClassName="h-3.5 w-3.5" />
-                                            <p className="line-clamp-4 font-serif text-lg leading-snug text-espresso">
-                                                "{review.text}"
-                                            </p>
-                                            <div className="border-t border-gold/20 pt-3">
-                                                <p className="font-sans text-xs font-bold uppercase tracking-[0.12em] text-espresso">
-                                                    {review.reviewerName}
-                                                </p>
-                                                <p className="mt-1 line-clamp-1 font-sans text-xs text-gray-600">
-                                                    {review.productName}
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </article>
-                                ))}
+                        {/* Reviews List */}
+                        {reviews.map((review: any, i: number) => (
+                            <div key={i} className="flex flex-col gap-3 py-6 border-b border-gray-100">
+                                <div className="flex items-center justify-between">
+                                    <StarRating rating={review.rating} />
+                                    <span className="font-sans text-xs text-gray-400">{review.date}</span>
+                                </div>
+                                <h4 className="font-serif font-bold text-lg text-espresso">{review.title}</h4>
+                                <p className="font-sans text-sm text-espresso/80 leading-relaxed">
+                                    "{review.text.replace(/^"|"$/g, '')}"
+                                </p>
+
+                                <span className="font-sans text-xs font-semibold uppercase tracking-widest text-gold mt-2">
+                                    — {review.author} {review.verified && <span className="text-gray-400 font-normal lowercase tracking-normal">(Verified Buyer)</span>}
+                                </span>
                             </div>
-
-                            {reviewPreview.featureReview && (
-                                <article className="flex flex-col justify-between rounded-lg border border-gold/20 bg-espresso p-8 text-cream shadow-[0_18px_42px_rgba(74,44,42,0.14)] lg:p-10">
-                                    <div>
-                                        <div className="mb-8 flex flex-wrap gap-3">
-                                            <span className="inline-flex items-center gap-2 rounded-full border border-gold/30 px-4 py-2 font-sans text-[10px] font-bold uppercase tracking-[0.14em] text-gold">
-                                                <ShieldCheck className="h-4 w-4" />
-                                                Verified notes
-                                            </span>
-                                            <span className="inline-flex items-center gap-2 rounded-full border border-gold/30 px-4 py-2 font-sans text-[10px] font-bold uppercase tracking-[0.14em] text-gold">
-                                                <Camera className="h-4 w-4" />
-                                                Customer photos
-                                            </span>
-                                        </div>
-                                        <StarRating rating={reviewPreview.featureReview.rating} starClassName="h-5 w-5" />
-                                        <p className="mt-6 font-serif text-3xl leading-tight text-cream lg:text-4xl">
-                                            "{reviewPreview.featureReview.text}"
-                                        </p>
-                                    </div>
-
-                                    <div className="mt-10 flex flex-col gap-5 border-t border-cream/15 pt-6 sm:flex-row sm:items-end sm:justify-between">
-                                        <div>
-                                            <p className="font-sans text-xs font-bold uppercase tracking-[0.16em] text-gold">
-                                                {reviewPreview.featureReview.reviewerName}
-                                            </p>
-                                            <p className="mt-2 max-w-sm font-sans text-sm leading-relaxed text-cream/75">
-                                                {reviewPreview.featureReview.productName}
-                                            </p>
-                                        </div>
-                                        <Link
-                                            href="/reviews"
-                                            className="inline-flex shrink-0 items-center justify-center gap-2 bg-gold px-4 py-2 font-sans text-xs font-semibold uppercase tracking-wider text-espresso transition-all duration-250 hover:bg-gold-light"
-                                        >
-                                            View Wall
-                                            <ArrowRight className="h-4 w-4" />
-                                        </Link>
-                                    </div>
-                                </article>
-                            )}
-                        </div>
+                        ))}
                     </div>
                 )}
 

@@ -8,7 +8,6 @@ import { client } from '@/sanity/lib/client'
 import { productBySlugQuery } from '@/sanity/lib/queries'
 import { ShieldCheck, Clock, Truck } from 'lucide-react'
 import { getRelatedProductSlugs } from '@/lib/categories'
-import { getProductReviews, getReviewSummary } from '@/lib/product-reviews'
 
 export const metadata = {
     title: 'Product Details | Custom Wedding Co.',
@@ -54,8 +53,6 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
     // Build related products array. Fall back to products in same Swell category if none specified in CMS.
     const sanityRelatedSlugs = sanityProduct?.relatedProducts?.map((p: any) => p.slug?.current) || []
     let resolvedRelatedProducts = []
-    const siteReviews = getProductReviews(300)
-    const siteReviewSummary = getReviewSummary(siteReviews)
 
     if (sanityRelatedSlugs.length > 0) {
         resolvedRelatedProducts = allSwellProducts.filter((p: any) => sanityRelatedSlugs.includes(p.slug))
@@ -152,7 +149,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
             case 'productTabsBlock':
                 return (
                     <div key={index} className="max-w-[1280px] mx-auto px-6 lg:px-12 pb-16">
-                        <ProductTabs product={product} siteReviews={siteReviews} siteReviewSummary={siteReviewSummary} />
+                        <ProductTabs product={product} />
                     </div>
                 )
             case 'relatedProductsBlock':
@@ -182,7 +179,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
                     </div>
                     <TrustBadges />
                     <div className="max-w-[1280px] mx-auto px-6 lg:px-12 pb-16">
-                        <ProductTabs product={product} siteReviews={siteReviews} siteReviewSummary={siteReviewSummary} />
+                        <ProductTabs product={product} />
                     </div>
                     <RelatedProducts related={formattedRelatedProducts} />
                 </>

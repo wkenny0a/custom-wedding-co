@@ -147,7 +147,7 @@ export function MultiItemBuilder({ product, perItemOptionNames, sharedOptions, u
                                     placeholder={meta.placeholder}
                                     value={row.fields[meta.name] || ''}
                                     onChange={(e) => updateField(row.id, meta.name, e.target.value)}
-                                    className="w-full min-w-0 bg-transparent border border-gold/30 px-3 py-2.5 text-sm focus:outline-none focus:border-espresso transition-colors font-sans placeholder:text-gray-400"
+                                    className="w-full bg-transparent border border-gold/30 px-3 py-2.5 text-sm focus:outline-none focus:border-espresso transition-colors font-sans placeholder:text-gray-400"
                                 />
                             ))}
                         </div>

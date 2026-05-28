@@ -22,6 +22,3 @@ You are an expert frontend developer working on "Custom Wedding Co.", an elegant
 
 # NOTE for AI: 
 ALWAYS read `AI_CONTEXT.md` first to align with the rest of the team's shared AI context! It contains architectural docs that all assistants on this project must follow.
-
-# 🚨 Git Workflow Rules 🚨
-CRITICAL: **Make sure you are on the `main` branch and only push to `main`.** Do NOT use `master` branch. Do NOT force push (`--force`) to `main` without explicit, extreme caution and human permission. All work should be committed directly to `main` to prevent split-brain repository states.

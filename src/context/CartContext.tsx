@@ -14,7 +14,6 @@ interface CartContextType {
     removeFromCart: (itemId: string) => Promise<void>;
     updateQuantity: (itemId: string, quantity: number) => Promise<void>;
     applyCoupon: (code: string) => Promise<any>;
-    removeCoupon: () => Promise<any>;
     updateCart: (newCart: any) => void;
     isLoading: boolean;
 }
@@ -161,19 +160,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
         }
     }
 
-    const removeCoupon = async () => {
-        setIsLoading(true)
-        try {
-            const updatedCart = await (swell.cart as any).removeCoupon()
-            setCart(updatedCart)
-            return updatedCart
-        } catch (error) {
-            console.error('Error removing coupon:', error)
-        } finally {
-            setIsLoading(false)
-        }
-    }
-
     const updateCart = (newCart: any) => {
         setCart(newCart);
     };
@@ -189,7 +175,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
                 removeFromCart,
                 updateQuantity,
                 applyCoupon,
-                removeCoupon,
                 updateCart,
                 isLoading
             }}

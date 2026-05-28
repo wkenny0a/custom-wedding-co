@@ -9,7 +9,6 @@ Because AI coding assistants run locally and have local memory caches, two devel
 1. **Check Existing Knowledge First**: Before making any architectural changes (e.g., adding a new backend feature, or updating a Swell product schema), check the documentation in `docs/knowledge/`.
 2. **Document Major Decisions**: If you (the AI) and the user make a significant decision (like how products sync from Swell to Sanity), **you must document it in `docs/knowledge/`**. Do not rely on your internal `~/.gemini/antigravity/` cache, as your human's collaborator won't have access to it!
 3. **Respect `.cursorrules` and `BRANDING.md`**: Do not use generic Tailwind utility colors. Always abide by the color variables defined in the system.
-4. **GIT WORKFLOW RULE**: **Make sure you are on the `main` branch and only push to `main`.** Never commit or push to `master`. Never execute a `git push --force` without extreme justification and human approval, to avoid destroying previous work.
 
 ## 📚 Key Knowledge Repositories
 

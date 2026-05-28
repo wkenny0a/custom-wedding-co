@@ -1,9 +1,30 @@
 import Link from 'next/link'
 import Image from 'next/image'
-import { blogPosts } from '@/lib/blog-posts'
 
 export function BlogInspiration() {
-    const articles = blogPosts
+    const articles = [
+        {
+            title: 'The Complete Guide to Wedding Invitation Etiquette',
+            excerpt: 'From wording to timing — everything you need to know about your invitation suite, decoded for modern couples.',
+            category: 'Paper Goods',
+            image: '/images/blog_invitations.png',
+            slug: '/blog/wedding-invitation-etiquette',
+        },
+        {
+            title: 'Styling Your Wedding Day: Tips From Our Creative Team',
+            excerpt: 'How to create a cohesive aesthetic from ceremony to reception, using personalized details that tell your story.',
+            category: 'Planning',
+            image: '/images/blog_planning.png',
+            slug: '/blog/styling-your-wedding-day',
+        },
+        {
+            title: '10 Thoughtful Bridesmaids\' Gift Ideas They\'ll Actually Love',
+            excerpt: 'Move beyond the generic — discover personalized keepsakes that celebrate each member of your bridal party.',
+            category: 'Gifts',
+            image: '/images/blog_dresses.png',
+            slug: '/blog/bridesmaid-gift-ideas',
+        },
+    ]
 
     return (
         <section className="py-20 lg:py-28 bg-cream-dark">
@@ -54,15 +75,6 @@ export function BlogInspiration() {
                             </div>
                         </Link>
                     ))}
-                </div>
-
-                <div className="mt-12 text-center">
-                    <Link
-                        href="/blog"
-                        className="inline-flex items-center justify-center border border-gold px-6 py-3 font-sans text-xs font-semibold uppercase tracking-wider text-espresso transition-colors duration-300 hover:bg-gold hover:text-cream"
-                    >
-                        View All Articles
-                    </Link>
                 </div>
             </div>
         </section>

@@ -1,118 +1,25 @@
 'use client'
 
 import { useCart } from '@/context/CartContext'
-import { X, Minus, Plus, Trash2, ShieldCheck, HeartHandshake, Sparkles, Crown } from 'lucide-react'
+import { X, Minus, Plus, ShoppingBag, Trash2, ShieldCheck, HeartHandshake, Sparkles, Zap, PackagePlus, Crown } from 'lucide-react'
 import Image from 'next/image'
-import Link from 'next/link'
-import { useState, useEffect, useRef } from 'react'
-
-type CartOption = {
-    name?: string;
-    value?: string;
-}
-
-type CartItem = {
-    id: string;
-    product_id?: string;
-    product?: {
-        id?: string;
-        name?: string;
-        images?: Array<{ file?: { url?: string } }>;
-    };
-    price?: number;
-    price_total?: number;
-    quantity?: number;
-    options?: CartOption[];
-    metadata?: {
-        welcome_box_box_color?: string;
-        welcome_box_lid_design?: string;
-        welcome_box_names_or_initials?: string;
-        welcome_box_event_date?: string;
-        welcome_box_custom_upload_url?: string;
-        welcome_box_welcome_message?: string;
-        welcome_box_matching_bag?: string;
-        welcome_box_selected_items?: string;
-        welcome_box_free_value?: string;
-        welcome_box_total_savings?: string;
-        welcome_box_volume_discount?: string;
-    };
-}
+import { useState } from 'react'
 
 // --- CONFIGURATION ---
 const FREE_SHIPPING_THRESHOLD = 99;
 const RUSH_PROCESSING_FEE = 19.00;
-
-// Tiered Discount System
-const DISCOUNT_TIERS = [
-    { min: 150, discount: 15, label: '15% OFF', coupon: 'savebig15' },
-    { min: 300, discount: 20, label: '20% OFF', coupon: 'savebig20' },
-    { min: 500, discount: 25, label: '25% OFF', coupon: 'savebig25' },
-];
 
 // TODO: Replace with real Swell Product IDs when available in the dashboard
 const RUSH_PROCESSING_PRODUCT_ID = '69e9a9c652ca2a001272aa14'; 
 const UPSELL_PRODUCT_ID = '69e9cbd8bb3d1b001278c282';
 
 export function CartDrawer() {
-    const { cart, isCartOpen, setIsCartOpen, updateQuantity, removeFromCart, addToCart, applyCoupon, removeCoupon, isLoading } = useCart()
+    const { cart, isCartOpen, setIsCartOpen, updateQuantity, removeFromCart, addToCart, isLoading } = useCart()
     
     // Fallback UI states if API integration for dummy IDs fails
     const [mockRushAdded, setMockRushAdded] = useState(false)
     const [mockUpsellAdded, setMockUpsellAdded] = useState(false)
     const [isActionLoading, setIsActionLoading] = useState(false)
-
-    // Track auto-applied coupon to prevent redundant calls
-    const appliedAutoCode = useRef<string | null>(null)
-    const isApplyingCoupon = useRef(false)
-
-    const items: CartItem[] = cart?.items || []
-    
-    // Calculate display subtotal including mock items if API isn't ready
-    let subtotal = cart?.sub_total ?? cart?.subTotal ?? items.reduce((sum: number, item) => sum + (item.price_total ?? ((item.price ?? 0) * (item.quantity ?? 1))), 0)
-    
-    if (mockRushAdded) subtotal += RUSH_PROCESSING_FEE;
-    if (mockUpsellAdded) subtotal += 9.99; // mock heirloom rose set price
-
-    // Tiered Discount Progress
-    const currentTier = [...DISCOUNT_TIERS].reverse().find(t => subtotal >= t.min) || null;
-    const ALL_AUTO_COUPONS = DISCOUNT_TIERS.map(t => t.coupon);
-    const currentCartCoupon = cart?.coupon_code || '';
-    const isCartCouponAuto = ALL_AUTO_COUPONS.includes(currentCartCoupon);
-
-    // Auto-apply / swap / remove coupon based on subtotal
-    useEffect(() => {
-        if (!cart || isLoading || isApplyingCoupon.current) return;
-
-        const targetCode = currentTier?.coupon || null;
-
-        // Skip if the correct coupon is already applied
-        if (targetCode === appliedAutoCode.current && targetCode === currentCartCoupon) return;
-        // Skip if a non-auto (manual) coupon is applied and we shouldn't override it
-        if (currentCartCoupon && !isCartCouponAuto && !targetCode) return;
-
-        const syncCoupon = async () => {
-            isApplyingCoupon.current = true;
-            try {
-                if (!targetCode && isCartCouponAuto) {
-                    await removeCoupon();
-                    appliedAutoCode.current = null;
-                } else if (targetCode && targetCode !== currentCartCoupon) {
-                    if (currentCartCoupon && isCartCouponAuto) {
-                        await removeCoupon();
-                    }
-                    await applyCoupon(targetCode);
-                    appliedAutoCode.current = targetCode;
-                }
-            } catch (e) {
-                console.warn('[AutoDiscount] Coupon sync failed:', e);
-            } finally {
-                isApplyingCoupon.current = false;
-            }
-        };
-
-        const timer = setTimeout(syncCoupon, 500);
-        return () => clearTimeout(timer);
-    }, [subtotal, currentCartCoupon, currentTier, isLoading, cart, applyCoupon, isCartCouponAuto, removeCoupon]);
 
     if (!isCartOpen) return null
 
@@ -128,7 +35,7 @@ export function CartDrawer() {
     const handleToggleRushProcessing = async () => {
         setIsActionLoading(true)
         try {
-            const existingItem = items.find((i) => i.product?.id === RUSH_PROCESSING_PRODUCT_ID)
+            const existingItem = items.find((i: any) => i.product?.id === RUSH_PROCESSING_PRODUCT_ID)
             
             if (existingItem) {
                 // Remove it if it is already in the cart
@@ -152,7 +59,7 @@ export function CartDrawer() {
         setIsActionLoading(true)
         try {
             await addToCart(UPSELL_PRODUCT_ID, 1)
-        } catch {
+        } catch (e) {
             console.warn("Upsell Product ID not configured in Swell. Using mock state.")
             setMockUpsellAdded(true)
         } finally {
@@ -160,21 +67,20 @@ export function CartDrawer() {
         }
     }
 
+    const items = cart?.items || []
+    
+    // Calculate display subtotal including mock items if API isn't ready
+    let subtotal = cart?.sub_total ?? cart?.subTotal ?? items.reduce((sum: number, item: any) => sum + (item.price_total ?? ((item.price ?? 0) * (item.quantity ?? 1))), 0)
+    
+    if (mockRushAdded) subtotal += RUSH_PROCESSING_FEE;
+    if (mockUpsellAdded) subtotal += 9.99; // mock heirloom rose set price
+
     // Free Shipping Progress
     const amountAwayFromFreeShipping = Math.max(0, FREE_SHIPPING_THRESHOLD - subtotal)
     const progressPercentage = Math.min(100, (subtotal / FREE_SHIPPING_THRESHOLD) * 100)
-    const hasFreeShipping = subtotal >= FREE_SHIPPING_THRESHOLD;
-
-    // Tiered Discount Display
-    const nextTier = DISCOUNT_TIERS.find(t => subtotal < t.min) || null;
-    const currentDiscount = currentTier?.discount || 0;
-    const savingsAmount = subtotal * (currentDiscount / 100);
-    const maxTier = DISCOUNT_TIERS[DISCOUNT_TIERS.length - 1];
-    const discountProgress = Math.min(100, (subtotal / maxTier.min) * 100);
-    const amountToNextTier = nextTier ? nextTier.min - subtotal : 0;
     
     // To identify if real upsells/rush are in the items array
-    const hasRealRush = items.some((i) => i.product?.id === RUSH_PROCESSING_PRODUCT_ID)
+    const hasRealRush = items.some((i: any) => i.product?.id === RUSH_PROCESSING_PRODUCT_ID)
     const isRushActive = hasRealRush || mockRushAdded;
 
     return (
@@ -200,7 +106,7 @@ export function CartDrawer() {
 
                 {/* Free Shipping Progress Bar */}
                 {items.length > 0 && (
-                    <div className={`px-6 py-4 bg-white ${hasFreeShipping ? '' : 'border-b border-gold/10'}`}>
+                    <div className="px-6 py-4 bg-white border-b border-gold/10">
                         <div className="flex justify-between items-center mb-2">
                             <span className="font-sans text-xs font-semibold text-espresso uppercase tracking-wider">
                                 {amountAwayFromFreeShipping > 0 
@@ -213,77 +119,6 @@ export function CartDrawer() {
                                 className="h-full bg-gold transition-all duration-700 ease-out"
                                 style={{ width: `${progressPercentage}%` }}
                             />
-                        </div>
-                    </div>
-                )}
-
-                {/* Tiered Discount Progress Bar — only shows after free shipping unlocked */}
-                {items.length > 0 && hasFreeShipping && (
-                    <div className="px-6 pt-1 pb-4 bg-white border-b border-gold/10">
-                        {/* Header text */}
-                        <div className="flex justify-between items-center mb-2">
-                            <span className="font-sans text-xs font-semibold text-espresso uppercase tracking-wider">
-                                {currentTier && !nextTier
-                                    ? `🎉 Max discount unlocked — ${currentTier.label}!`
-                                    : nextTier
-                                        ? `$${amountToNextTier.toFixed(2)} away from ${nextTier.label}`
-                                        : 'Spend more, save more!'}
-                            </span>
-                            {currentDiscount > 0 && (
-                                <span className="font-sans text-[10px] font-bold text-green-700 bg-green-50 px-2 py-0.5 rounded-full">
-                                    −${savingsAmount.toFixed(2)}
-                                </span>
-                            )}
-                        </div>
-
-                        {/* Multi-tier progress bar */}
-                        <div className="relative">
-                            {/* Track background */}
-                            <div className="h-2 w-full bg-espresso/8 rounded-full overflow-hidden">
-                                <div
-                                    className="h-full rounded-full transition-all duration-700 ease-out"
-                                    style={{
-                                        width: `${discountProgress}%`,
-                                        background: currentDiscount >= 25
-                                            ? 'linear-gradient(90deg, #C5A467, #A67C3D, #7C5C28)'
-                                            : currentDiscount >= 20
-                                                ? 'linear-gradient(90deg, #C5A467, #A67C3D)'
-                                                : currentDiscount >= 15
-                                                    ? 'linear-gradient(90deg, #C5A467, #D4B87A)'
-                                                    : '#C5A467',
-                                    }}
-                                />
-                            </div>
-
-                            {/* Tier markers */}
-                            <div className="relative h-5 mt-1">
-                                {DISCOUNT_TIERS.map((tier) => {
-                                    const position = (tier.min / maxTier.min) * 100;
-                                    const isReached = subtotal >= tier.min;
-                                    return (
-                                        <div
-                                            key={tier.min}
-                                            className="absolute flex flex-col items-center"
-                                            style={{ left: `${position}%`, transform: 'translateX(-50%)' }}
-                                        >
-                                            {/* Dot / checkmark */}
-                                            <div className={`w-4 h-4 rounded-full flex items-center justify-center text-[8px] font-bold transition-all duration-500 ${
-                                                isReached
-                                                    ? 'bg-gold text-white shadow-sm shadow-gold/40 scale-110'
-                                                    : 'bg-espresso/10 text-espresso/40'
-                                            }`}>
-                                                {isReached ? '✓' : ''}
-                                            </div>
-                                            {/* Label */}
-                                            <span className={`font-sans text-[9px] font-semibold mt-0.5 whitespace-nowrap transition-colors duration-300 ${
-                                                isReached ? 'text-gold' : 'text-espresso/30'
-                                            }`}>
-                                                ${tier.min} · {tier.label}
-                                            </span>
-                                        </div>
-                                    );
-                                })}
-                            </div>
                         </div>
                     </div>
                 )}
@@ -301,7 +136,7 @@ export function CartDrawer() {
                             </div>
                             <h3 className="font-display text-2xl text-espresso">Your cart is empty</h3>
                             <p className="font-sans text-espresso/70 text-sm max-w-[250px]">
-                                Let&apos;s create something beautiful for your special day.
+                                Let's create something beautiful for your special day.
                             </p>
                             <button
                                 onClick={() => setIsCartOpen(false)}
@@ -313,14 +148,14 @@ export function CartDrawer() {
                     ) : (
                         <div className="flex flex-col gap-6">
                             {/* Line Items */}
-                            {items.map((item) => (
+                            {items.map((item: any) => (
                                 <div key={item.id} className="flex gap-4 border-b border-gold/10 pb-6 group">
                                     {/* Product Image */}
                                     <div className="relative w-20 h-28 bg-gray-100 flex-shrink-0 overflow-hidden">
                                         {item.product?.images?.[0]?.file?.url ? (
                                             <Image
                                                 src={item.product.images[0].file.url}
-                                                alt={item.product?.name || 'Cart item'}
+                                                alt={item.product.name}
                                                 fill
                                                 className="object-cover group-hover:scale-105 transition-transform duration-700"
                                             />
@@ -349,83 +184,28 @@ export function CartDrawer() {
 
                                         {/* Selected Options */}
                                         <div className="mt-1.5 flex flex-col gap-0.5">
-                                            {item.options?.map((opt, idx) => (
+                                            {item.options?.map((opt: any, idx: number) => (
                                                 <span key={idx} className="font-sans text-[11px] text-gray-500">
                                                     <span className="font-semibold text-espresso">{opt.name}:</span> {opt.value}
                                                 </span>
                                             ))}
-                                            {item.metadata?.welcome_box_box_color && (
-                                                <span className="font-sans text-[11px] text-gray-500">
-                                                    <span className="font-semibold text-espresso">Box Color:</span> {item.metadata.welcome_box_box_color}
-                                                </span>
-                                            )}
-                                            {item.metadata?.welcome_box_lid_design && (
-                                                <span className="font-sans text-[11px] text-gray-500">
-                                                    <span className="font-semibold text-espresso">Lid Design:</span> {item.metadata.welcome_box_lid_design}
-                                                </span>
-                                            )}
-                                            {item.metadata?.welcome_box_names_or_initials && (
-                                                <span className="font-sans text-[11px] text-gray-500">
-                                                    <span className="font-semibold text-espresso">Names / Initials:</span> {item.metadata.welcome_box_names_or_initials}
-                                                </span>
-                                            )}
-                                            {item.metadata?.welcome_box_event_date && (
-                                                <span className="font-sans text-[11px] text-gray-500">
-                                                    <span className="font-semibold text-espresso">Event Date:</span> {item.metadata.welcome_box_event_date}
-                                                </span>
-                                            )}
-                                            {item.metadata?.welcome_box_custom_upload_url && (
-                                                <span className="font-sans text-[11px] text-gray-500">
-                                                    <span className="font-semibold text-espresso">Custom Design URL:</span> {item.metadata.welcome_box_custom_upload_url}
-                                                </span>
-                                            )}
-                                            {item.metadata?.welcome_box_welcome_message && (
-                                                <span className="font-sans text-[11px] text-gray-500">
-                                                    <span className="font-semibold text-espresso">Welcome Message:</span> {item.metadata.welcome_box_welcome_message}
-                                                </span>
-                                            )}
-                                            {item.metadata?.welcome_box_matching_bag && (
-                                                <span className="font-sans text-[11px] text-gray-500">
-                                                    <span className="font-semibold text-espresso">Matching Custom Welcome Bag:</span> {item.metadata.welcome_box_matching_bag}
-                                                </span>
-                                            )}
-                                            {item.metadata?.welcome_box_selected_items && (
-                                                <span className="font-sans text-[11px] text-gray-500">
-                                                    <span className="font-semibold text-espresso">Selected Items:</span> {item.metadata.welcome_box_selected_items}
-                                                </span>
-                                            )}
-                                            {item.metadata?.welcome_box_free_value && (
-                                                <span className="font-sans text-[11px] text-gray-500">
-                                                    <span className="font-semibold text-espresso">Free Box Value:</span> {item.metadata.welcome_box_free_value}
-                                                </span>
-                                            )}
-                                            {item.metadata?.welcome_box_total_savings && (
-                                                <span className="font-sans text-[11px] text-gray-500">
-                                                    <span className="font-semibold text-espresso">Total Savings:</span> {item.metadata.welcome_box_total_savings}
-                                                </span>
-                                            )}
-                                            {item.metadata?.welcome_box_volume_discount && (
-                                                <span className="font-sans text-[11px] text-gray-500">
-                                                    <span className="font-semibold text-espresso">Volume Discount:</span> {item.metadata.welcome_box_volume_discount}
-                                                </span>
-                                            )}
                                         </div>
 
                                         <div className="mt-auto pt-4 flex items-center justify-between">
                                             {/* Quantity Selector */}
                                             <div className="flex items-center border border-espresso/20 bg-white">
                                                 <button
-                                                    onClick={() => handleQuantityChange(item.id, item.quantity ?? 1, -1)}
+                                                    onClick={() => handleQuantityChange(item.id, item.quantity, -1)}
                                                     disabled={isLoading}
                                                     className="p-1.5 text-espresso/70 hover:text-gold hover:bg-cream-dark transition-colors duration-300 disabled:opacity-50"
                                                 >
                                                     <Minus size={14} />
                                                 </button>
                                                 <span className="font-sans text-xs font-semibold text-espresso w-8 text-center">
-                                                    {item.quantity ?? 1}
+                                                    {item.quantity}
                                                 </span>
                                                 <button
-                                                    onClick={() => handleQuantityChange(item.id, item.quantity ?? 1, 1)}
+                                                    onClick={() => handleQuantityChange(item.id, item.quantity, 1)}
                                                     disabled={isLoading}
                                                     className="p-1.5 text-espresso/70 hover:text-gold hover:bg-cream-dark transition-colors duration-300 disabled:opacity-50"
                                                 >
@@ -442,7 +222,7 @@ export function CartDrawer() {
                             ))}
 
                             {/* One-Click Upsell Block */}
-                            {!mockUpsellAdded && !items.some((i) => i.product?.id === UPSELL_PRODUCT_ID) && (
+                            {!mockUpsellAdded && !items.some((i: any) => i.product?.id === UPSELL_PRODUCT_ID) && (
                                 <div className="mt-2 bg-cream-dark/40 p-4 border border-gold/20 flex gap-4 items-center">
                                     <div className="w-16 h-16 bg-white relative flex-shrink-0 overflow-hidden border border-espresso/10">
                                         <Image src="https://cdn.swell.store/customweddingco/69ea40d08a8d0f0012a7ec2e/f15db5b27a760f4da5bf0d3ba6b75970/roses-classic-cream.jpg" alt="Heirloom Rose Set" fill className="object-cover" />
@@ -496,40 +276,15 @@ export function CartDrawer() {
                                     <span className="font-sans text-xs font-semibold uppercase tracking-wider text-espresso/70">Subtotal</span>
                                     <span className="font-sans text-[10px] text-gray-400 mt-0.5">Shipping & taxes calculated at checkout</span>
                                 </div>
-                                <div className="flex flex-col items-end">
-                                    {currentDiscount > 0 && (
-                                        <span className="font-sans text-xs text-espresso/40 line-through">${subtotal.toFixed(2)}</span>
-                                    )}
-                                    <span className="font-serif text-2xl font-medium">
-                                        ${currentDiscount > 0 ? (subtotal * (1 - currentDiscount / 100)).toFixed(2) : subtotal.toFixed(2)}
-                                    </span>
-                                </div>
+                                <span className="font-serif text-2xl font-medium">${subtotal.toFixed(2)}</span>
                             </div>
 
-                            {/* Applied discount badge */}
-                            {currentDiscount > 0 && isCartCouponAuto && (
-                                <div className="flex items-center justify-between bg-green-50 border border-green-200 rounded-lg px-4 py-2.5 -mt-1">
-                                    <div className="flex items-center gap-2">
-                                        <span className="text-green-600 text-sm">🎉</span>
-                                        <div>
-                                            <span className="font-sans text-xs font-bold text-green-800 uppercase tracking-wider">
-                                                {currentTier?.coupon}
-                                            </span>
-                                            <span className="font-sans text-[10px] text-green-600 ml-1.5">applied</span>
-                                        </div>
-                                    </div>
-                                    <span className="font-sans text-sm font-bold text-green-700">
-                                        −${savingsAmount.toFixed(2)}
-                                    </span>
-                                </div>
-                            )}
-
-                            <Link
+                            <a
                                 href="/checkout"
                                 className="w-full bg-espresso text-cream font-sans font-bold uppercase tracking-widest text-sm py-4 mt-2 text-center hover:bg-espresso-light transition-all duration-500 shadow-md hover:shadow-lg block"
                             >
                                 Secure Checkout
-                            </Link>
+                            </a>
 
                             {/* Trust & Reassurance Zone */}
                             <div className="flex justify-center items-center gap-6 mt-2">

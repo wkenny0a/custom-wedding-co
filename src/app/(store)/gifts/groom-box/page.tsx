@@ -1,4 +1,4 @@
-import GroomBoxConfigurator from '@/components/configurator/GroomBoxConfigurator';
+import BridesmaidBoxConfigurator from '@/components/configurator/BridesmaidBoxConfigurator';
 import { getProducts, getLowestDisplayPrice, getProductBySlug } from '@/lib/swell';
 import { Metadata } from 'next';
 
@@ -32,7 +32,8 @@ export default async function GroomsmanBoxPage() {
 
   return (
     <div className="w-full py-6 md:py-10">
-      <GroomBoxConfigurator 
+      <BridesmaidBoxConfigurator 
+        theme="groomsman"
         catalogProducts={catalogProducts} 
         baseBoxProduct={baseBox}
         title="Design Your Groom Box"

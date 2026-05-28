@@ -29,7 +29,7 @@ export function Header() {
                         : 'bg-cream/85 backdrop-blur-md py-5 border-b border-gold/10'
                     }`}
             >
-                <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-12 flex items-center justify-between">
+                <div className="max-w-[1280px] mx-auto px-6 lg:px-12 flex items-center justify-between">
 
                     {/* Left Nav (Desktop) */}
                     <nav className="hidden lg:flex items-center gap-5 xl:gap-8 w-1/3">
@@ -50,39 +50,37 @@ export function Header() {
                     </nav>
 
                     {/* Mobile Hamburger */}
-                    <div className="lg:hidden w-1/4 flex justify-start">
-                        <button
-                            className="p-2 -ml-2 text-espresso hover:text-gold"
-                            onClick={() => setIsMobileMenuOpen(true)}
-                        >
-                            <Menu size={24} />
-                        </button>
-                    </div>
+                    <button
+                        className="lg:hidden p-2 -ml-2 text-espresso hover:text-gold"
+                        onClick={() => setIsMobileMenuOpen(true)}
+                    >
+                        <Menu size={24} />
+                    </button>
 
                     {/* Center Logo */}
-                    <div className="flex-1 lg:w-1/3 flex justify-center px-2">
-                        <Link href="/" className="hover:opacity-80 transition-opacity flex items-center justify-center w-full max-w-[160px] sm:max-w-[220px] lg:max-w-[250px]">
-                            <Image src="/assets/logo.png" alt="Custom Wedding Co. Logo" width={250} height={100} className="object-contain w-full h-auto" priority />
+                    <div className="w-1/3 flex justify-center">
+                        <Link href="/" className="hover:opacity-80 transition-opacity flex items-center justify-center">
+                            <Image src="/assets/logo.png" alt="Custom Wedding Co. Logo" width={250} height={100} className="object-contain" priority />
                         </Link>
                     </div>
 
                     {/* Right Nav */}
-                    <div className="flex items-center justify-end gap-3 sm:gap-6 w-1/4 lg:w-1/3">
+                    <div className="flex items-center justify-end gap-5 xl:gap-6 w-1/3">
                         <nav className="hidden lg:flex items-center gap-5 xl:gap-8 mr-2 xl:mr-4">
                             <Link href="/shop/barware-drinkware" className="font-sans text-[0.8rem] uppercase tracking-widest font-medium hover:text-gold transition-colors">Tabletop</Link>
                             <Link href="/shop/favors-party-extras" className="font-sans text-[0.8rem] uppercase tracking-widest font-medium hover:text-gold transition-colors">Favors</Link>
                             <Link href="/about" className="font-sans text-[0.8rem] uppercase tracking-widest font-medium hover:text-gold transition-colors">About</Link>
                         </nav>
-                        <div className="flex items-center gap-3 sm:gap-4 text-espresso">
+                        <div className="flex items-center gap-4 text-espresso">
                             <button className="hover:text-gold transition-colors">
-                                <Search size={20} strokeWidth={1.5} className="w-5 h-5 sm:w-6 sm:h-6" />
+                                <Search size={20} strokeWidth={1.5} />
                             </button>
                             <button
                                 onClick={() => setIsCartOpen(true)}
                                 className="relative hover:text-gold transition-colors flex items-center group"
                             >
-                                <ShoppingBag size={20} className="group-hover:text-gold w-5 h-5 sm:w-6 sm:h-6" strokeWidth={1.5} />
-                                <span className="absolute -top-1.5 -right-2 bg-gold text-cream text-[9px] sm:text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
+                                <ShoppingBag size={20} className="group-hover:text-gold" strokeWidth={1.5} />
+                                <span className="absolute -top-1.5 -right-2 bg-gold text-cream text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
                                     {cart?.items?.reduce((acc: number, item: any) => acc + (item.quantity || 1), 0) || 0}
                                 </span>
                             </button>
