@@ -2,6 +2,20 @@ import { Metadata } from 'next';
 import { getProducts, getLowestDisplayPrice } from '@/lib/swell';
 import PrebuiltBridesmaidBoxConfigurator from '@/components/configurator/PrebuiltBridesmaidBoxConfigurator';
 
+type SwellProduct = {
+  id: string;
+  name: string;
+  slug: string;
+  price?: number;
+  options?: unknown[];
+  images?: {
+    file?: {
+      url?: string;
+    };
+    url?: string;
+  }[];
+}
+
 export const metadata: Metadata = {
   title: 'Build Your Custom Prebuilt Bridesmaid Box | Personalize Every Detail | Custom Wedding Co.',
   description: 'Select our premium pre-built bridesmaid proposal box. Customize the outside name, print a heartfelt message inside the lid, and choose between our Classic and Deluxe VIP keepsake tiers. Heavily discounted bundle price, ships gift-ready in 5–7 days.',
@@ -12,7 +26,7 @@ export const dynamic = 'force-dynamic';
 export default async function PrebuiltBridesmaidBoxPage() {
   // 1. Fetch all products from Swell to search by slug
   const productResponse = await getProducts();
-  const allProducts = productResponse?.results || [];
+  const allProducts = (productResponse?.results || []) as SwellProduct[];
 
   // Slugs for the required items
   const baseBoxSlug = 'bridesmaid-box';
@@ -28,7 +42,7 @@ export default async function PrebuiltBridesmaidBoxPage() {
   const soyCandleSlug = 'artisan-soy-candle-bridal';
 
   // 2. Fetch Base Box Product
-  const baseBoxProduct = allProducts.find((p: any) => p.slug === baseBoxSlug) || null;
+  const baseBoxProduct = allProducts.find((product) => product.slug === baseBoxSlug) || null;
 
   // 3. Hydrate Stuffer Products
   const stufferSlugs = [
@@ -41,7 +55,7 @@ export default async function PrebuiltBridesmaidBoxPage() {
   ];
 
   const hydratedStuffers = stufferSlugs.map(slug => {
-    const match = allProducts.find((p: any) => p.slug === slug);
+    const match = allProducts.find((product) => product.slug === slug);
     if (!match) return null;
 
     return {
@@ -53,7 +67,7 @@ export default async function PrebuiltBridesmaidBoxPage() {
       isCustomizable: match.options && match.options.length > 0,
       swellData: match
     };
-  }).filter(Boolean);
+  }).filter((stuffer): stuffer is NonNullable<typeof stuffer> => Boolean(stuffer));
 
   return (
     <div className="w-full py-6 md:py-10 bg-cream">

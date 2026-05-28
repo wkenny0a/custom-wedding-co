@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { useCart } from '@/context/CartContext';
 import { Button } from '@/components/ui/Button';
-import { Check, ShieldCheck, Sparkles, PackageCheck, Clock, Eye, ShoppingBag } from 'lucide-react';
+import { Check, Sparkles, ShoppingBag } from 'lucide-react';
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 const BOX_COLORS = [
@@ -45,8 +45,20 @@ const REVIEWS = [
 ];
 
 export interface PrebuiltBridesmaidBoxConfiguratorProps {
-  baseBoxProduct: any;
-  prebuiltStuffers: any[];
+  baseBoxProduct: {
+    id: string;
+    name?: string;
+    slug?: string;
+  } | null;
+  prebuiltStuffers: {
+    id: string;
+    name: string;
+    slug: string;
+    price: number;
+    image: string;
+    isCustomizable?: boolean;
+    swellData?: unknown;
+  }[];
 }
 
 export default function PrebuiltBridesmaidBoxConfigurator({
@@ -94,27 +106,39 @@ export default function PrebuiltBridesmaidBoxConfigurator({
       id: 'box-closed',
       title: `${boxColor.name} Closed Box`,
       url: boxColor.imageUrl || '/images/boxes/box_closed_premium_cream.png',
-      isBox: true
+      isBox: true,
+      isInside: false,
+      isLid: false,
+      isStuffer: false
     },
     // Opened Box preview (dynamic layout of items)
     {
       id: 'box-inside',
       title: 'Curated Items Inside',
       url: '/images/gift-boxes/bridesmaid-box.png', // Fallback to premium styled bridesmaid-box image
-      isInside: true
+      isBox: false,
+      isInside: true,
+      isLid: false,
+      isStuffer: false
     },
     // Custom printed inside lid
     {
       id: 'box-lid',
       title: 'Custom Lid Message',
       url: '/images/gift-boxes/how-it-works.png',
-      isLid: true
+      isBox: false,
+      isInside: false,
+      isLid: true,
+      isStuffer: false
     },
     // Stuffer close-ups
     ...activeStuffers.map(s => ({
       id: s.id,
       title: s.name,
       url: s.image,
+      isBox: false,
+      isInside: false,
+      isLid: false,
       isStuffer: true
     }))
   ];
