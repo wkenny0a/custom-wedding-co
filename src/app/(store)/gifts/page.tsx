@@ -18,8 +18,8 @@ const BOXES = [
     description:
       'Propose to your girls with a luxury box they\'ll never forget. Choose your box color, write a heartfelt inner-lid message, and fill it with hand-picked items — satin pajamas, acrylic tumblers, diamond name necklaces, compact mirrors, and more. Every piece is personalized with her name, making it the ultimate keepsake.',
     image: '/images/gift-boxes/bridesmaid-box.png',
-    href: '/gifts/bridesmaid-box',
-    cta: 'Design Your Bridesmaid Box',
+    href: '/gifts/prebuilt-bridesmaid-boxs-test',
+    cta: 'Shop Bridesmaid Boxes',
     items: [
       'Personalized Satin Pajama Set',
       'Diamond Pavé Name Necklace',
@@ -336,7 +336,7 @@ export default function GiftBoxesPage() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
-              href="/gifts/bridesmaid-box"
+              href="/gifts/prebuilt-bridesmaid-boxs-test"
               className="px-8 py-3.5 bg-gold text-white font-sans text-sm tracking-widest uppercase rounded-sm hover:bg-gold-light transition-all duration-500"
             >
               Bridesmaid Box

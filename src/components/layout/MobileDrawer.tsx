@@ -46,7 +46,7 @@ export function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
                     <div className="flex flex-col gap-4 py-1">
                         <span className="font-serif text-2xl text-espresso">Build a Box</span>
                         <div className="flex flex-col gap-4 pl-4 border-l border-gold/30 ml-1">
-                            <Link href="/gifts/bridesmaid-box" onClick={onClose} className="font-sans text-sm uppercase tracking-widest text-espresso/80 hover:text-gold transition-colors">Bridesmaid Box</Link>
+                            <Link href="/gifts/prebuilt-bridesmaid-boxs-test" onClick={onClose} className="font-sans text-sm uppercase tracking-widest text-espresso/80 hover:text-gold transition-colors">Bridesmaid Box</Link>
                             <Link href="/gifts/groom-box" onClick={onClose} className="font-sans text-sm uppercase tracking-widest text-espresso/80 hover:text-gold transition-colors">Groomsman Box</Link>
                             <Link href="/gifts/welcome-gift-box" onClick={onClose} className="font-sans text-sm uppercase tracking-widest text-espresso/80 hover:text-gold transition-colors">Welcome Box</Link>
                         </div>

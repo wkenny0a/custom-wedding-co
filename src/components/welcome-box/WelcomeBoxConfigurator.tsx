@@ -1,19 +1,207 @@
+/* eslint-disable @next/next/no-img-element */
 'use client';
 
-import React, { useState } from 'react';
-import { BoxColorOption, ProductItem, WelcomeBoxState, DesignOption } from './WelcomeBoxTypes';
-import StepBoxColor from '@/components/configurator/StepBoxColor';
-import StepDesignSelector from './StepDesignSelector';
-import StepWelcomeProducts from './StepWelcomeProducts';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
+import {
+  Check,
+  ChevronDown,
+  Gift,
+  Minus,
+  PackageCheck,
+  PenLine,
+  Plus,
+  ShoppingBag,
+  Sparkles,
+  Truck,
+  WalletCards,
+  X,
+} from 'lucide-react';
+import { BoxColorOption, DesignOption, ProductItem, WelcomeBoxState } from './WelcomeBoxTypes';
 import { useCart } from '@/context/CartContext';
 
-// ─── Volume Discount Tiers ───────────────────────────────────────────────────
+type BaseBoxProduct = {
+  id?: string;
+  name?: string;
+  price?: number | string;
+  options?: SwellProductOption[];
+};
+
+type SwellProductOptionValue = {
+  id?: string;
+  name?: string;
+  value?: string;
+  price?: number;
+};
+
+type SwellProductOption = {
+  id?: string;
+  name?: string;
+  input_type?: string;
+  type?: string;
+  required?: boolean;
+  values?: SwellProductOptionValue[];
+};
+
+type RewardTier = {
+  threshold: number;
+  title: string;
+  shortTitle: string;
+  detail: string;
+  valueLabel: (boxQuantity: number) => string;
+  value: (boxQuantity: number) => number;
+  icon: React.ComponentType<{ size?: number; strokeWidth?: number; className?: string }>;
+  imageUrl?: string;
+};
+
 const TIERS = [
-  { min: 5,   discount: 10 },
-  { min: 20,  discount: 20 },
-  { min: 30,  discount: 30 },
-  { min: 50,  discount: 45 },
+  { min: 5, discount: 10 },
+  { min: 20, discount: 20 },
+  { min: 30, discount: 30 },
+  { min: 50, discount: 45 },
 ];
+
+const PRESETS = [
+  { qty: 5, label: '5 boxes', discount: '10% off' },
+  { qty: 20, label: '20 boxes', discount: '20% off' },
+  { qty: 30, label: '30 boxes', discount: '30% off' },
+  { qty: 50, label: '50 boxes', discount: '45% off' },
+  { qty: 100, label: '100 boxes', discount: '45% off' },
+];
+
+const BOX_COLORS: BoxColorOption[] = [
+  { id: 'c1', name: 'Navy Blue', hexCode: '#3b5998', imageUrl: '/images/boxes/box_closed_navy_blue.png' },
+  { id: 'c2', name: 'Sky Blue', hexCode: '#88d8ed', imageUrl: '/images/boxes/box_closed_sky_blue.png' },
+  { id: 'c4', name: 'Premium Cream', hexCode: '#f3f1ea', imageUrl: '/images/boxes/box_closed_premium_cream.png', mostPopular: true },
+  { id: 'c5', name: 'Light Pink', hexCode: '#f5c4c9', imageUrl: '/images/boxes/box_closed_light_pink.png' },
+  { id: 'c7', name: 'Yellow', hexCode: '#ffd54f', imageUrl: '/images/boxes/box_closed_yellow.png' },
+  { id: 'c8', name: 'Matte Black', hexCode: '#212121', imageUrl: '/images/boxes/box_closed_matte_black.png' },
+];
+
+const DESIGNS: DesignOption[] = [
+  { id: 1, name: 'The Classic Initial', imageUrl: '/images/gift-boxes/monograms/2.png', isCustomUpload: false },
+  { id: 2, name: 'The Modern Serif', imageUrl: '/images/gift-boxes/monograms/3.png', isCustomUpload: false },
+  { id: 3, name: 'The Romantic Script', imageUrl: '/images/gift-boxes/monograms/4.png', isCustomUpload: false },
+  { id: 4, name: 'The Elegant Floral', imageUrl: '/images/gift-boxes/monograms/5.png', isCustomUpload: false },
+  { id: 5, name: 'The Minimalist Block', imageUrl: '/images/gift-boxes/monograms/6.png', isCustomUpload: false },
+  { id: 6, name: 'The Vintage Crest', imageUrl: '/images/gift-boxes/monograms/7.png', isCustomUpload: false },
+  { id: 7, name: 'The Artisan Frame', imageUrl: '/images/gift-boxes/monograms/8.png', isCustomUpload: false },
+  { id: 8, name: 'The Timeless Calligraphy', imageUrl: '/images/gift-boxes/monograms/9.png', isCustomUpload: false },
+  { id: 9, name: 'The Botanical Wreath', imageUrl: '/images/gift-boxes/monograms/10.png', isCustomUpload: false },
+  { id: 10, name: 'The Regal Monogram', imageUrl: '/images/gift-boxes/monograms/11.png', isCustomUpload: false },
+  { id: 11, name: 'The Contemporary Sans', imageUrl: '/images/gift-boxes/monograms/12.png', isCustomUpload: false },
+  { id: 12, name: 'Upload Your Own', imageUrl: '/images/gift-boxes/monograms/custom-design.png', isCustomUpload: true },
+];
+
+const REWARDS: RewardTier[] = [
+  {
+    threshold: 2,
+    title: 'Free shipping',
+    shortTitle: 'Free shipping',
+    detail: 'Unlocked after 2 selected items',
+    valueLabel: () => '$19 value',
+    value: () => 19,
+    icon: Truck,
+  },
+  {
+    threshold: 3,
+    title: 'Free metal money clip',
+    shortTitle: 'Money clip',
+    detail: 'One included in every box',
+    valueLabel: (qty) => `$${19 * qty} value`,
+    value: (qty) => 19 * qty,
+    icon: WalletCards,
+  },
+  {
+    threshold: 4,
+    title: 'Free passport holder',
+    shortTitle: 'Passport holder',
+    detail: 'One included in every box',
+    valueLabel: (qty) => `$${25 * qty} value`,
+    value: (qty) => 25 * qty,
+    icon: PackageCheck,
+    imageUrl: '/images/passport_holder.png',
+  },
+  {
+    threshold: 5,
+    title: 'Free signature pen with case',
+    shortTitle: 'Pen with case',
+    detail: 'One included in every box',
+    valueLabel: (qty) => `$${30 * qty} value`,
+    value: (qty) => 30 * qty,
+    icon: PenLine,
+    imageUrl: '/images/signature_pen.png',
+  },
+];
+
+const REVIEWS = [
+  {
+    name: 'Amanda R.',
+    location: 'New York, NY',
+    text: 'Our guests opened the boxes before the welcome party and kept talking about how polished everything felt.',
+    rating: 5,
+    date: 'March 2025',
+  },
+  {
+    name: 'James & Sarah',
+    location: 'Austin, TX',
+    text: 'We ordered 80 boxes and the one-page build process made it easy to compare what we were adding.',
+    rating: 5,
+    date: 'January 2025',
+  },
+  {
+    name: 'Rachel M.',
+    location: 'Denver, CO',
+    text: 'The volume discount and free gift value made the final total feel much clearer for our planner.',
+    rating: 5,
+    date: 'April 2025',
+  },
+];
+
+const REVIEW_IMAGES = [
+  {
+    src: '/images/ugc/welcome-review-1.jpeg',
+    alt: 'Custom wedding welcome box styled for guests',
+  },
+  {
+    src: '/images/ugc/welcome-review-2.jpeg',
+    alt: 'Personalized welcome box contents from a real wedding order',
+  },
+  {
+    src: '/images/ugc/welcome-review-3.jpeg',
+    alt: 'Wedding welcome boxes prepared for a guest celebration',
+  },
+];
+
+const FAQS = [
+  {
+    q: "What's the minimum order?",
+    a: '5 boxes. Volume discounts begin at 5 boxes and increase for larger wedding, welcome party, and destination event orders.',
+  },
+  {
+    q: 'Can I use my own design on the lid?',
+    a: 'Yes. Choose Upload Your Own, then add a JPG, PNG, or WEBP file up to 4.5MB.',
+  },
+  {
+    q: 'Do all boxes get the same contents?',
+    a: 'Yes. One order creates identical boxes with the same color, lid design, welcome message, and selected items.',
+  },
+  {
+    q: 'When do the free gifts unlock?',
+    a: 'Free shipping unlocks at 2 selected items. Money clips unlock at 3 items, passport holders at 4 items, and signature pens with cases at 5 items.',
+  },
+  {
+    q: 'How far in advance should I order?',
+    a: 'We recommend ordering 3 to 4 weeks before your event. Contact us before ordering if your timeline is close.',
+  },
+];
+
+const formatCurrency = (value: number) =>
+  new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: value % 1 === 0 ? 0 : 2,
+    maximumFractionDigits: 2,
+  }).format(value);
 
 const getDiscount = (qty: number): number => {
   let discount = 0;
@@ -23,74 +211,52 @@ const getDiscount = (qty: number): number => {
   return discount;
 };
 
-const getDiscountLabel = (qty: number): string => {
-  const d = getDiscount(qty);
-  if (d === 0) return 'No discount';
-  return `${d}% OFF`;
+const getCouponCode = (qty: number) => {
+  if (qty >= 50) return 'welcome45';
+  if (qty >= 30) return 'welcome30';
+  if (qty >= 20) return 'welcome20';
+  if (qty >= 5) return 'welcome10';
+  return null;
 };
 
-// ─── Quantity Presets ─────────────────────────────────────────────────────────
-const PRESETS = [
-  { qty: 5,   label: '5 boxes',   discount: '10% OFF' },
-  { qty: 20,  label: '20 boxes',  discount: '20% OFF' },
-  { qty: 30,  label: '30 boxes',  discount: '30% OFF' },
-  { qty: 50,  label: '50 boxes',  discount: '45% OFF' },
-  { qty: 100, label: '100 boxes', discount: '45% OFF' },
-];
+const getSwellOptions = (product: { options?: SwellProductOption[]; swellData?: unknown } | null | undefined) => {
+  const directOptions = product?.options;
+  if (Array.isArray(directOptions)) return directOptions;
 
-// ─── Social Proof Data ───────────────────────────────────────────────────────
-const REVIEWS = [
-  {
-    name: 'Amanda R.',
-    location: 'New York, NY',
-    text: 'Our 200 guests each got a welcome box and we had people messaging us for WEEKS about how thoughtful it was.',
-    rating: 5,
-    date: 'March 2025',
-  },
-  {
-    name: 'James & Sarah',
-    location: 'Austin, TX',
-    text: "We ordered 80 boxes and they arrived perfectly. The custom monogram on the lid made each one feel personal.",
-    rating: 5,
-    date: 'January 2025',
-  },
-  {
-    name: 'Rachel M.',
-    location: 'Denver, CO',
-    text: "The volume pricing made it actually affordable. We got 45% off at 100 boxes and the quality was still amazing.",
-    rating: 5,
-    date: 'April 2025',
-  },
-];
+  const swellData = product?.swellData as { options?: SwellProductOption[] } | undefined;
+  return Array.isArray(swellData?.options) ? swellData.options : [];
+};
 
-const FAQS = [
-  {
-    q: "What's the minimum order?",
-    a: '5 boxes. Volume discounts start at 20 boxes.',
-  },
-  {
-    q: 'Can I use my own design on the lid?',
-    a: "Yes! Design 12 lets you upload your own artwork. We accept JPG, PNG, and WEBP files up to 4.5MB. Your custom design will be printed on the lid of every box in your order.",
-  },
-  {
-    q: 'Do all boxes get the same contents?',
-    a: 'Yes, all boxes in a single order are identical — same lid design, same items inside, same welcome message. This keeps production efficient and pricing affordable.',
-  },
-  {
-    q: 'What file formats do you accept for custom uploads?',
-    a: 'JPG, PNG, and WEBP up to 4.5MB. For best results, use a high-resolution image (at least 1200×1200 pixels) with your design centered.',
-  },
-  {
-    q: 'How far in advance should I order?',
-    a: 'We recommend 3–4 weeks before your event for standard production. Rush processing is available for an additional fee.',
-  },
-];
+const findOptionByName = (options: SwellProductOption[], targetName: string) =>
+  options.find((option) => option.name?.trim().toLowerCase() === targetName.toLowerCase());
+
+const getOptionValueName = (value: SwellProductOptionValue | undefined) => value?.name || value?.value || '';
+
+const getProductImages = (product: ProductItem | null) => {
+  if (!product) return [];
+  const swellImages = product.swellData?.images || [];
+  const images = Array.isArray(swellImages)
+    ? swellImages
+        .map((image: { file?: { url?: string } }) => image.file?.url)
+        .filter((url: string | undefined): url is string => Boolean(url))
+    : [];
+  return images.length ? images : [product.image || '/images/box_closed.png'];
+};
+
+const getProductDescription = (product: ProductItem | null) => {
+  if (!product) return '';
+  return (
+    product.swellData?.description ||
+    product.swellData?.meta_description ||
+    'A curated welcome-box item selected for guest gifting, wedding weekends, and personalized event details.'
+  );
+};
 
 function StarRating({ count }: { count: number }) {
   return (
-    <div className="flex items-center gap-0.5">
+    <div className="flex items-center gap-0.5" aria-label={`${count} star rating`}>
       {Array.from({ length: count }).map((_, i) => (
-        <svg key={i} className="w-4 h-4 text-gold" fill="currentColor" viewBox="0 0 20 20">
+        <svg key={i} className="h-4 w-4 text-gold" fill="currentColor" viewBox="0 0 20 20">
           <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
         </svg>
       ))}
@@ -103,18 +269,26 @@ export default function WelcomeBoxConfigurator({
   baseBoxProduct = null,
 }: {
   catalogProducts?: ProductItem[];
-  baseBoxProduct?: any;
+  baseBoxProduct?: BaseBoxProduct | null;
 }) {
-  const [currentStep, setCurrentStep] = useState<number>(0);
+  const { addToCart, setIsCartOpen, cart, applyCoupon } = useCart();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [boxQuantity, setBoxQuantity] = useState<number>(5);
   const [isCustomQuantity, setIsCustomQuantity] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
-  const { addToCart, removeFromCart, setIsCartOpen, cart, applyCoupon } = useCart();
+  const [uploadError, setUploadError] = useState('');
+  const [uploadPreview, setUploadPreview] = useState('');
+  const [isUploading, setIsUploading] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+  const [failedDesignImages, setFailedDesignImages] = useState<Set<number>>(new Set());
+  const [activePreviewTab, setActivePreviewTab] = useState<'closed' | 'inside' | 'lid'>('closed');
+  const [viewingProduct, setViewingProduct] = useState<ProductItem | null>(null);
+  const [detailImageIndex, setDetailImageIndex] = useState(0);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [state, setState] = useState<WelcomeBoxState>({
-    boxColor: null,
-    selectedDesign: null,
+    boxColor: BOX_COLORS.find((color) => color.mostPopular) || BOX_COLORS[0],
+    selectedDesign: DESIGNS[0],
     namesOrInitials: '',
     eventDate: '',
     customUploadUrl: '',
@@ -126,435 +300,1138 @@ export default function WelcomeBoxConfigurator({
   });
 
   const discountAmount = getDiscount(boxQuantity);
+  const selectedCount = state.selectedProducts.length;
+  const selectedProductIds = useMemo(
+    () => new Set(state.selectedProducts.map((product) => product.id)),
+    [state.selectedProducts],
+  );
+  const selectedItemsUnitTotal = useMemo(
+    () => state.selectedProducts.reduce((sum, product) => sum + (Number(product.price) || 0), 0),
+    [state.selectedProducts],
+  );
+  const baseBoxUnitPrice = Number(baseBoxProduct?.price || 0);
+  const matchingBagUnitPrice = state.includeMatchingBag ? 2 : 0;
+  const unitTotalBeforeDiscount = baseBoxUnitPrice + selectedItemsUnitTotal + matchingBagUnitPrice;
+  const subtotalBeforeDiscount = unitTotalBeforeDiscount * boxQuantity;
+  const volumeSavings = subtotalBeforeDiscount * (discountAmount / 100);
+  const unlockedRewards = REWARDS.filter((reward) => selectedCount >= reward.threshold);
+  const rewardSavings = unlockedRewards.reduce((sum, reward) => sum + reward.value(boxQuantity), 0);
+  const totalSavings = volumeSavings + rewardSavings;
+  const estimatedTotal = Math.max(0, subtotalBeforeDiscount - volumeSavings);
+  const progressPercent = Math.min(100, (selectedCount / 5) * 100);
+  const nextReward = REWARDS.find((reward) => selectedCount < reward.threshold);
+  const isCustomDesign = state.selectedDesign?.isCustomUpload === true;
+  const hasPersonalization = isCustomDesign
+    ? state.customUploadUrl.trim() !== ''
+    : state.namesOrInitials.trim() !== '' && state.eventDate.trim() !== '';
+  const isReadyToAdd =
+    Boolean(baseBoxProduct?.id) &&
+    Boolean(state.boxColor) &&
+    Boolean(state.selectedDesign) &&
+    hasPersonalization &&
+    selectedCount >= 2 &&
+    !isSubmitting;
 
-  const getCouponCode = (qty: number) => {
-    if (qty >= 50) return 'welcome45';
-    if (qty >= 30) return 'welcome30';
-    if (qty >= 20) return 'welcome20';
-    if (qty >= 5) return 'welcome10';
-    return null;
+  const setBoxColor = (color: BoxColorOption) => setState((s) => ({ ...s, boxColor: color }));
+  const setSelectedDesign = (design: DesignOption) => setState((s) => ({ ...s, selectedDesign: design }));
+  const setNamesOrInitials = (value: string) => setState((s) => ({ ...s, namesOrInitials: value }));
+  const setEventDate = (value: string) => setState((s) => ({ ...s, eventDate: value }));
+  const setWelcomeMessage = (value: string) => setState((s) => ({ ...s, welcomeMessage: value }));
+  const setIncludeMatchingBag = (value: boolean) => setState((s) => ({ ...s, includeMatchingBag: value }));
+
+  const processFile = useCallback(
+    async (file: File) => {
+      setUploadError('');
+      const allowed = ['image/jpeg', 'image/png', 'image/webp'];
+      if (!allowed.includes(file.type)) {
+        setUploadError('Please upload a JPG, PNG, or WEBP file.');
+        return;
+      }
+      if (file.size > 4718592) {
+        setUploadError('Please keep your upload under 4.5MB.');
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (event) => setUploadPreview(String(event.target?.result || ''));
+      reader.readAsDataURL(file);
+
+      setIsUploading(true);
+      try {
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('cartId', cart?.id || '');
+
+        const response = await fetch('/api/upload', { method: 'POST', body: formData });
+        const data = (await response.json()) as { url?: string; error?: string };
+
+        if (!response.ok || !data.url) {
+          throw new Error(data.error || 'Upload failed');
+        }
+
+        setState((s) => ({
+          ...s,
+          customUploadUrl: data.url || '',
+          customUploadFilename: file.name,
+        }));
+        setUploadPreview(data.url);
+      } catch (error: unknown) {
+        setUploadError(error instanceof Error ? error.message : 'Upload failed. Please try again.');
+        setUploadPreview('');
+      } finally {
+        setIsUploading(false);
+      }
+    },
+    [cart?.id],
+  );
+
+  const handleFileDrop = useCallback(
+    (event: React.DragEvent<HTMLDivElement>) => {
+      event.preventDefault();
+      setIsDragging(false);
+      const file = event.dataTransfer.files[0];
+      if (file) processFile(file);
+    },
+    [processFile],
+  );
+
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) processFile(file);
   };
 
-  // ─── Handlers ──────────────────────────────────────────────────────────────
-  const handleInjectBaseBox = async () => {
-    if (!baseBoxProduct) return;
+  const addProduct = (product: ProductItem) => {
+    setState((s) => {
+      if (s.selectedProducts.some((selectedProduct) => selectedProduct.id === product.id)) return s;
+      return { ...s, selectedProducts: [...s.selectedProducts, product] };
+    });
+  };
+
+  const removeProduct = (productId: string) => {
+    setState((s) => ({
+      ...s,
+      selectedProducts: s.selectedProducts.filter((product) => product.id !== productId),
+    }));
+  };
+
+  const openProductDetail = (product: ProductItem) => {
+    setDetailImageIndex(0);
+    setViewingProduct(product);
+  };
+
+  const buildBaseOptions = () => {
+    const options: { name: string; value: string }[] = [];
+
+    const matchingBagOption = findOptionByName(getSwellOptions(baseBoxProduct), 'Matching Custom Welcome Bag');
+    if (matchingBagOption) {
+      const targetValue = matchingBagOption.values?.find((value) =>
+        state.includeMatchingBag
+          ? /yes/i.test(getOptionValueName(value))
+          : /^no$/i.test(getOptionValueName(value)),
+      );
+      const fallbackValue = matchingBagOption.values?.[state.includeMatchingBag ? 1 : 0];
+      const value = getOptionValueName(targetValue || fallbackValue);
+      if (matchingBagOption.name && value) {
+        options.push({ name: matchingBagOption.name, value });
+      }
+    }
+
+    return options;
+  };
+
+  const buildBaseMetadata = () => ({
+    welcome_box_builder: true,
+    welcome_box_box_color: state.boxColor?.name || '',
+    welcome_box_lid_design: state.selectedDesign?.name || '',
+    welcome_box_names_or_initials: state.namesOrInitials.trim(),
+    welcome_box_event_date: state.eventDate.trim(),
+    welcome_box_custom_upload_url: state.customUploadUrl,
+    welcome_box_welcome_message: state.welcomeMessage.trim(),
+    welcome_box_matching_bag: state.includeMatchingBag ? 'Yes (+$2 per box)' : 'No',
+    welcome_box_selected_items: state.selectedProducts.map((product) => product.name).join(', '),
+    welcome_box_item_count: selectedCount,
+    welcome_box_quantity: boxQuantity,
+    welcome_box_free_value: unlockedRewards.length
+      ? unlockedRewards
+          .map((reward) => `${reward.shortTitle} (${reward.valueLabel(boxQuantity)})`)
+          .join(' + ')
+      : 'No free gifts unlocked',
+    welcome_box_total_savings: formatCurrency(totalSavings),
+    welcome_box_volume_discount: `${discountAmount}% off`,
+  });
+
+  const buildProductOptions = (product: ProductItem) => {
+    const options: { name: string; value: string }[] = [];
+
+    for (const option of getSwellOptions(product)) {
+      if (!option.name) continue;
+      const inputType = option.input_type || option.type || '';
+      const optionName = option.name.toLowerCase();
+
+      if (Array.isArray(option.values) && option.values.length > 0) {
+        let selectedValue: SwellProductOptionValue | undefined;
+
+        if (optionName.includes('design')) {
+          selectedValue = option.values.find((value) =>
+            getOptionValueName(value).toLowerCase() === `design #${state.selectedDesign?.id || 1}`.toLowerCase(),
+          );
+        }
+
+        selectedValue = selectedValue || option.values[0];
+        const value = getOptionValueName(selectedValue);
+        if (value) options.push({ name: option.name, value });
+        continue;
+      }
+
+      if (optionName.includes('names') || optionName.includes('initials')) {
+        options.push({
+          name: option.name,
+          value: state.namesOrInitials.trim() || 'Custom artwork uploaded',
+        });
+        continue;
+      }
+
+      if (optionName.includes('event date') || optionName === 'date') {
+        options.push({
+          name: option.name,
+          value: state.eventDate.trim() || 'See custom artwork',
+        });
+        continue;
+      }
+
+      if (optionName.includes('upload') || optionName.includes('artwork')) {
+        options.push({
+          name: option.name,
+          value: state.customUploadUrl || 'Provided with welcome box',
+        });
+        continue;
+      }
+
+      if (option.required || inputType === 'short_text' || inputType === 'text') {
+        options.push({ name: option.name, value: 'Provided with welcome box' });
+      }
+    }
+
+    return options;
+  };
+
+  const handleAddBundleToCart = async () => {
+    if (!isReadyToAdd || !baseBoxProduct?.id) return;
     setIsSubmitting(true);
+
     try {
-      if (state.baseBoxCartItemId) {
-        try { await removeFromCart(state.baseBoxCartItemId); } catch (e) { /* ignore */ }
+      await addToCart(baseBoxProduct.id, boxQuantity, buildBaseOptions(), buildBaseMetadata(), true);
+
+      for (const product of state.selectedProducts) {
+        await addToCart(product.id, boxQuantity, buildProductOptions(product), null, true);
       }
 
-      const baseOptions: { name: string; value: string }[] = [];
-      if (state.boxColor) baseOptions.push({ name: 'Box Color', value: state.boxColor.name });
-      if (state.selectedDesign) baseOptions.push({ name: 'Lid Design', value: state.selectedDesign.name });
-      if (state.namesOrInitials.trim()) baseOptions.push({ name: 'Names / Initials', value: state.namesOrInitials });
-      if (state.eventDate.trim()) baseOptions.push({ name: 'Event Date', value: state.eventDate });
-      if (state.customUploadUrl) baseOptions.push({ name: 'Custom Design URL', value: state.customUploadUrl });
-      if (state.welcomeMessage.trim()) baseOptions.push({ name: 'Welcome Message', value: state.welcomeMessage });
-      if (state.includeMatchingBag) baseOptions.push({ name: 'Matching Custom Welcome Bag', value: 'Yes (+$2.00)' });
-      if (boxQuantity > 1) baseOptions.push({ name: 'Quantity', value: String(boxQuantity) });
-
-      const updatedCart = await addToCart(baseBoxProduct.id, boxQuantity, baseOptions, null, true);
-
-      if (updatedCart && updatedCart.items && updatedCart.items.length > 0) {
-        const newestItem = updatedCart.items[updatedCart.items.length - 1];
-        setState(s => ({ ...s, baseBoxCartItemId: newestItem.id }));
-      }
+      setIsCartOpen(true);
 
       const couponCode = getCouponCode(boxQuantity);
       if (couponCode) {
         try {
           await applyCoupon(couponCode);
-        } catch (e) {
-          console.warn('Coupon auto-apply skipped:', couponCode, e);
+        } catch (couponError) {
+          console.warn('Welcome box coupon auto-apply skipped:', couponCode, couponError);
         }
       }
     } catch (error) {
-      console.error('Failed to inject base box silently:', error);
+      console.error('Failed to add welcome box bundle:', error);
+      alert('We could not add the welcome box to cart. Please try again or contact us for help.');
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const goToStep = async (targetStep: number) => {
-    if (targetStep === 3 && currentStep < 3) {
-      await handleInjectBaseBox();
+  const readyMessage = useMemo(() => {
+    if (!baseBoxProduct?.id) return 'Welcome box product is not available yet.';
+    if (selectedCount < 2) return `Add ${2 - selectedCount} more item${2 - selectedCount === 1 ? '' : 's'} to unlock checkout.`;
+    if (!state.boxColor) return 'Choose a box color.';
+    if (!state.selectedDesign) return 'Choose a lid design.';
+    if (!hasPersonalization) {
+      return isCustomDesign ? 'Upload your lid artwork.' : 'Add names and event date.';
     }
-    setCurrentStep(targetStep);
-    if (typeof window !== 'undefined') {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-  };
+    return 'Ready to add your completed welcome box.';
+  }, [baseBoxProduct?.id, hasPersonalization, isCustomDesign, selectedCount, state.boxColor, state.selectedDesign]);
 
-  const nextStep = () => goToStep(Math.min(currentStep + 1, 3));
-  const prevStep = () => goToStep(Math.max(currentStep - 1, 0));
-
-  const setBoxColor = (color: BoxColorOption) => setState(s => ({ ...s, boxColor: color }));
-  const setSelectedDesign = (design: DesignOption) => setState(s => ({ ...s, selectedDesign: design }));
-  const setNamesOrInitials = (v: string) => setState(s => ({ ...s, namesOrInitials: v }));
-  const setEventDate = (v: string) => setState(s => ({ ...s, eventDate: v }));
-  const setCustomUpload = (url: string, filename: string) => setState(s => ({ ...s, customUploadUrl: url, customUploadFilename: filename }));
-  const setWelcomeMessage = (v: string) => setState(s => ({ ...s, welcomeMessage: v }));
-  const setIncludeMatchingBag = (v: boolean) => setState(s => ({ ...s, includeMatchingBag: v }));
-
-  const addProduct = async (product: ProductItem) => {
-    setIsSubmitting(true);
-    try {
-      let itemOptions: { name: string; value: string }[] = [];
-      if (product.isCustomizable && product.customOptions && product.customOptions.length > 0) {
-        itemOptions = product.customOptions.map(opt => ({ name: opt.name, value: opt.value }));
-      }
-      const updatedCart = await addToCart(product.id, boxQuantity, itemOptions, null, true);
-      const newestItem = updatedCart?.items?.[updatedCart.items.length - 1];
-      const newProduct = { ...product, cartItemId: newestItem?.id };
-      setState(s => ({ ...s, selectedProducts: [...s.selectedProducts, newProduct] }));
-    } catch (error) {
-      console.error('Cart addition failed:', error);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const removeProduct = async (productId: string) => {
-    const productToRemove = state.selectedProducts.find(p => p.id === productId);
-    if (!productToRemove) return;
-    setIsSubmitting(true);
-    try {
-      if (productToRemove.cartItemId) {
-        await removeFromCart(productToRemove.cartItemId);
-      }
-      setState(s => ({ ...s, selectedProducts: s.selectedProducts.filter(p => p.id !== productId) }));
-    } catch (error) {
-      console.error('Cart removal failed:', error);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const handleSubmit = async () => {
-    if (typeof window !== 'undefined') {
-      window.location.href = '/checkout';
-    }
-  };
-
-  const steps = [
-    { num: 1, label: 'Box Color' },
-    { num: 2, label: 'Lid Design' },
-    { num: 3, label: 'Fill Box' },
-  ];
+  const detailImages = getProductImages(viewingProduct);
+  const detailImage = detailImages[detailImageIndex] || viewingProduct?.image || '/images/box_closed.png';
+  const detailDescription = getProductDescription(viewingProduct);
 
   return (
-    <div className="w-full">
-
-      {/* ─── SOCIAL PROOF TOP BAR ─────────────────────────────────── */}
-      <div className="w-full bg-espresso text-cream py-3 px-4 mb-0">
-        <div className="max-w-5xl mx-auto flex flex-wrap items-center justify-center gap-4 sm:gap-8 text-xs font-sans tracking-wide">
-          <div className="flex items-center gap-2">
-            <StarRating count={5} />
-            <span className="text-cream/90">4.9 from <strong>1,200+ couples</strong></span>
-          </div>
-          <div className="hidden sm:block w-px h-4 bg-cream/20" />
-          <span className="text-cream/90">🎁 <strong>8,500+</strong> welcome boxes delivered</span>
-          <div className="hidden sm:block w-px h-4 bg-cream/20" />
-          <span className="text-cream/90">✦ Volume discounts up to 45% off</span>
-          <div className="hidden sm:block w-px h-4 bg-cream/20" />
-          <span className="text-cream/90">🚚 Ships in 5–7 business days</span>
+    <div className="w-full pb-28 lg:pb-32">
+      <div className="w-full bg-espresso text-cream">
+        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-3 px-4 py-3 text-center font-sans text-[11px] uppercase tracking-[0.16em] sm:gap-6">
+          <span className="flex items-center gap-2">
+            <Sparkles size={14} className="text-gold" />
+            4.9 from 1,200+ couples
+          </span>
+          <span className="hidden h-4 w-px bg-cream/20 sm:block" />
+          <span>8,500+ welcome boxes delivered</span>
+          <span className="hidden h-4 w-px bg-cream/20 sm:block" />
+          <span>Bulk discounts up to 45% off</span>
         </div>
       </div>
 
-      {/* ─── MAIN CONFIGURATOR CARD ───────────────────────────────── */}
-      <div className="w-full max-w-5xl mx-auto bg-white/40 backdrop-blur-md border border-gold-pale/20 shadow-xl rounded-3xl p-6 md:p-12 mt-6">
+      <section className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-10">
+        <div className="mb-8 grid gap-6 border-b border-gold-pale/40 pb-8 lg:grid-cols-[minmax(0,1fr)_420px] lg:items-end">
+          <div>
+            <span className="mb-3 block font-sans text-xs font-semibold uppercase tracking-[0.22em] text-gold">
+              Build Your Wedding Welcome Box
+            </span>
+            <h1 className="font-serif text-4xl leading-tight text-espresso sm:text-5xl lg:text-6xl">
+              Curate guest boxes in one simple flow.
+            </h1>
+            <p className="mt-4 max-w-2xl text-base leading-7 text-espresso-light/80 sm:text-lg">
+              Choose the box count, personalize the lid, add the items guests will actually use, and unlock free wedding-weekend upgrades as your box gets fuller.
+            </p>
+          </div>
+          <div className="rounded-2xl border border-gold-pale/40 bg-white/70 p-4 shadow-sm">
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <p className="font-sans text-xs uppercase tracking-[0.18em] text-espresso/50">Current savings</p>
+                <p className="mt-1 font-serif text-3xl text-espresso">{formatCurrency(totalSavings)}</p>
+              </div>
+              <div className="rounded-full bg-gold/10 px-4 py-2 font-sans text-xs font-semibold uppercase tracking-[0.16em] text-gold">
+                {discountAmount}% box discount
+              </div>
+            </div>
+          </div>
+        </div>
 
-        {/* ─── STEP 0: QUANTITY & VOLUME DISCOUNT SELECTOR ──────── */}
-        {currentStep === 0 && (
-          <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
-            <div className="text-center mb-10">
-              <span className="text-xs uppercase tracking-[0.2em] text-gold font-semibold block mb-4">
-                Welcome Boxes Your Guests Will Actually Love
-              </span>
-              <h2 className="font-serif text-4xl md:text-5xl mb-4">Design Your Welcome Wedding Box</h2>
-              <p className="text-espresso-light/80 text-lg max-w-2xl mx-auto">
-                Create beautifully curated welcome boxes for every seat at your celebration. Pick a lid design, personalize with your names and date, fill with luxe surprises — and let us handle the rest.
+        <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_430px] lg:items-start">
+          <div className="order-2 lg:order-1">
+            <div className="mb-5 flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
+              <div>
+                <span className="font-sans text-xs font-semibold uppercase tracking-[0.18em] text-gold">
+                  Fill the box
+                </span>
+                <h2 className="mt-2 font-serif text-3xl text-espresso">Select guest-ready items</h2>
+              </div>
+              <p className="max-w-sm text-sm leading-6 text-espresso-light/70">
+                Pick at least two items. Rewards unlock as you add more unique products.
               </p>
             </div>
 
-            {/* Quantity Selector */}
-            <div className="max-w-2xl mx-auto mb-10">
-              <div className="text-center mb-6">
-                <h3 className="font-serif text-2xl mb-1">🎁 How many welcome boxes do you need?</h3>
-                <p className="text-sm text-espresso-light/70">The more you order, the more you save! Volume discounts up to 45% off.</p>
-              </div>
-
-              {/* 3×2 Preset Grid */}
-              <div className="grid grid-cols-3 gap-3 mb-4">
-                {PRESETS.map(p => (
-                  <button
-                    key={p.qty}
-                    onClick={() => { setBoxQuantity(p.qty); setIsCustomQuantity(false); }}
-                    className={`relative py-5 rounded-xl border-2 transition-all duration-300 hover:-translate-y-1 flex flex-col items-center gap-1 ${
-                      !isCustomQuantity && boxQuantity === p.qty
-                        ? 'border-gold bg-gold/10 text-espresso shadow-md scale-[1.02]'
-                        : 'border-gold-pale/40 text-espresso-light hover:border-gold hover:bg-white/60'
+            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+              {catalogProducts.map((product) => {
+                const isSelected = selectedProductIds.has(product.id);
+                return (
+                  <article
+                    key={product.id}
+                    className={`group flex h-full flex-col overflow-hidden rounded-2xl border bg-white shadow-sm transition-all duration-300 ${
+                      isSelected
+                        ? 'border-gold shadow-md shadow-gold/10'
+                        : 'border-gold-pale/30 hover:border-gold/60 hover:shadow-md'
                     }`}
                   >
-                    <span className="font-serif text-2xl leading-none">{p.qty}</span>
-                    <span className="text-[10px] uppercase tracking-wider font-sans text-espresso/50">{p.label}</span>
-                    <span className={`text-[10px] uppercase tracking-widest font-sans font-bold mt-0.5 ${
-                      p.discount === 'No discount' ? 'text-espresso/30' : 'text-gold'
-                    }`}>
-                      {p.discount}
-                    </span>
-                  </button>
-                ))}
-
-                {/* Custom Quantity Button / Input */}
-                {isCustomQuantity ? (
-                  <div className="relative py-3 rounded-xl border-2 border-gold bg-gold/10 shadow-md flex flex-col items-center justify-center gap-1 scale-[1.02]">
-                    <input
-                      type="number"
-                      min="5"
-                      value={boxQuantity}
-                      onChange={(e) => setBoxQuantity(Math.max(5, parseInt(e.target.value) || 5))}
-                      className="w-16 text-center text-2xl font-serif bg-transparent focus:outline-none text-espresso"
-                      autoFocus
-                    />
-                    <span className="text-[10px] uppercase tracking-wider font-sans text-espresso/50">boxes</span>
-                    <span className={`text-[10px] uppercase tracking-widest font-sans font-bold ${
-                      discountAmount === 0 ? 'text-espresso/30' : 'text-gold'
-                    }`}>
-                      {getDiscountLabel(boxQuantity)}
-                    </span>
-                  </div>
-                ) : (
-                  <button
-                    onClick={() => { setBoxQuantity(5); setIsCustomQuantity(true); }}
-                    className="py-5 rounded-xl border-2 border-gold-pale/40 text-espresso-light hover:border-gold hover:bg-white/60 transition-all duration-300 hover:-translate-y-1 flex flex-col items-center gap-1"
-                  >
-                    <span className="font-serif text-2xl leading-none">✎</span>
-                    <span className="text-[10px] uppercase tracking-wider font-sans text-espresso/50">Custom</span>
-                    <span className="text-[10px] uppercase tracking-widest font-sans font-bold text-espresso/30">Enter qty</span>
-                  </button>
-                )}
-              </div>
-
-              {/* Volume Discount Banner */}
-              {discountAmount > 0 ? (
-                <div className="mt-4 text-center bg-gold/10 border border-gold/30 rounded-xl py-3 px-4 text-sm font-sans text-espresso animate-in fade-in duration-300">
-                  🎉 You qualify for <strong>{discountAmount}% volume discount</strong> — applied at checkout!
-                </div>
-              ) : (
-                <div className="mt-4 text-center bg-cream-dark/30 border border-gold-pale/20 rounded-xl py-3 px-4 text-sm font-sans text-espresso/50 animate-in fade-in duration-300">
-                  💡 Order 20+ boxes to unlock volume discounts starting at 10% off
-                </div>
-              )}
-            </div>
-
-            {/* CTA */}
-            <div className="flex justify-center border-t border-gold-pale/50 pt-8">
-              <button
-                onClick={() => { setCurrentStep(1); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-                className="px-10 py-4 bg-espresso text-cream uppercase tracking-widest text-sm hover:bg-espresso-light transition-all duration-500 shadow-md hover:shadow-lg hover:-translate-y-0.5"
-              >
-                Start Designing My Welcome Boxes →
-              </button>
-            </div>
-
-            {/* UGC Section */}
-            <div className="mt-16 animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-300">
-              <div className="text-center mb-8">
-                <h3 className="font-serif text-2xl text-espresso">
-                  See What Real Couples Created
-                </h3>
-                <p className="text-sm text-espresso-light/70 mt-2">
-                  Join thousands of couples who built the perfect welcome box for their guests.
-                </p>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
-                {[1, 2, 3].map((num) => (
-                  <div key={num} className="relative aspect-[4/5] rounded-2xl overflow-hidden shadow-lg border border-gold-pale/20 group">
-                    <img 
-                      src={`/images/ugc/welcome-review-${num}.jpeg`}
-                      alt={`Real welcome box review ${num}`}
-                      className="object-cover w-full h-full transform transition-transform duration-700 group-hover:scale-105"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* ─── STEPS 1–3 ─────────────────────────────────────────── */}
-        {currentStep >= 1 && (
-          <>
-            {/* Step Header (shown on step 1) */}
-            {currentStep === 1 && (
-              <div className="text-center mb-10 animate-in fade-in duration-700">
-                <h2 className="font-serif text-4xl md:text-5xl mb-4">Design Your Welcome Wedding Box</h2>
-                <p className="text-espresso-light/80 text-lg max-w-2xl mx-auto">
-                  Building {boxQuantity} boxes — one beautiful design for all your guests.
-                </p>
-                {discountAmount > 0 && (
-                  <div className="mt-3 inline-flex items-center gap-2 bg-gold/10 border border-gold/30 rounded-full px-4 py-1.5 text-xs font-sans text-espresso">
-                    🎉 {discountAmount}% volume discount applied
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* Stepper Navigation */}
-            <div className="flex justify-center mb-12">
-              <div className="flex items-center gap-2 md:gap-4 w-full max-w-2xl">
-                {steps.map((step, index) => (
-                  <React.Fragment key={step.num}>
-                    <div
-                      className="flex flex-col items-center cursor-pointer group"
-                      onClick={() => step.num <= currentStep && goToStep(step.num)}
-                    >
-                      <div
-                        className={`w-10 h-10 rounded-full flex items-center justify-center font-serif text-lg transition-colors duration-500 ${
-                          currentStep === step.num
-                            ? 'bg-gold text-white'
-                            : currentStep > step.num
-                              ? 'bg-espresso text-cream'
-                              : 'bg-cream-dark text-gray-400'
+                    <div className="relative aspect-[4/3] bg-cream-dark/60">
+                      {product.image ? (
+                        <img
+                          src={product.image}
+                          alt={product.name}
+                          className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                        />
+                      ) : (
+                        <div className="flex h-full w-full items-center justify-center text-espresso/30">
+                          <Gift size={32} strokeWidth={1.5} />
+                        </div>
+                      )}
+                      {isSelected && (
+                        <div className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full bg-gold text-white shadow-md">
+                          <Check size={18} strokeWidth={2} />
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex flex-1 flex-col p-4">
+                      <h3 className="font-serif text-xl leading-tight text-espresso">{product.name}</h3>
+                      <div className="mt-3 flex items-center justify-between gap-3">
+                        <span className="font-sans text-sm font-semibold text-espresso">
+                          {formatCurrency(Number(product.price) || 0)} each
+                        </span>
+                        {product.isCustomizable && (
+                          <span className="rounded-full bg-gold/10 px-2.5 py-1 font-sans text-[10px] font-semibold uppercase tracking-[0.14em] text-gold">
+                            Custom
+                          </span>
+                        )}
+                      </div>
+                      <button
+                        onClick={() => (isSelected ? removeProduct(product.id) : addProduct(product))}
+                        className={`mt-5 flex h-11 w-full items-center justify-center gap-2 rounded-full border font-sans text-xs font-semibold uppercase tracking-[0.18em] transition-all duration-300 ${
+                          isSelected
+                            ? 'border-espresso/20 bg-cream text-espresso hover:border-espresso/40'
+                            : 'border-espresso bg-espresso text-cream hover:bg-espresso-light'
                         }`}
                       >
-                        {currentStep > step.num ? '✓' : step.num}
-                      </div>
-                      <span className={`text-xs uppercase tracking-widest mt-2 hidden md:block transition-colors duration-300 ${
-                        currentStep >= step.num ? 'text-espresso' : 'text-gray-400'
-                      }`}>
-                        {step.label}
-                      </span>
+                        {isSelected ? (
+                          <>
+                            <Minus size={15} /> Remove
+                          </>
+                        ) : (
+                          <>
+                            <Plus size={15} /> Add to box
+                          </>
+                        )}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => openProductDetail(product)}
+                        className="mt-2 flex h-9 w-full items-center justify-center rounded-full border border-gold-pale/50 bg-white font-sans text-[10px] font-semibold uppercase tracking-[0.16em] text-espresso/65 transition-all duration-300 hover:border-gold hover:text-espresso"
+                      >
+                        View detail
+                      </button>
                     </div>
-                    {index < steps.length - 1 && (
-                      <div className={`flex-1 h-[1px] mb-6 md:mb-0 transition-colors duration-500 ${
-                        currentStep > step.num ? 'bg-espresso/40' : 'bg-gold-pale/50'
-                      }`} />
-                    )}
-                  </React.Fragment>
-                ))}
+                  </article>
+                );
+              })}
+            </div>
+
+            {catalogProducts.length === 0 && (
+              <div className="rounded-2xl border border-gold-pale/40 bg-white/70 p-8 text-center">
+                <h3 className="font-serif text-2xl text-espresso">Welcome box items are loading</h3>
+                <p className="mt-2 text-sm text-espresso-light/70">
+                  If this persists, refresh the page or contact us and we can help build the box manually.
+                </p>
               </div>
-            </div>
+            )}
+          </div>
 
-            {/* Step Components */}
-            <div className="w-full min-h-[400px]">
-              {currentStep === 1 && (
-                <StepBoxColor
-                  selectedColor={state.boxColor}
-                  onSelectColor={setBoxColor}
-                  onNext={nextStep}
-                  onPrev={prevStep}
-                />
-              )}
-
-              {currentStep === 2 && (
-                <StepDesignSelector
-                  selectedDesign={state.selectedDesign}
-                  onSelectDesign={setSelectedDesign}
-                  namesOrInitials={state.namesOrInitials}
-                  onChangeNamesOrInitials={setNamesOrInitials}
-                  eventDate={state.eventDate}
-                  onChangeEventDate={setEventDate}
-                  customUploadUrl={state.customUploadUrl}
-                  customUploadFilename={state.customUploadFilename}
-                  onUploadComplete={setCustomUpload}
-                  welcomeMessage={state.welcomeMessage}
-                  onChangeWelcomeMessage={setWelcomeMessage}
-                  includeMatchingBag={state.includeMatchingBag}
-                  onChangeMatchingBag={setIncludeMatchingBag}
-                  onNext={nextStep}
-                  onPrev={prevStep}
-                  isSubmitting={isSubmitting}
-                />
-              )}
-
-              {currentStep === 3 && (
-                <StepWelcomeProducts
-                  catalogProducts={catalogProducts}
-                  selectedProducts={state.selectedProducts}
-                  onAddProduct={addProduct}
-                  onRemoveProduct={removeProduct}
-                  onPrev={prevStep}
-                  onSubmit={handleSubmit}
-                  isSubmitting={isSubmitting}
-                  quantity={boxQuantity}
-                  selectedDesign={state.selectedDesign}
-                  namesOrInitials={state.namesOrInitials}
-                  eventDate={state.eventDate}
-                  customUploadUrl={state.customUploadUrl}
-                  discountPercent={discountAmount}
-                />
-              )}
-            </div>
-          </>
-        )}
-      </div>
-
-      {/* ─── SOCIAL PROOF WALL (Below builder) ──────────────────────── */}
-      <div className="w-full max-w-5xl mx-auto mt-16 mb-8 px-4">
-
-        {/* Reviews */}
-        <div className="text-center mb-10">
-          <span className="text-xs uppercase tracking-[0.2em] text-gold font-semibold block mb-3">What Our Couples Say</span>
-          <h3 className="font-serif text-3xl md:text-4xl text-espresso">Thousands of Happy Guests</h3>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
-          {REVIEWS.map((review, i) => (
-            <div key={i} className="bg-white/60 backdrop-blur-sm border border-gold-pale/30 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow duration-300">
-              <StarRating count={review.rating} />
-              <p className="font-serif text-lg text-espresso mt-4 mb-5 leading-relaxed">
-                &ldquo;{review.text}&rdquo;
-              </p>
-              <div className="border-t border-gold-pale/30 pt-4">
-                <span className="font-sans text-sm font-semibold text-espresso block">{review.name}</span>
-                <span className="font-sans text-xs text-gray-400">{review.location} · {review.date}</span>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Trust Badge Strip */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-16">
-          {[
-            { icon: '📦', label: 'Volume Discounts', sub: 'Up to 50% off at 100+' },
-            { icon: '🎨', label: '12 Lid Designs', sub: 'Or upload your own' },
-            { icon: '✉️', label: 'Custom Message', sub: 'Inside every lid' },
-            { icon: '💛', label: 'Satisfaction Guarantee', sub: '14-day promise' },
-          ].map((badge) => (
-            <div key={badge.label} className="bg-white/60 border border-gold-pale/20 rounded-2xl p-5 text-center">
-              <span className="text-3xl block mb-2">{badge.icon}</span>
-              <span className="font-serif text-sm text-espresso font-semibold block">{badge.label}</span>
-              <span className="font-sans text-xs text-gray-400 mt-1 block">{badge.sub}</span>
-            </div>
-          ))}
-        </div>
-
-        {/* FAQ */}
-        <div className="max-w-2xl mx-auto">
-          <h3 className="font-serif text-2xl text-espresso text-center mb-8">Common Questions</h3>
-          <div className="flex flex-col gap-3">
-            {FAQS.map((faq, i) => (
-              <div key={i} className="border border-gold-pale/30 rounded-xl overflow-hidden bg-white/50">
-                <button
-                  onClick={() => setOpenFaq(openFaq === i ? null : i)}
-                  className="w-full flex justify-between items-center px-6 py-4 text-left hover:bg-white/40 transition-colors duration-200"
-                >
-                  <span className="font-serif text-espresso text-base pr-4">{faq.q}</span>
-                  <span className={`text-gold font-sans text-xl flex-shrink-0 transition-transform duration-300 ${openFaq === i ? 'rotate-45' : ''}`}>+</span>
-                </button>
-                {openFaq === i && (
-                  <div className="px-6 pb-5 text-sm font-sans text-espresso-light leading-relaxed animate-in fade-in slide-in-from-top-2 duration-300 border-t border-gold-pale/20 pt-4">
-                    {faq.a}
+          <aside className="order-1 lg:order-2">
+            <div className="lg:sticky lg:top-24">
+              <div className="rounded-3xl border border-gold-pale/40 bg-white/85 p-4 shadow-xl shadow-espresso/5 backdrop-blur sm:p-5">
+                <div className="mb-5 flex items-start justify-between gap-4 border-b border-gold-pale/40 pb-4">
+                  <div>
+                    <span className="font-sans text-[11px] font-semibold uppercase tracking-[0.2em] text-gold">
+                      Your box builder
+                    </span>
+                    <h2 className="mt-1 font-serif text-2xl text-espresso">Customize the full box</h2>
                   </div>
+                  <div className="rounded-full bg-cream px-3 py-1 text-center font-sans text-[11px] font-semibold uppercase tracking-[0.14em] text-espresso/70">
+                    {selectedCount} items
+                  </div>
+                </div>
+
+                <div className="space-y-5">
+                  <section>
+                    <div className="mb-3 flex items-center justify-between gap-3">
+                      <h3 className="font-sans text-xs font-semibold uppercase tracking-[0.18em] text-espresso">
+                        1. Box quantity
+                      </h3>
+                      <span className="font-sans text-xs font-semibold text-gold">{discountAmount}% off</span>
+                    </div>
+                    <div className="grid grid-cols-3 gap-2">
+                      {PRESETS.map((preset) => (
+                        <button
+                          key={preset.qty}
+                          onClick={() => {
+                            setBoxQuantity(preset.qty);
+                            setIsCustomQuantity(false);
+                          }}
+                          className={`rounded-xl border px-2 py-3 text-center transition-all duration-300 ${
+                            !isCustomQuantity && boxQuantity === preset.qty
+                              ? 'border-gold bg-gold/10 shadow-sm'
+                              : 'border-gold-pale/40 bg-white/60 hover:border-gold/60'
+                          }`}
+                        >
+                          <span className="block font-serif text-xl leading-none text-espresso">{preset.qty}</span>
+                          <span className="mt-1 block font-sans text-[9px] uppercase tracking-[0.12em] text-espresso/50">
+                            {preset.label}
+                          </span>
+                          <span className="mt-1 block font-sans text-[9px] font-semibold uppercase tracking-[0.12em] text-gold">
+                            {preset.discount}
+                          </span>
+                        </button>
+                      ))}
+                      {isCustomQuantity ? (
+                        <label className="rounded-xl border border-gold bg-gold/10 px-2 py-2 text-center shadow-sm">
+                          <input
+                            type="number"
+                            min="5"
+                            value={boxQuantity}
+                            onChange={(event) => setBoxQuantity(Math.max(5, Number(event.target.value) || 5))}
+                            className="w-full bg-transparent text-center font-serif text-xl text-espresso outline-none"
+                          />
+                          <span className="block font-sans text-[9px] uppercase tracking-[0.12em] text-espresso/50">
+                            boxes
+                          </span>
+                          <span className="block font-sans text-[9px] font-semibold uppercase tracking-[0.12em] text-gold">
+                            custom
+                          </span>
+                        </label>
+                      ) : (
+                        <button
+                          onClick={() => {
+                            setIsCustomQuantity(true);
+                            setBoxQuantity(5);
+                          }}
+                          className="rounded-xl border border-gold-pale/40 bg-white/60 px-2 py-3 text-center transition-all duration-300 hover:border-gold/60"
+                        >
+                          <span className="block font-serif text-xl leading-none text-espresso">Custom</span>
+                          <span className="mt-1 block font-sans text-[9px] uppercase tracking-[0.12em] text-espresso/50">
+                            enter qty
+                          </span>
+                        </button>
+                      )}
+                    </div>
+                  </section>
+
+                  <section className="rounded-2xl border border-gold-pale/40 bg-white p-4 shadow-sm">
+                    <div className="mb-3 flex items-center justify-between gap-3">
+                      <div>
+                        <h3 className="font-sans text-xs font-semibold uppercase tracking-[0.18em] text-espresso">
+                          Live box preview
+                        </h3>
+                        <p className="mt-1 text-xs text-espresso-light/65">
+                          See the box, lid, and selected items update as you build.
+                        </p>
+                      </div>
+                      <Sparkles size={18} className="text-gold" strokeWidth={1.5} />
+                    </div>
+
+                    <div className="mb-3 grid grid-cols-3 gap-2 rounded-full bg-cream p-1">
+                      {[
+                        { id: 'closed', label: 'Box' },
+                        { id: 'inside', label: 'Inside' },
+                        { id: 'lid', label: 'Lid' },
+                      ].map((tab) => (
+                        <button
+                          key={tab.id}
+                          type="button"
+                          onClick={() => setActivePreviewTab(tab.id as 'closed' | 'inside' | 'lid')}
+                          className={`h-9 rounded-full font-sans text-[10px] font-semibold uppercase tracking-[0.14em] transition-all duration-300 ${
+                            activePreviewTab === tab.id
+                              ? 'bg-espresso text-cream shadow-sm'
+                              : 'text-espresso/55 hover:text-espresso'
+                          }`}
+                        >
+                          {tab.label}
+                        </button>
+                      ))}
+                    </div>
+
+                    <div className="relative aspect-square overflow-hidden rounded-2xl border border-gold-pale/30 bg-cream-dark/45">
+                      {activePreviewTab === 'closed' && (
+                        <div className="flex h-full w-full items-center justify-center p-5">
+                          <img
+                            src={state.boxColor?.imageUrl || '/images/box_closed.png'}
+                            alt={`${state.boxColor?.name || 'Welcome'} box preview`}
+                            className="h-full w-full object-contain"
+                          />
+                        </div>
+                      )}
+
+                      {activePreviewTab === 'inside' && (
+                        <div className="relative flex h-full w-full items-center justify-center p-5">
+                          <img
+                            src="/images/box_open.png"
+                            alt="Open welcome box preview"
+                            className="absolute inset-0 h-full w-full object-contain opacity-35"
+                          />
+                          {state.selectedProducts.length > 0 ? (
+                            <div className="relative z-10 grid max-h-[82%] w-[86%] grid-cols-3 gap-2 overflow-y-auto rounded-2xl border border-gold-pale/30 bg-white/80 p-2 shadow-sm backdrop-blur-sm">
+                              {state.selectedProducts.map((product) => (
+                                <div key={product.id} className="overflow-hidden rounded-lg border border-gold-pale/25 bg-white text-center shadow-sm">
+                                  <img src={product.image || '/images/box_closed.png'} alt={product.name} className="h-12 w-full object-cover" />
+                                  <span className="block truncate px-1 py-1 font-sans text-[9px] text-espresso/70">
+                                    {product.name}
+                                  </span>
+                                </div>
+                              ))}
+                            </div>
+                          ) : (
+                            <div className="relative z-10 flex flex-col items-center rounded-2xl bg-white/75 px-5 py-4 text-center shadow-sm">
+                              <Gift size={28} className="text-gold" strokeWidth={1.4} />
+                              <p className="mt-2 font-serif text-sm text-espresso">Choose items to fill the box</p>
+                            </div>
+                          )}
+                        </div>
+                      )}
+
+                      {activePreviewTab === 'lid' && (
+                        <div className="flex h-full w-full flex-col items-center justify-center bg-white p-5 text-center">
+                          <div className="relative mb-4 h-24 w-24 overflow-hidden rounded-2xl border border-gold-pale/40 bg-cream">
+                            <img
+                              src={
+                                state.selectedDesign?.isCustomUpload && state.customUploadUrl
+                                  ? state.customUploadUrl
+                                  : state.selectedDesign?.imageUrl || '/images/gift-boxes/monograms/2.png'
+                              }
+                              alt={state.selectedDesign?.name || 'Lid design preview'}
+                              className="h-full w-full object-cover"
+                            />
+                          </div>
+                          <p className="font-serif text-xl leading-tight text-espresso">
+                            {state.namesOrInitials || 'Names or initials'}
+                          </p>
+                          <p className="mt-2 font-sans text-[10px] font-semibold uppercase tracking-[0.18em] text-espresso-light/65">
+                            {state.eventDate || 'Event date'}
+                          </p>
+                          {state.welcomeMessage && (
+                            <p className="mt-3 max-h-16 max-w-[260px] overflow-hidden text-xs leading-5 text-espresso-light/75">
+                              {state.welcomeMessage}
+                            </p>
+                          )}
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="mt-3 flex flex-wrap gap-2 text-[10px] font-semibold uppercase tracking-[0.13em] text-espresso/55">
+                      <span className="rounded-full bg-cream px-2.5 py-1">Color: {state.boxColor?.name}</span>
+                      <span className="rounded-full bg-cream px-2.5 py-1">Design: {state.selectedDesign?.name}</span>
+                      <span className="rounded-full bg-cream px-2.5 py-1">{selectedCount} items</span>
+                    </div>
+                  </section>
+
+                  <section>
+                    <h3 className="mb-3 font-sans text-xs font-semibold uppercase tracking-[0.18em] text-espresso">
+                      2. Box color
+                    </h3>
+                    <div className="grid grid-cols-3 gap-2">
+                      {BOX_COLORS.map((color) => (
+                        <button
+                          key={color.id}
+                          onClick={() => setBoxColor(color)}
+                          className={`relative rounded-xl border px-2 py-3 text-center transition-all duration-300 ${
+                            state.boxColor?.id === color.id
+                              ? 'border-gold bg-gold/10 shadow-sm'
+                              : 'border-gold-pale/40 bg-white/60 hover:border-gold/60'
+                          }`}
+                        >
+                          {color.mostPopular && (
+                            <span className="absolute -top-2 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-gold px-2 py-0.5 font-sans text-[8px] font-semibold uppercase tracking-[0.12em] text-white">
+                              Most loved
+                            </span>
+                          )}
+                          <span
+                            className="mx-auto block h-8 w-8 rounded-full border border-espresso/10 shadow-inner"
+                            style={{ backgroundColor: color.hexCode }}
+                          />
+                          <span className="mt-2 block font-sans text-[10px] font-semibold leading-tight text-espresso">
+                            {color.name}
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+                  </section>
+
+                  <section>
+                    <h3 className="mb-3 font-sans text-xs font-semibold uppercase tracking-[0.18em] text-espresso">
+                      3. Lid design and message
+                    </h3>
+                    <div className="grid grid-cols-4 gap-2">
+                      {DESIGNS.map((design) => {
+                        const isSelected = state.selectedDesign?.id === design.id;
+                        const hasFailed = failedDesignImages.has(design.id);
+                        const designImage = design.isCustomUpload && (state.customUploadUrl || uploadPreview)
+                          ? state.customUploadUrl || uploadPreview
+                          : design.imageUrl;
+
+                        return (
+                          <button
+                            key={design.id}
+                            onClick={() => setSelectedDesign(design)}
+                            className={`group overflow-hidden rounded-xl border bg-white transition-all duration-300 ${
+                              isSelected
+                                ? 'border-gold shadow-sm'
+                                : 'border-gold-pale/30 hover:border-gold/60'
+                            }`}
+                            aria-label={`Choose ${design.name}`}
+                          >
+                            <div className="relative aspect-square bg-cream-dark/50">
+                              {hasFailed && !state.customUploadUrl ? (
+                                <div className="flex h-full w-full items-center justify-center text-espresso/30">
+                                  <Sparkles size={18} strokeWidth={1.5} />
+                                </div>
+                              ) : (
+                                <img
+                                  src={designImage}
+                                  alt={design.name}
+                                  className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                                  onError={() => setFailedDesignImages((prev) => new Set(prev).add(design.id))}
+                                />
+                              )}
+                              {isSelected && (
+                                <span className="absolute inset-0 flex items-center justify-center bg-gold/20">
+                                  <span className="flex h-6 w-6 items-center justify-center rounded-full bg-gold text-white">
+                                    <Check size={14} />
+                                  </span>
+                                </span>
+                              )}
+                            </div>
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    {state.selectedDesign?.isCustomUpload ? (
+                      <div className="mt-3 rounded-2xl border border-gold-pale/40 bg-cream/60 p-3">
+                        <div
+                          onDragOver={(event) => {
+                            event.preventDefault();
+                            setIsDragging(true);
+                          }}
+                          onDragLeave={() => setIsDragging(false)}
+                          onDrop={handleFileDrop}
+                          className={`rounded-xl border border-dashed p-4 text-center transition-all duration-300 ${
+                            isDragging ? 'border-gold bg-gold/10' : 'border-gold-pale/60 bg-white/60'
+                          }`}
+                        >
+                          {state.customUploadUrl ? (
+                            <div className="flex items-center gap-3 text-left">
+                              <img
+                                src={state.customUploadUrl}
+                                alt="Uploaded lid design"
+                                className="h-14 w-14 rounded-lg border border-gold-pale/40 object-cover"
+                              />
+                              <div className="min-w-0 flex-1">
+                                <p className="font-sans text-xs font-semibold uppercase tracking-[0.14em] text-gold">
+                                  Artwork uploaded
+                                </p>
+                                <p className="truncate text-xs text-espresso-light/70">{state.customUploadFilename}</p>
+                              </div>
+                              <button
+                                type="button"
+                                onClick={() => fileInputRef.current?.click()}
+                                className="font-sans text-[10px] font-semibold uppercase tracking-[0.14em] text-espresso"
+                              >
+                                Replace
+                              </button>
+                            </div>
+                          ) : (
+                            <button
+                              type="button"
+                              onClick={() => fileInputRef.current?.click()}
+                              className="w-full font-sans text-xs font-semibold uppercase tracking-[0.16em] text-espresso"
+                            >
+                              {isUploading ? 'Uploading artwork...' : 'Upload lid artwork'}
+                            </button>
+                          )}
+                          <input
+                            ref={fileInputRef}
+                            type="file"
+                            accept="image/jpeg,image/png,image/webp"
+                            onChange={handleFileSelect}
+                            className="hidden"
+                          />
+                        </div>
+                        {uploadError && <p className="mt-2 text-xs text-red-800">{uploadError}</p>}
+                      </div>
+                    ) : (
+                      <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
+                        <label className="block">
+                          <span className="mb-1 block font-sans text-[10px] font-semibold uppercase tracking-[0.16em] text-espresso/55">
+                            Names or initials
+                          </span>
+                          <input
+                            type="text"
+                            value={state.namesOrInitials}
+                            onChange={(event) => setNamesOrInitials(event.target.value)}
+                            placeholder="J & S, The Millers"
+                            className="h-11 w-full rounded-xl border border-gold-pale/50 bg-white px-3 font-serif text-sm text-espresso outline-none transition-colors focus:border-gold"
+                          />
+                        </label>
+                        <label className="block">
+                          <span className="mb-1 block font-sans text-[10px] font-semibold uppercase tracking-[0.16em] text-espresso/55">
+                            Event date
+                          </span>
+                          <input
+                            type="text"
+                            value={state.eventDate}
+                            onChange={(event) => setEventDate(event.target.value)}
+                            placeholder="June 14, 2027"
+                            className="h-11 w-full rounded-xl border border-gold-pale/50 bg-white px-3 font-serif text-sm text-espresso outline-none transition-colors focus:border-gold"
+                          />
+                        </label>
+                      </div>
+                    )}
+
+                    <label className="mt-3 block">
+                      <span className="mb-1 block font-sans text-[10px] font-semibold uppercase tracking-[0.16em] text-espresso/55">
+                        Welcome message
+                      </span>
+                      <textarea
+                        value={state.welcomeMessage}
+                        onChange={(event) => setWelcomeMessage(event.target.value)}
+                        placeholder="Welcome to our wedding weekend..."
+                        rows={3}
+                        className="w-full resize-none rounded-xl border border-gold-pale/50 bg-white px-3 py-3 font-serif text-sm text-espresso outline-none transition-colors focus:border-gold"
+                      />
+                    </label>
+
+                    <button
+                      type="button"
+                      onClick={() => setIncludeMatchingBag(!state.includeMatchingBag)}
+                      className="mt-3 flex w-full items-center justify-between gap-4 rounded-2xl border border-gold-pale/40 bg-cream/50 px-4 py-3 text-left transition-colors hover:border-gold/60"
+                    >
+                      <span>
+                        <span className="block font-sans text-xs font-semibold uppercase tracking-[0.16em] text-espresso">
+                          Matching custom welcome bag
+                        </span>
+                        <span className="mt-1 block text-xs text-espresso-light/65">Add a matching personalized bag for $2 per box.</span>
+                      </span>
+                      <span
+                        className={`relative h-6 w-11 flex-shrink-0 rounded-full transition-colors ${
+                          state.includeMatchingBag ? 'bg-gold' : 'bg-espresso/15'
+                        }`}
+                      >
+                        <span
+                          className={`absolute top-1 h-4 w-4 rounded-full bg-white shadow-sm transition-transform ${
+                            state.includeMatchingBag ? 'translate-x-6' : 'translate-x-1'
+                          }`}
+                        />
+                      </span>
+                    </button>
+                  </section>
+
+                  <section className="rounded-2xl border border-gold-pale/40 bg-cream/60 p-4">
+                    <div className="mb-3 flex items-center justify-between gap-4">
+                      <div>
+                        <h3 className="font-sans text-xs font-semibold uppercase tracking-[0.18em] text-espresso">
+                          Reward progress
+                        </h3>
+                        <p className="mt-1 text-xs text-espresso-light/65">
+                          {nextReward
+                            ? `Add ${nextReward.threshold - selectedCount} more item${nextReward.threshold - selectedCount === 1 ? '' : 's'} to unlock ${nextReward.shortTitle}.`
+                            : 'Every welcome box reward is unlocked.'}
+                        </p>
+                      </div>
+                      <Gift size={20} className="text-gold" strokeWidth={1.5} />
+                    </div>
+                    <div className="h-2 overflow-hidden rounded-full bg-espresso/10">
+                      <div
+                        className="h-full rounded-full bg-gold transition-all duration-700"
+                        style={{ width: `${progressPercent}%` }}
+                      />
+                    </div>
+                    <div className="mt-4 grid grid-cols-2 gap-2">
+                      {REWARDS.map((reward) => {
+                        const unlocked = selectedCount >= reward.threshold;
+                        const Icon = reward.icon;
+                        return (
+                          <div
+                            key={reward.threshold}
+                            className={`rounded-xl border p-3 transition-all duration-300 ${
+                              unlocked
+                                ? 'border-gold bg-white shadow-sm'
+                                : 'border-gold-pale/30 bg-white/45 opacity-70'
+                            }`}
+                          >
+                            <div className="mb-2 flex items-center justify-between gap-2">
+                              {reward.imageUrl ? (
+                                <span className="h-9 w-9 overflow-hidden rounded-lg border border-gold-pale/40 bg-cream-dark">
+                                  <img
+                                    src={reward.imageUrl}
+                                    alt={reward.title}
+                                    className={`h-full w-full object-cover ${unlocked ? '' : 'opacity-45 grayscale'}`}
+                                  />
+                                </span>
+                              ) : (
+                                <span
+                                  className={`flex h-8 w-8 items-center justify-center rounded-full ${
+                                    unlocked ? 'bg-gold/10 text-gold' : 'bg-espresso/5 text-espresso/35'
+                                  }`}
+                                >
+                                  <Icon size={17} strokeWidth={1.6} />
+                                </span>
+                              )}
+                              <span className="font-sans text-[10px] font-semibold uppercase tracking-[0.12em] text-espresso/50">
+                                {reward.threshold} items
+                              </span>
+                            </div>
+                            <p className="font-serif text-sm leading-tight text-espresso">{reward.title}</p>
+                            <p className="mt-1 text-[11px] leading-4 text-espresso-light/65">{reward.valueLabel(boxQuantity)}</p>
+                            {unlocked && (
+                              <p className="mt-2 font-sans text-[10px] font-semibold uppercase tracking-[0.14em] text-gold">
+                                Unlocked
+                              </p>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </section>
+
+                  <section className="rounded-2xl border border-gold-pale/40 bg-white p-4">
+                    <div className="mb-3 flex items-center justify-between">
+                      <h3 className="font-sans text-xs font-semibold uppercase tracking-[0.18em] text-espresso">
+                        Box summary
+                      </h3>
+                      <span className="text-xs text-espresso-light/65">{boxQuantity} boxes</span>
+                    </div>
+                    <div className="space-y-2 text-sm">
+                      <div className="flex justify-between gap-4">
+                        <span className="text-espresso-light/70">Items per box</span>
+                        <span className="font-semibold text-espresso">{selectedCount}</span>
+                      </div>
+                      <div className="flex justify-between gap-4">
+                        <span className="text-espresso-light/70">Items subtotal</span>
+                        <span className="font-semibold text-espresso">{formatCurrency(selectedItemsUnitTotal * boxQuantity)}</span>
+                      </div>
+                      {state.includeMatchingBag && (
+                        <div className="flex justify-between gap-4">
+                          <span className="text-espresso-light/70">Matching bags</span>
+                          <span className="font-semibold text-espresso">{formatCurrency(matchingBagUnitPrice * boxQuantity)}</span>
+                        </div>
+                      )}
+                      <div className="flex justify-between gap-4">
+                        <span className="text-espresso-light/70">Volume discount</span>
+                        <span className="font-semibold text-gold">-{formatCurrency(volumeSavings)}</span>
+                      </div>
+                      <div className="flex justify-between gap-4">
+                        <span className="text-espresso-light/70">Free-gift value</span>
+                        <span className="font-semibold text-gold">{formatCurrency(rewardSavings)}</span>
+                      </div>
+                      {unlockedRewards.length > 0 && (
+                        <div className="rounded-2xl border border-gold-pale/35 bg-cream/50 p-3">
+                          <p className="mb-2 font-sans text-[10px] font-semibold uppercase tracking-[0.16em] text-espresso/55">
+                            Gift value included
+                          </p>
+                          <div className="flex flex-wrap gap-2">
+                            {unlockedRewards.map((reward) => {
+                              const Icon = reward.icon;
+                              return (
+                                <div key={reward.threshold} className="flex items-center gap-2 rounded-xl border border-gold-pale/30 bg-white px-2 py-2">
+                                  {reward.imageUrl ? (
+                                    <img
+                                      src={reward.imageUrl}
+                                      alt={reward.title}
+                                      className="h-9 w-9 rounded-lg object-cover"
+                                    />
+                                  ) : (
+                                    <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-gold/10 text-gold">
+                                      <Icon size={16} strokeWidth={1.6} />
+                                    </span>
+                                  )}
+                                  <span className="max-w-[86px] font-sans text-[10px] font-semibold leading-4 text-espresso">
+                                    {reward.shortTitle}
+                                  </span>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      )}
+                      <div className="border-t border-gold-pale/40 pt-3">
+                        <div className="flex items-center justify-between gap-4">
+                          <span className="font-sans text-xs font-semibold uppercase tracking-[0.16em] text-espresso">
+                            Total saved
+                          </span>
+                          <span className="font-serif text-2xl text-espresso">{formatCurrency(totalSavings)}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </section>
+
+                  <div className="rounded-2xl border border-gold-pale/40 bg-espresso p-4 text-cream shadow-lg">
+                    <div className="mb-3 flex items-center justify-between gap-4">
+                      <div>
+                        <p className="font-sans text-[10px] font-semibold uppercase tracking-[0.18em] text-cream/60">
+                          Ready status
+                        </p>
+                        <p className="mt-1 text-sm text-cream/90">{readyMessage}</p>
+                      </div>
+                      <div className="rounded-full bg-cream/10 px-3 py-1 font-sans text-[10px] font-semibold uppercase tracking-[0.14em] text-cream">
+                        Save {formatCurrency(totalSavings)}
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleAddBundleToCart}
+                      disabled={!isReadyToAdd}
+                      className={`flex h-14 w-full items-center justify-center gap-2 rounded-full font-sans text-sm font-semibold uppercase tracking-[0.18em] transition-all duration-300 ${
+                        isReadyToAdd
+                          ? 'bg-gold text-white hover:bg-gold-dark'
+                          : 'cursor-not-allowed bg-cream/15 text-cream/45'
+                      }`}
+                    >
+                      <ShoppingBag size={18} strokeWidth={1.6} />
+                      {isSubmitting ? 'Adding bundle...' : `Add ${boxQuantity} boxes to cart`}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-6xl px-4 pb-20 sm:px-6 lg:px-10">
+        <div className="mb-12">
+          <div className="mb-6 text-center">
+            <span className="font-sans text-xs font-semibold uppercase tracking-[0.2em] text-gold">
+              Real Couples
+            </span>
+            <h2 className="mt-2 font-serif text-3xl text-espresso sm:text-4xl">
+              Welcome boxes guests remembered
+            </h2>
+            <p className="mx-auto mt-3 max-w-2xl text-sm leading-6 text-espresso-light/70">
+              A look at the personalized welcome-box details couples have created for wedding weekends, destination arrivals, and guest gifting moments.
+            </p>
+          </div>
+          <div className="grid gap-4 sm:grid-cols-3">
+            {REVIEW_IMAGES.map((image, index) => (
+              <figure
+                key={image.src}
+                className={`group overflow-hidden rounded-2xl border border-gold-pale/35 bg-white shadow-sm ${
+                  index === 1 ? 'sm:translate-y-5' : ''
+                }`}
+              >
+                <div className="aspect-[4/5] overflow-hidden bg-cream-dark">
+                  <img
+                    src={image.src}
+                    alt={image.alt}
+                    className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    loading="lazy"
+                  />
+                </div>
+              </figure>
+            ))}
+          </div>
+        </div>
+
+        <div className="grid gap-5 md:grid-cols-3">
+          {REVIEWS.map((review) => (
+            <article key={`${review.name}-${review.date}`} className="rounded-2xl border border-gold-pale/35 bg-white/70 p-6 shadow-sm">
+              <StarRating count={review.rating} />
+              <p className="mt-4 font-serif text-lg leading-7 text-espresso">&ldquo;{review.text}&rdquo;</p>
+              <div className="mt-5 border-t border-gold-pale/35 pt-4">
+                <p className="font-sans text-sm font-semibold text-espresso">{review.name}</p>
+                <p className="mt-1 font-sans text-xs text-espresso-light/60">
+                  {review.location} · {review.date}
+                </p>
+              </div>
+            </article>
+          ))}
+        </div>
+
+        <div className="mt-12 rounded-3xl border border-gold-pale/40 bg-white/70 p-6 sm:p-8">
+          <div className="mb-6 flex items-center justify-between gap-4">
+            <div>
+              <span className="font-sans text-xs font-semibold uppercase tracking-[0.2em] text-gold">Questions</span>
+              <h2 className="mt-2 font-serif text-3xl text-espresso">Welcome box FAQs</h2>
+            </div>
+            <Sparkles className="hidden text-gold sm:block" size={28} strokeWidth={1.4} />
+          </div>
+          <div className="divide-y divide-gold-pale/40">
+            {FAQS.map((faq, index) => (
+              <div key={faq.q} className="py-4">
+                <button
+                  type="button"
+                  onClick={() => setOpenFaq(openFaq === index ? null : index)}
+                  className="flex w-full items-center justify-between gap-4 text-left"
+                >
+                  <span className="font-serif text-lg text-espresso">{faq.q}</span>
+                  <ChevronDown
+                    size={18}
+                    className={`flex-shrink-0 text-gold transition-transform duration-300 ${
+                      openFaq === index ? 'rotate-180' : ''
+                    }`}
+                  />
+                </button>
+                {openFaq === index && (
+                  <p className="mt-3 max-w-3xl text-sm leading-6 text-espresso-light/75">{faq.a}</p>
                 )}
               </div>
             ))}
           </div>
         </div>
+      </section>
+
+      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-gold-pale/50 bg-cream/95 px-3 py-3 shadow-2xl shadow-espresso/15 backdrop-blur-md">
+        <div className="mx-auto flex max-w-5xl items-center gap-3">
+          <div className="min-w-0 flex-1">
+            <p className="font-sans text-[10px] font-semibold uppercase tracking-[0.16em] text-espresso/50">
+              Estimated total
+            </p>
+            <div className="mt-0.5 flex flex-wrap items-baseline gap-x-3 gap-y-0.5">
+              <span className="font-serif text-2xl leading-none text-espresso">
+                {formatCurrency(estimatedTotal)}
+              </span>
+              <span className="font-sans text-xs font-semibold text-gold">
+                Save {formatCurrency(totalSavings)}
+              </span>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={handleAddBundleToCart}
+            disabled={!isReadyToAdd}
+            className={`flex h-12 min-w-[156px] items-center justify-center gap-2 rounded-full px-4 font-sans text-xs font-semibold uppercase tracking-[0.16em] transition-all duration-300 sm:min-w-[220px] ${
+              isReadyToAdd
+                ? 'bg-espresso text-cream hover:bg-espresso-light'
+                : 'cursor-not-allowed bg-espresso/20 text-espresso/40'
+            }`}
+          >
+            <ShoppingBag size={16} strokeWidth={1.6} />
+            {isSubmitting ? 'Adding...' : 'Add to cart'}
+          </button>
+        </div>
       </div>
+
+      {viewingProduct && (
+        <div className="fixed inset-0 z-50 flex items-end justify-center bg-espresso/55 p-0 backdrop-blur-sm sm:items-center sm:p-5">
+          <div className="max-h-[92vh] w-full max-w-4xl overflow-y-auto rounded-t-3xl border border-gold-pale/40 bg-cream shadow-2xl sm:rounded-3xl">
+            <div className="sticky top-0 z-10 flex items-center justify-between border-b border-gold-pale/40 bg-cream/95 px-5 py-4 backdrop-blur">
+              <div className="min-w-0 pr-4">
+                <p className="font-sans text-[10px] font-semibold uppercase tracking-[0.18em] text-gold">
+                  Product detail
+                </p>
+                <h3 className="truncate font-serif text-xl text-espresso sm:text-2xl">
+                  {viewingProduct.name}
+                </h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setViewingProduct(null)}
+                className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full border border-gold-pale/45 bg-white text-espresso transition-colors hover:border-gold"
+                aria-label="Close product detail"
+              >
+                <X size={18} strokeWidth={1.7} />
+              </button>
+            </div>
+
+            <div className="grid gap-6 p-5 sm:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] sm:p-7">
+              <div>
+                <div className="aspect-square overflow-hidden rounded-2xl border border-gold-pale/35 bg-white">
+                  <img
+                    src={detailImage}
+                    alt={viewingProduct.name}
+                    className="h-full w-full object-cover"
+                  />
+                </div>
+                {detailImages.length > 1 && (
+                  <div className="mt-3 grid grid-cols-5 gap-2">
+                    {detailImages.slice(0, 10).map((image, index) => (
+                      <button
+                        key={`${image}-${index}`}
+                        type="button"
+                        onClick={() => setDetailImageIndex(index)}
+                        className={`aspect-square overflow-hidden rounded-xl border bg-white transition-all ${
+                          detailImageIndex === index ? 'border-gold shadow-sm' : 'border-gold-pale/35 hover:border-gold/70'
+                        }`}
+                        aria-label={`View image ${index + 1}`}
+                      >
+                        <img src={image} alt="" className="h-full w-full object-cover" />
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <div className="flex flex-col">
+                <p className="font-sans text-sm font-semibold text-gold">
+                  {formatCurrency(Number(viewingProduct.price) || 0)} each
+                </p>
+                <div
+                  className="mt-4 text-sm leading-7 text-espresso-light/80 [&_p]:mb-4 [&_strong]:text-espresso [&_ul]:list-disc [&_ul]:pl-5"
+                  dangerouslySetInnerHTML={{ __html: detailDescription }}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
