@@ -23,7 +23,7 @@ export const metadata: Metadata = {
 
 export const dynamic = 'force-dynamic';
 
-const targetProductUrl = '/gifts/prebuilt-bridesmaid-boxs-test-2';
+const targetProductUrl = '#interactive-builder';
 
 const unboxingSteps = [
   {
