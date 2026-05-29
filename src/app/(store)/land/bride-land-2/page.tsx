@@ -266,7 +266,7 @@ const fallbackTierProducts: Record<TierId, BuilderProduct> = {
     id: '6a18c4480d7baf00129d6bd9',
     name: 'The Bridesmaid Luxe Proposal Box',
     slug: 'the-bridesmaid-luxe-proposal-box',
-    price: 69.99,
+    price: 89.99,
     image: '/images/gift-boxes/bridesmaid-box.png',
     images: ['/images/gift-boxes/bridesmaid-box.png'],
   },

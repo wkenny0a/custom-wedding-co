@@ -301,7 +301,8 @@ export function PrebuiltBridesmaidProposalBoxBuilder({
       window.location.href = checkoutUrl || '/checkout'
     } catch (error) {
       console.error('Failed to add prebuilt bridesmaid box:', error)
-      alert('We could not add the bridesmaid box to cart. Please try again or contact us for help.')
+      const errorMsg = error instanceof Error ? error.message : String(error)
+      alert(`We could not add the bridesmaid box to cart: ${errorMsg}. Please try again or contact us for help.`)
     } finally {
       setIsSubmitting(false)
     }
