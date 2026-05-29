@@ -725,7 +725,7 @@ export function PrebuiltBridesmaidProposalBoxBuilder({
                         </p>
                         <label>
                           <span className="mb-1 block font-sans text-[10px] font-bold uppercase tracking-[0.16em] text-espresso/55">
-                            Outside lid name
+                            Outside lid name, also used for the personalized items inside this box
                           </span>
                           <input
                             type="text"
