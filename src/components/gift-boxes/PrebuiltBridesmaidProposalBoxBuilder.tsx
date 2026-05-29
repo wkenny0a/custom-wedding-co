@@ -297,8 +297,7 @@ export function PrebuiltBridesmaidProposalBoxBuilder({
 
       const updatedCart = await addToCart(activeTier.product.id, quantity, [], baseMetadata, true)
 
-      const checkoutUrl = getCheckoutUrl(updatedCart) || getCheckoutUrl(cart)
-      window.location.href = checkoutUrl || '/checkout'
+      window.location.href = '/checkout'
     } catch (error) {
       console.error('Failed to add prebuilt bridesmaid box:', error)
       const errorMsg = error instanceof Error ? error.message : String(error)
