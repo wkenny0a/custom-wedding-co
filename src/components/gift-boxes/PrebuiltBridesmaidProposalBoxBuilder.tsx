@@ -392,7 +392,7 @@ export function PrebuiltBridesmaidProposalBoxBuilder({
               </div>
             </div>
 
-            <div className="mt-6 grid gap-4 md:grid-cols-2">
+            <div className="mt-6 grid gap-3 grid-cols-2">
               {tiers.map((tier) => {
                 const selected = tier.id === activeTier.id
                 const tierMsrp = getTierMsrp(tier, products)
@@ -401,36 +401,43 @@ export function PrebuiltBridesmaidProposalBoxBuilder({
                     key={tier.id}
                     type="button"
                     onClick={() => setTierId(tier.id)}
-                    className={`border p-5 text-left transition-all ${
+                    className={`border p-3 sm:p-5 text-left transition-all rounded-2xl flex flex-col h-full justify-between ${
                       selected
-                        ? 'border-gold bg-white shadow-lg shadow-gold/10'
+                        ? 'border-gold bg-white shadow-lg shadow-gold/15 ring-1 ring-gold/30'
                         : 'border-gold-pale/35 bg-white/65 hover:border-gold/70'
                     }`}
                   >
-                    <div className="relative mb-4 aspect-[4/3] overflow-hidden bg-cream-dark">
-                      <Image src={tier.product.image} alt={tier.name} fill sizes="(min-width: 768px) 240px, 100vw" className="object-cover" />
-                    </div>
-                    <p className="font-sans text-[10px] font-bold uppercase tracking-[0.18em] text-gold">{tier.eyebrow}</p>
-                    <h2 className="mt-2 font-serif text-2xl leading-tight text-espresso">{tier.name}</h2>
-                    <p className="mt-2 text-sm leading-6 text-espresso-light/75">{tier.description}</p>
-                    <div className="mt-4 flex items-end justify-between gap-3">
-                      <div>
-                        <p className="font-sans text-xs text-espresso/45 line-through">{formatCurrency(tierMsrp)} MSRP</p>
-                        <p className="font-serif text-3xl text-espresso">{formatCurrency(tier.price)}</p>
+                    <div className="w-full">
+                      <div className="relative mb-3 sm:mb-4 aspect-[4/3] overflow-hidden bg-cream-dark rounded-xl">
+                        <Image src={tier.product.image} alt={tier.name} fill sizes="(min-width: 768px) 240px, 50vw" className="object-cover" />
                       </div>
-                      {selected && (
-                        <span className="flex h-8 w-8 items-center justify-center rounded-full bg-gold text-white">
-                          <Check className="h-4 w-4" />
-                        </span>
-                      )}
+                      <p className="font-sans text-[8px] sm:text-[10px] font-bold uppercase tracking-[0.18em] text-gold">{tier.eyebrow}</p>
+                      <h2 className="mt-1 sm:mt-2 font-serif text-sm sm:text-2xl leading-tight text-espresso font-semibold">{tier.name}</h2>
+                      <p className="mt-1 sm:mt-2 text-[10px] sm:text-sm leading-normal sm:leading-6 text-espresso-light/75 line-clamp-2 sm:line-clamp-none">{tier.description}</p>
+                    </div>
+                    <div className="mt-3 sm:mt-4 flex items-end justify-between gap-2 w-full pt-2 border-t border-gold-pale/20">
+                      <div>
+                        <p className="font-sans text-[9px] sm:text-xs text-espresso/45 line-through">{formatCurrency(tierMsrp)} MSRP</p>
+                        <p className="font-serif text-lg sm:text-3xl text-espresso font-bold">{formatCurrency(tier.price)}</p>
+                      </div>
+                      <span className={`flex h-5 w-5 sm:h-8 sm:w-8 items-center justify-center rounded-full transition-colors ${
+                        selected ? 'bg-gold text-white' : 'border border-gold-pale/40 text-transparent'
+                      }`}>
+                        <Check className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                      </span>
                     </div>
                   </button>
                 )
               })}
             </div>
 
-            <div className="mt-6 border border-gold-pale/40 bg-white/75 p-5">
-              <h2 className="font-serif text-2xl text-espresso">What&apos;s inside</h2>
+            <div className="mt-6 border border-gold bg-white shadow-xl shadow-gold/5 p-5 rounded-2xl ring-1 ring-gold/25 transition-all duration-500">
+              <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
+                <h2 className="font-serif text-2xl text-espresso font-semibold">What&apos;s inside</h2>
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gold/10 text-gold font-sans text-[10px] font-bold uppercase tracking-widest animate-pulse">
+                  <Check className="w-3 h-3" /> Included in {activeTier.name}
+                </span>
+              </div>
               <p className="mt-2 text-sm leading-6 text-espresso-light/75">
                 This preset is linked to the actual Swell box listing and bundles products shoppers can also find on the site, with custom outside-lid names and inside-lid messages.
               </p>
