@@ -55,6 +55,7 @@ type PrebuiltBridesmaidProposalBoxBuilderProps = {
   products: Record<ProductKey, BuilderProduct>
   bonusProducts: Record<BonusKey, BuilderProduct>
   hideHeaderBar?: boolean
+  showStickyCart?: boolean
 }
 
 const timerSeconds = 10 * 60
@@ -137,12 +138,6 @@ function stripHtml(value = '') {
   return value.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim()
 }
 
-function getCheckoutUrl(cart: unknown) {
-  if (!cart || typeof cart !== 'object') return ''
-  const maybeCart = cart as { checkout_url?: string; checkoutUrl?: string }
-  return maybeCart.checkout_url || maybeCart.checkoutUrl || ''
-}
-
 function getTierMsrp(tier: Tier, products: Record<ProductKey, BuilderProduct>) {
   return tier.productKeys.reduce((sum, key) => sum + products[key].price, 0)
 }
@@ -152,8 +147,9 @@ export function PrebuiltBridesmaidProposalBoxBuilder({
   products,
   bonusProducts,
   hideHeaderBar = false,
+  showStickyCart = true,
 }: PrebuiltBridesmaidProposalBoxBuilderProps) {
-  const { addToCart, cart } = useCart()
+  const { addToCart } = useCart()
   const [tierId, setTierId] = useState<TierId>('signature')
   const [quantity, setQuantity] = useState(1)
   const [isCustomQuantity, setIsCustomQuantity] = useState(false)
@@ -295,7 +291,7 @@ export function PrebuiltBridesmaidProposalBoxBuilder({
             : 'Timer expired',
       }
 
-      const updatedCart = await addToCart(activeTier.product.id, quantity, [], baseMetadata, true)
+      await addToCart(activeTier.product.id, quantity, [], baseMetadata, true)
 
       window.location.href = '/checkout'
     } catch (error) {
@@ -904,28 +900,30 @@ export function PrebuiltBridesmaidProposalBoxBuilder({
         </div>
       </section>
 
-      <div className="fixed inset-x-0 bottom-0 z-50 border-t border-gold-pale/50 bg-cream/96 px-3 py-3 shadow-2xl shadow-espresso/15 backdrop-blur">
-        <div className="mx-auto flex max-w-5xl items-center gap-3 pl-14 pr-20 sm:pl-0 sm:pr-0">
-          <div className="min-w-0 flex-1">
-            <p className="font-sans text-[10px] font-bold uppercase tracking-[0.16em] text-espresso/50">Estimated total</p>
-            <div className="mt-0.5 flex flex-wrap items-baseline gap-x-3 gap-y-0.5">
-              <span className="font-serif text-2xl leading-none text-espresso">{formatCurrency(subtotal)}</span>
-              <span className="font-sans text-xs font-bold text-gold">Save {formatCurrency(totalSavings)}</span>
+      {showStickyCart && (
+        <div className="fixed inset-x-0 bottom-0 z-50 border-t border-gold-pale/50 bg-cream/96 px-3 py-3 shadow-2xl shadow-espresso/15 backdrop-blur">
+          <div className="mx-auto flex max-w-5xl items-center gap-3 pl-14 pr-20 sm:pl-0 sm:pr-0">
+            <div className="min-w-0 flex-1">
+              <p className="font-sans text-[10px] font-bold uppercase tracking-[0.16em] text-espresso/50">Estimated total</p>
+              <div className="mt-0.5 flex flex-wrap items-baseline gap-x-3 gap-y-0.5">
+                <span className="font-serif text-2xl leading-none text-espresso">{formatCurrency(subtotal)}</span>
+                <span className="font-sans text-xs font-bold text-gold">Save {formatCurrency(totalSavings)}</span>
+              </div>
             </div>
+            <button
+              type="button"
+              onClick={handleAddToCart}
+              disabled={!canSubmit}
+              className={`flex h-12 min-w-[126px] items-center justify-center gap-2 bg-espresso px-3 font-sans text-[11px] font-bold uppercase tracking-[0.12em] text-cream transition-colors sm:min-w-[220px] sm:px-4 sm:text-xs sm:tracking-[0.14em] ${
+                canSubmit ? 'hover:bg-espresso-light' : 'cursor-not-allowed opacity-45'
+              }`}
+            >
+              {isSubmitting ? 'Adding...' : 'Add to cart'}
+              <ArrowRight className="hidden h-4 w-4 sm:block" />
+            </button>
           </div>
-          <button
-            type="button"
-            onClick={handleAddToCart}
-            disabled={!canSubmit}
-            className={`flex h-12 min-w-[126px] items-center justify-center gap-2 bg-espresso px-3 font-sans text-[11px] font-bold uppercase tracking-[0.12em] text-cream transition-colors sm:min-w-[220px] sm:px-4 sm:text-xs sm:tracking-[0.14em] ${
-              canSubmit ? 'hover:bg-espresso-light' : 'cursor-not-allowed opacity-45'
-            }`}
-          >
-            {isSubmitting ? 'Adding...' : 'Add to cart'}
-            <ArrowRight className="hidden h-4 w-4 sm:block" />
-          </button>
         </div>
-      </div>
+      )}
 
       {detailProduct && (
         <div className="fixed inset-0 z-[70] flex items-end justify-center bg-espresso/60 p-0 backdrop-blur-sm sm:items-center sm:p-5">
