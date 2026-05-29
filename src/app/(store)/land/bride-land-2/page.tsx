@@ -3,6 +3,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowRight, Check, Heart, Sparkles, Star, Camera, Gift, ShieldCheck, Clock, Award, HelpCircle } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
+import { getProducts } from '@/lib/swell';
 
 export const metadata: Metadata = {
   title: 'Personalized Bridesmaid Proposal Box | Custom Wedding Co.',
@@ -140,7 +141,38 @@ const comparisonData = {
   ],
 };
 
-export default function BrideLandingPageTwo() {
+export default async function BrideLandingPageTwo() {
+  const productResponse = await getProducts();
+  const allProducts = productResponse?.results || [];
+
+  const robeProduct = allProducts.find((p: any) => p.slug === 'bespoke-satin-lace-bridal-robe');
+  const mirrorProduct = allProducts.find((p: any) => p.slug === 'personalized-compact-mirror-custom-heirloom-bridal-gift');
+  const jewelryProduct = allProducts.find((p: any) => p.slug === 'bespoke-velvet-heirloom-jewelry-case');
+  const sleepProduct = allProducts.find((p: any) => p.slug === 'bespoke-satin-sleep-collection');
+
+  const getProductImg = (product: any, fallback: string) => {
+    return product?.images?.[0]?.file?.url || product?.images?.[0]?.url || fallback;
+  };
+
+  const dynamicItemsInside = [
+    {
+      ...itemsInside[0],
+      image: getProductImg(robeProduct, itemsInside[0].image),
+    },
+    {
+      ...itemsInside[1],
+      image: getProductImg(mirrorProduct, itemsInside[1].image),
+    },
+    {
+      ...itemsInside[2],
+      image: getProductImg(jewelryProduct, itemsInside[2].image),
+    },
+    {
+      ...itemsInside[3],
+      image: getProductImg(sleepProduct, itemsInside[3].image),
+    },
+  ];
+
   return (
     <main className="w-full max-w-full overflow-x-hidden bg-cream text-espresso">
 
@@ -245,7 +277,7 @@ export default function BrideLandingPageTwo() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {itemsInside.map((item, idx) => (
+            {dynamicItemsInside.map((item, idx) => (
               <article key={idx} className="bg-white border border-gold-pale/35 rounded-2xl overflow-hidden shadow-[0_12px_30px_rgba(74,44,42,0.04)] flex flex-col h-full group">
                 <div className="relative aspect-square overflow-hidden bg-cream-dark w-full">
                   <Image
