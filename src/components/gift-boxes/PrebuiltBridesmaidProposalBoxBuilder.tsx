@@ -136,10 +136,6 @@ function stripHtml(value = '') {
   return value.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim()
 }
 
-function getOptionValueName(value: { name?: string; value?: string } | undefined) {
-  return value?.name || value?.value || ''
-}
-
 function getCheckoutUrl(cart: unknown) {
   if (!cart || typeof cart !== 'object') return ''
   const maybeCart = cart as { checkout_url?: string; checkoutUrl?: string }
@@ -150,59 +146,12 @@ function getTierMsrp(tier: Tier, products: Record<ProductKey, BuilderProduct>) {
   return tier.productKeys.reduce((sum, key) => sum + products[key].price, 0)
 }
 
-function buildProductOptions(product: BuilderProduct, names: string) {
-  const options: { name: string; value: string }[] = []
-
-  for (const option of product.options || []) {
-    if (!option.name) continue
-    const optionName = option.name.toLowerCase()
-
-    if (option.values?.length) {
-      let selectedValue = option.values[0]
-
-      if (optionName.includes('design')) {
-        selectedValue =
-          option.values.find((value) => getOptionValueName(value).toLowerCase() === 'design #1') ||
-          option.values[0]
-      } else if (optionName.includes('font color')) {
-        selectedValue =
-          option.values.find((value) => /gold/i.test(getOptionValueName(value))) ||
-          option.values[0]
-      } else if (optionName.includes('mirror color')) {
-        selectedValue =
-          option.values.find((value) => /gold/i.test(getOptionValueName(value))) ||
-          option.values[0]
-      }
-
-      const value = getOptionValueName(selectedValue)
-      if (value) options.push({ name: option.name, value })
-      continue
-    }
-
-    if (optionName.includes('name') || optionName.includes('initial')) {
-      options.push({ name: option.name, value: names.trim() || 'Bridesmaid names provided with box' })
-      continue
-    }
-
-    if (optionName.includes('event date') || optionName === 'date') {
-      options.push({ name: option.name, value: 'Provided with proposal box' })
-      continue
-    }
-
-    if (option.required || option.input_type === 'short_text' || option.type === 'text') {
-      options.push({ name: option.name, value: 'Provided with proposal box' })
-    }
-  }
-
-  return options
-}
-
 export function PrebuiltBridesmaidProposalBoxBuilder({
   tierProducts,
   products,
   bonusProducts,
 }: PrebuiltBridesmaidProposalBoxBuilderProps) {
-  const { addToCart, applyCoupon, cart } = useCart()
+  const { addToCart, cart } = useCart()
   const [tierId, setTierId] = useState<TierId>('signature')
   const [quantity, setQuantity] = useState(1)
   const [isCustomQuantity, setIsCustomQuantity] = useState(false)
@@ -330,12 +279,13 @@ export function PrebuiltBridesmaidProposalBoxBuilder({
         prebuilt_box_quantity: quantity,
         prebuilt_box_total_display: formatCurrency(subtotal),
         prebuilt_box_total_savings: formatCurrency(totalSavings),
-        prebuilt_box_coupon: activeTier.id === 'luxe' ? 'PREBUILT99' : 'PREBUILT70',
         prebuilt_box_names: nameList,
         prebuilt_box_inner_lid_messages: messageList,
         prebuilt_box_personalizations: JSON.stringify(personalizations),
         prebuilt_box_color: selectedColor.label,
+        prebuilt_box_cart_behavior: 'Selected preset box SKU only; included products are recorded in metadata.',
         prebuilt_box_included_products: includedProducts.map((product) => product.name).join(', '),
+        prebuilt_box_included_product_ids: includedProducts.map((product) => product.id).join(', '),
         prebuilt_box_bonus_products: bonusItems.map((product) => product.name).join(', '),
         prebuilt_box_timer_gift:
           secondsLeft > 0
@@ -343,27 +293,7 @@ export function PrebuiltBridesmaidProposalBoxBuilder({
             : 'Timer expired',
       }
 
-      let updatedCart = await addToCart(activeTier.product.id, quantity, [], baseMetadata, true)
-
-      for (const product of includedProducts) {
-        updatedCart = await addToCart(
-          product.id,
-          quantity,
-          buildProductOptions(product, nameList),
-          {
-            prebuilt_bridesmaid_box_component: true,
-            prebuilt_box_tier: activeTier.name,
-            prebuilt_box_names: nameList,
-          },
-          true,
-        )
-      }
-
-      const couponCode = activeTier.id === 'luxe' ? 'PREBUILT99' : 'PREBUILT70'
-      const discountedCart = await applyCoupon(couponCode)
-      if (discountedCart) {
-        updatedCart = discountedCart
-      }
+      const updatedCart = await addToCart(activeTier.product.id, quantity, [], baseMetadata, true)
 
       const checkoutUrl = getCheckoutUrl(updatedCart) || getCheckoutUrl(cart)
       window.location.href = checkoutUrl || '/checkout'
