@@ -621,12 +621,6 @@ export function PrebuiltBridesmaidProposalBoxBuilder({
                       {previewTab === 'box' && (
                         <div className="relative flex h-full items-center justify-center p-6">
                           <Image src={selectedColor.image} alt={`${selectedColor.label} bridesmaid box`} fill sizes="390px" className="object-contain p-6" />
-                          <p
-                            className="absolute left-1/2 top-[42%] max-w-[58%] -translate-x-1/2 text-center text-3xl leading-tight text-espresso"
-                            style={{ fontFamily: '"Brush Script MT", "Segoe Script", cursive' }}
-                          >
-                            {activePreviewName}
-                          </p>
                         </div>
                       )}
 
