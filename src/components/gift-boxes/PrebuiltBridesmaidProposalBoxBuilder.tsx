@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import Image from 'next/image'
-import { ArrowRight, Check, Clock3, PackageCheck, ShoppingBag, Sparkles, Star, X } from 'lucide-react'
+import { ArrowRight, Check, ChevronLeft, ChevronRight, Clock3, PackageCheck, ShoppingBag, Sparkles, Star, X } from 'lucide-react'
 import { useCart } from '@/context/CartContext'
 
 export type BuilderProduct = {
@@ -211,6 +211,7 @@ export function PrebuiltBridesmaidProposalBoxBuilder({
     { name: '', message: defaultLidMessage },
   ])
   const [previewTab, setPreviewTab] = useState<'box' | 'inside' | 'lid'>('box')
+  const [activePreviewIndex, setActivePreviewIndex] = useState(0)
   const [imageIndex, setImageIndex] = useState(0)
   const [secondsLeft, setSecondsLeft] = useState(timerSeconds)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -246,7 +247,9 @@ export function PrebuiltBridesmaidProposalBoxBuilder({
   const bonusItems = [bonusProducts.hairClaw, bonusProducts.scrunchies]
   const nameList = personalizations.map((item) => item.name.trim()).filter(Boolean).join(', ')
   const messageList = personalizations.map((item, index) => `Box ${index + 1}: ${item.message.trim()}`).join(' | ')
-  const primaryPersonalization = personalizations[0] || { name: '', message: defaultLidMessage }
+  const activePreviewPersonalization = personalizations[activePreviewIndex] || personalizations[0] || { name: '', message: defaultLidMessage }
+  const activePreviewName = activePreviewPersonalization.name.trim() || `Box ${activePreviewIndex + 1}`
+  const activePreviewMessage = activePreviewPersonalization.message.trim() || defaultLidMessage
   const msrpUnit = getTierMsrp(activeTier, products)
   const bundleSavingsUnit = Math.max(0, msrpUnit - activeTier.price)
   const bonusUnitValue = bonusItems.reduce((sum, product) => sum + product.price, 0)
@@ -281,6 +284,10 @@ export function PrebuiltBridesmaidProposalBoxBuilder({
   }, [quantity])
 
   useEffect(() => {
+    setActivePreviewIndex((current) => Math.min(current, Math.max(0, quantity - 1)))
+  }, [quantity])
+
+  useEffect(() => {
     setImageIndex(0)
   }, [tierId])
 
@@ -291,6 +298,13 @@ export function PrebuiltBridesmaidProposalBoxBuilder({
     setPersonalizations((current) =>
       current.map((item, itemIndex) => (itemIndex === index ? { ...item, [field]: value } : item)),
     )
+  }
+
+  const changePreviewBox = (direction: -1 | 1) => {
+    setActivePreviewIndex((current) => {
+      if (quantity <= 1) return 0
+      return (current + direction + quantity) % quantity
+    })
   }
 
   const handleAddToCart = async () => {
@@ -543,6 +557,51 @@ export function PrebuiltBridesmaidProposalBoxBuilder({
                       <h3 className="font-sans text-xs font-bold uppercase tracking-[0.18em] text-espresso">Live box preview</h3>
                       <Sparkles className="h-4 w-4 text-gold" />
                     </div>
+                    <div className="mb-3 flex items-center justify-between gap-2 border border-gold-pale/35 bg-white px-2 py-2">
+                      <button
+                        type="button"
+                        onClick={() => changePreviewBox(-1)}
+                        disabled={quantity <= 1}
+                        className="flex h-9 w-9 items-center justify-center border border-gold-pale/45 bg-cream text-espresso transition-colors hover:border-gold disabled:cursor-not-allowed disabled:opacity-35"
+                        aria-label="Preview previous box"
+                      >
+                        <ChevronLeft className="h-4 w-4" />
+                      </button>
+                      <div className="min-w-0 text-center">
+                        <p className="font-sans text-[10px] font-bold uppercase tracking-[0.16em] text-gold">
+                          Box {activePreviewIndex + 1} of {quantity}
+                        </p>
+                        <p className="truncate font-serif text-base leading-tight text-espresso">
+                          {activePreviewName}
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => changePreviewBox(1)}
+                        disabled={quantity <= 1}
+                        className="flex h-9 w-9 items-center justify-center border border-gold-pale/45 bg-cream text-espresso transition-colors hover:border-gold disabled:cursor-not-allowed disabled:opacity-35"
+                        aria-label="Preview next box"
+                      >
+                        <ChevronRight className="h-4 w-4" />
+                      </button>
+                    </div>
+                    <div className="mb-3 flex gap-1.5 overflow-x-auto pb-1">
+                      {personalizations.map((item, index) => (
+                        <button
+                          key={index}
+                          type="button"
+                          onClick={() => setActivePreviewIndex(index)}
+                          className={`h-8 flex-shrink-0 border px-3 font-sans text-[10px] font-bold uppercase tracking-[0.12em] transition-colors ${
+                            activePreviewIndex === index
+                              ? 'border-gold bg-gold/10 text-espresso'
+                              : 'border-gold-pale/35 bg-white text-espresso/55 hover:border-gold'
+                          }`}
+                          aria-label={`Preview box ${index + 1}`}
+                        >
+                          {item.name.trim() || `Box ${index + 1}`}
+                        </button>
+                      ))}
+                    </div>
                     <div className="mb-3 grid grid-cols-3 gap-1 bg-cream-dark p-1">
                       {(['box', 'inside', 'lid'] as const).map((tab) => (
                         <button
@@ -566,7 +625,7 @@ export function PrebuiltBridesmaidProposalBoxBuilder({
                             className="absolute left-1/2 top-[42%] max-w-[58%] -translate-x-1/2 text-center text-3xl leading-tight text-espresso"
                             style={{ fontFamily: '"Brush Script MT", "Segoe Script", cursive' }}
                           >
-                            {primaryPersonalization.name || 'Name preview'}
+                            {activePreviewName}
                           </p>
                         </div>
                       )}
@@ -598,10 +657,10 @@ export function PrebuiltBridesmaidProposalBoxBuilder({
                             className="max-w-[260px] text-3xl leading-tight text-espresso"
                             style={{ fontFamily: '"Brush Script MT", "Segoe Script", cursive' }}
                           >
-                            {primaryPersonalization.message || defaultLidMessage}
+                            {activePreviewMessage}
                           </p>
                           <p className="mt-4 font-sans text-[10px] font-bold uppercase tracking-[0.18em] text-espresso-light/65">
-                            {primaryPersonalization.name || 'Outside lid name'}
+                            {activePreviewName}
                           </p>
                         </div>
                       )}
