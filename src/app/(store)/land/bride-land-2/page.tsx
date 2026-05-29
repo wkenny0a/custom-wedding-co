@@ -731,17 +731,11 @@ export default async function BrideLandingPageTwo() {
 
       {/* ─── 8.5 BOX BUILDER PREVIEW SECTION ──────────────────────────────── */}
       <section id="interactive-builder" className="scroll-mt-24 bg-cream border-t border-b border-gold/15 py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center mb-10">
-          <span className="text-xs uppercase tracking-[0.24em] text-gold font-bold">Interactive Preview Builder</span>
-          <h2 className="font-display text-4xl sm:text-5xl text-espresso mt-2">Design Her Bridesmaid Box</h2>
-          <p className="text-espresso/70 font-sans text-sm md:text-base max-w-lg mx-auto mt-2">
-            Select your tier, enter her name, customize the inside lid, and preview it live before checkout.
-          </p>
-        </div>
         <PrebuiltBridesmaidProposalBoxBuilder
           tierProducts={tierProducts}
           products={products}
           bonusProducts={bonusProducts}
+          hideHeaderBar={true}
         />
       </section>
 

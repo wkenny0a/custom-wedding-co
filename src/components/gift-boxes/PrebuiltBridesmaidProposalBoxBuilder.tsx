@@ -54,6 +54,7 @@ type PrebuiltBridesmaidProposalBoxBuilderProps = {
   tierProducts: Record<TierId, BuilderProduct>
   products: Record<ProductKey, BuilderProduct>
   bonusProducts: Record<BonusKey, BuilderProduct>
+  hideHeaderBar?: boolean
 }
 
 const timerSeconds = 10 * 60
@@ -150,6 +151,7 @@ export function PrebuiltBridesmaidProposalBoxBuilder({
   tierProducts,
   products,
   bonusProducts,
+  hideHeaderBar = false,
 }: PrebuiltBridesmaidProposalBoxBuilderProps) {
   const { addToCart, cart } = useCart()
   const [tierId, setTierId] = useState<TierId>('signature')
@@ -307,18 +309,20 @@ export function PrebuiltBridesmaidProposalBoxBuilder({
 
   return (
     <main className="bg-cream pb-28 text-espresso">
-      <section className="bg-espresso text-cream">
-        <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-center gap-3 px-4 py-3 text-center font-sans text-[11px] uppercase tracking-[0.16em] sm:gap-6">
-          <span className="flex items-center gap-2">
-            <Star className="h-3.5 w-3.5 fill-gold text-gold" />
-            4.9 from 1,200+ couples
-          </span>
-          <span className="hidden h-4 w-px bg-cream/20 sm:block" />
-          <span>8,500+ welcome boxes delivered</span>
-          <span className="hidden h-4 w-px bg-cream/20 sm:block" />
-          <span>Bulk discounts up to 45% off</span>
-        </div>
-      </section>
+      {!hideHeaderBar && (
+        <section className="bg-espresso text-cream">
+          <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-center gap-3 px-4 py-3 text-center font-sans text-[11px] uppercase tracking-[0.16em] sm:gap-6">
+            <span className="flex items-center gap-2">
+              <Star className="h-3.5 w-3.5 fill-gold text-gold" />
+              4.9 from 1,200+ couples
+            </span>
+            <span className="hidden h-4 w-px bg-cream/20 sm:block" />
+            <span>8,500+ welcome boxes delivered</span>
+            <span className="hidden h-4 w-px bg-cream/20 sm:block" />
+            <span>Bulk discounts up to 45% off</span>
+          </div>
+        </section>
+      )}
 
       <section className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         <div className="mb-8 max-w-3xl">
