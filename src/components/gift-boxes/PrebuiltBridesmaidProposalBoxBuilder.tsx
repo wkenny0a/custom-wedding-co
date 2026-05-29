@@ -436,7 +436,7 @@ export function PrebuiltBridesmaidProposalBoxBuilder({
                     </div>
                     <div className="mt-3 sm:mt-4 flex items-end justify-between gap-2 w-full pt-2 border-t border-gold-pale/20">
                       <div>
-                        <p className="font-sans text-[9px] sm:text-xs text-espresso/45 line-through">{formatCurrency(tierMsrp)} MSRP</p>
+                        <p className="font-sans text-[9px] sm:text-xs text-espresso/45 line-through">{formatCurrency(tierMsrp)} Value</p>
                         <p className="font-serif text-lg sm:text-3xl text-espresso font-bold">{formatCurrency(tier.price)}</p>
                       </div>
                       <span className={`flex h-5 w-5 sm:h-8 sm:w-8 items-center justify-center rounded-full transition-all duration-300 ${
@@ -494,7 +494,7 @@ export function PrebuiltBridesmaidProposalBoxBuilder({
                     <div className="min-w-0 flex-1 flex flex-col justify-between">
                       <div>
                         <h3 className="font-serif text-sm sm:text-base leading-tight text-espresso font-semibold line-clamp-1">{product.name}</h3>
-                        <p className="mt-1 font-sans text-xs font-bold text-gold">{formatCurrency(product.price)} MSRP</p>
+                        <p className="mt-1 font-sans text-xs font-bold text-gold">{formatCurrency(product.price)} Value</p>
                       </div>
                       <button
                         type="button"
@@ -803,7 +803,7 @@ export function PrebuiltBridesmaidProposalBoxBuilder({
                     <h3 className="mb-3 font-sans text-xs font-bold uppercase tracking-[0.18em] text-espresso">Box summary</h3>
                     <div className="space-y-2 text-sm">
                       <div className="flex justify-between gap-4">
-                        <span className="text-espresso-light/70">MSRP total</span>
+                        <span className="text-espresso-light/70">Value total</span>
                         <span className="font-semibold text-espresso line-through">{formatCurrency(totalMsrp)}</span>
                       </div>
                       <div className="flex justify-between gap-4">
@@ -949,7 +949,7 @@ export function PrebuiltBridesmaidProposalBoxBuilder({
                 <Image src={detailProduct.image} alt={detailProduct.name} fill sizes="360px" className="object-cover" />
               </div>
               <div>
-                <p className="font-sans text-sm font-bold text-gold">{formatCurrency(detailProduct.price)} MSRP</p>
+                <p className="font-sans text-sm font-bold text-gold">{formatCurrency(detailProduct.price)} Value</p>
                 <p className="mt-4 text-sm leading-7 text-espresso-light/80">
                   {stripHtml(detailProduct.description) || 'A personalized keepsake selected for the bridesmaid proposal box experience.'}
                 </p>
