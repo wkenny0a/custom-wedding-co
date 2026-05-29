@@ -747,10 +747,14 @@ export function PrebuiltBridesmaidProposalBoxBuilder({
                         <span className="text-espresso-light/70">Free gift value</span>
                         <span className="font-semibold text-gold">{formatCurrency(timerGiftValue)}</span>
                       </div>
-                      <div className="border-t border-gold-pale/40 pt-3">
+                      <div className="border-t border-gold-pale/40 pt-3 space-y-2">
                         <div className="flex items-center justify-between gap-4">
                           <span className="font-sans text-xs font-bold uppercase tracking-[0.16em] text-espresso">Total savings</span>
-                          <span className="font-serif text-2xl text-espresso">{formatCurrency(totalSavings)}</span>
+                          <span className="font-semibold text-gold">{formatCurrency(totalSavings)}</span>
+                        </div>
+                        <div className="flex items-center justify-between gap-4 pt-1.5 border-t border-gold-pale/25">
+                          <span className="font-sans text-xs font-bold uppercase tracking-[0.16em] text-espresso">Total cost</span>
+                          <span className="font-serif text-2xl text-espresso">{formatCurrency(subtotal)}</span>
                         </div>
                       </div>
                     </div>

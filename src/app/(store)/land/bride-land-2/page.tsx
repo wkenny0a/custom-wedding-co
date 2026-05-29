@@ -814,18 +814,6 @@ export default async function BrideLandingPageTwo() {
           </div>
         </div>
       </section>
-      
-      {/* ─── 11. MOBILE STICKY CTA ────────────────────────────────────────── */}
-      <div className="fixed inset-x-0 bottom-0 z-40 bg-cream/95 border-t border-gold/20 p-4 pb-6 shadow-[0_-8px_30px_rgba(74,44,42,0.12)] backdrop-blur-md flex items-center justify-between lg:hidden animate-in slide-in-from-bottom duration-500">
-        <div className="flex flex-col text-left">
-          <span className="text-[0.6rem] uppercase tracking-wider text-gold font-bold">Proposal Gift</span>
-          <span className="text-xs font-semibold text-espresso font-sans">Prebuilt & Assembled</span>
-        </div>
-        <Button href={targetProductUrl} size="sm" className="px-6 py-3 text-xs uppercase tracking-widest font-bold font-sans">
-          Create Her Box
-        </Button>
-      </div>
-
     </main>
   );
 }
