@@ -392,6 +392,23 @@ export function PrebuiltBridesmaidProposalBoxBuilder({
               </div>
             </div>
 
+            {/* Inline CSS for the customized smooth fade-in animation on tier shift */}
+            <style>{`
+              @keyframes fadeInUp {
+                from {
+                  opacity: 0;
+                  transform: translateY(12px);
+                }
+                to {
+                  opacity: 1;
+                  transform: translateY(0);
+                }
+              }
+              .animate-custom-fade-in {
+                animation: fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+              }
+            `}</style>
+
             <div className="mt-6 grid gap-3 grid-cols-2">
               {tiers.map((tier) => {
                 const selected = tier.id === activeTier.id
@@ -401,14 +418,16 @@ export function PrebuiltBridesmaidProposalBoxBuilder({
                     key={tier.id}
                     type="button"
                     onClick={() => setTierId(tier.id)}
-                    className={`border p-3 sm:p-5 text-left transition-all rounded-2xl flex flex-col h-full justify-between ${
+                    className={`relative border p-3 sm:p-5 text-left transition-all duration-300 rounded-2xl flex flex-col h-full justify-between overflow-hidden ${
                       selected
-                        ? 'border-gold bg-white shadow-lg shadow-gold/15 ring-1 ring-gold/30'
-                        : 'border-gold-pale/35 bg-white/65 hover:border-gold/70'
+                        ? 'border-gold bg-gold/[0.03] shadow-xl shadow-gold/15 ring-2 ring-gold/50 scale-[1.02] z-10'
+                        : 'border-gold-pale/35 bg-white/70 hover:border-gold/50 opacity-75 hover:opacity-100'
                     }`}
                   >
                     <div className="w-full">
-                      <div className="relative mb-3 sm:mb-4 aspect-[4/3] overflow-hidden bg-cream-dark rounded-xl">
+                      <div className={`relative mb-3 sm:mb-4 aspect-[4/3] overflow-hidden bg-cream-dark rounded-xl transition-all duration-300 ${
+                        selected ? 'ring-2 ring-gold border-gold' : 'border border-transparent'
+                      }`}>
                         <Image src={tier.product.image} alt={tier.name} fill sizes="(min-width: 768px) 240px, 50vw" className="object-cover" />
                       </div>
                       <p className="font-sans text-[8px] sm:text-[10px] font-bold uppercase tracking-[0.18em] text-gold">{tier.eyebrow}</p>
@@ -420,10 +439,12 @@ export function PrebuiltBridesmaidProposalBoxBuilder({
                         <p className="font-sans text-[9px] sm:text-xs text-espresso/45 line-through">{formatCurrency(tierMsrp)} MSRP</p>
                         <p className="font-serif text-lg sm:text-3xl text-espresso font-bold">{formatCurrency(tier.price)}</p>
                       </div>
-                      <span className={`flex h-5 w-5 sm:h-8 sm:w-8 items-center justify-center rounded-full transition-colors ${
-                        selected ? 'bg-gold text-white' : 'border border-gold-pale/40 text-transparent'
+                      <span className={`flex h-5 w-5 sm:h-8 sm:w-8 items-center justify-center rounded-full transition-all duration-300 ${
+                        selected
+                          ? 'bg-gold text-white ring-4 ring-gold/20 scale-110 shadow-lg'
+                          : 'border-2 border-gold-pale/60 text-transparent bg-white hover:border-gold'
                       }`}>
-                        <Check className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                        <Check className="h-3.5 w-3.5 sm:h-4 sm:w-4 stroke-[3]" />
                       </span>
                     </div>
                   </button>
@@ -431,31 +452,58 @@ export function PrebuiltBridesmaidProposalBoxBuilder({
               })}
             </div>
 
-            <div className="mt-6 border border-gold bg-white shadow-xl shadow-gold/5 p-5 rounded-2xl ring-1 ring-gold/25 transition-all duration-500">
+            <div className="relative mt-10 border-2 border-gold bg-white shadow-2xl shadow-gold/10 p-5 sm:p-6 rounded-2xl ring-4 ring-gold/15 transition-all duration-500">
+              {/* Dynamic pointer arrow connecting the active tier box to the "What's inside" section */}
+              <div
+                className="absolute -top-3.5 h-0 w-0 border-l-[14px] border-r-[14px] border-b-[14px] border-transparent border-b-gold transition-all duration-500 ease-in-out"
+                style={{
+                  left: activeTier.id === 'signature' ? '25%' : '75%',
+                  transform: 'translateX(-50%)',
+                }}
+              />
+              <div
+                className="absolute -top-3 h-0 w-0 border-l-[12px] border-r-[12px] border-b-[12px] border-transparent border-b-white transition-all duration-500 ease-in-out"
+                style={{
+                  left: activeTier.id === 'signature' ? '25%' : '75%',
+                  transform: 'translateX(-50%)',
+                }}
+              />
+
               <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
-                <h2 className="font-serif text-2xl text-espresso font-semibold">What&apos;s inside</h2>
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gold/10 text-gold font-sans text-[10px] font-bold uppercase tracking-widest animate-pulse">
-                  <Check className="w-3 h-3" /> Included in {activeTier.name}
+                <h2 className="font-serif text-xl sm:text-2xl text-espresso font-semibold flex items-center gap-2">
+                  What&apos;s inside
+                </h2>
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gold/10 text-gold font-sans text-[10px] font-bold uppercase tracking-widest transition-all duration-300">
+                  <Check className="w-3 h-3 stroke-[2.5]" /> Included in {activeTier.name}
                 </span>
               </div>
-              <p className="mt-2 text-sm leading-6 text-espresso-light/75">
+              <p className="mt-2 text-xs sm:text-sm leading-relaxed text-espresso-light/75">
                 This preset is linked to the actual Swell box listing and bundles products shoppers can also find on the site, with custom outside-lid names and inside-lid messages.
               </p>
-              <div className="mt-5 grid gap-3 sm:grid-cols-2">
+              <div key={activeTier.id} className="mt-5 grid gap-3 sm:grid-cols-2 animate-custom-fade-in transition-all duration-500">
                 {includedProducts.map((product) => (
-                  <article key={product.id} className="flex gap-3 border border-gold-pale/35 bg-cream p-3">
-                    <div className="relative h-20 w-20 flex-shrink-0 overflow-hidden bg-cream-dark">
+                  <article
+                    key={product.id}
+                    className="flex gap-4 border border-gold/30 bg-gold/[0.01] p-3.5 rounded-xl shadow-sm transition-all duration-300 hover:border-gold hover:shadow-md hover:scale-[1.01] hover:bg-gold/[0.03]"
+                  >
+                    <div className="relative h-20 w-20 flex-shrink-0 overflow-hidden bg-cream-dark rounded-lg border-2 border-gold/25 shadow-sm">
                       <Image src={product.image} alt={product.name} fill sizes="80px" className="object-cover" />
+                      {/* Premium visual check circle icon overlay on product images */}
+                      <div className="absolute top-1 right-1 bg-gold text-cream rounded-full h-4.5 w-4.5 flex items-center justify-center p-0.5 shadow-md border border-white">
+                        <Check className="w-2.5 h-2.5 stroke-[3.5]" />
+                      </div>
                     </div>
-                    <div className="min-w-0 flex-1">
-                      <h3 className="font-serif text-base leading-tight text-espresso">{product.name}</h3>
-                      <p className="mt-1 font-sans text-xs font-semibold text-gold">{formatCurrency(product.price)} MSRP</p>
+                    <div className="min-w-0 flex-1 flex flex-col justify-between">
+                      <div>
+                        <h3 className="font-serif text-sm sm:text-base leading-tight text-espresso font-semibold line-clamp-1">{product.name}</h3>
+                        <p className="mt-1 font-sans text-xs font-bold text-gold">{formatCurrency(product.price)} MSRP</p>
+                      </div>
                       <button
                         type="button"
                         onClick={() => setDetailProduct(product)}
-                        className="mt-2 font-sans text-[10px] font-bold uppercase tracking-[0.14em] text-espresso/55 transition-colors hover:text-espresso"
+                        className="mt-2 text-left font-sans text-[9px] font-bold uppercase tracking-[0.14em] text-espresso/60 transition-colors hover:text-gold"
                       >
-                        View detail
+                        View details &rarr;
                       </button>
                     </div>
                   </article>
