@@ -477,10 +477,8 @@ export function PrebuiltBridesmaidProposalBoxBuilder({
                   <Check className="w-3 h-3 stroke-[2.5]" /> Included in {activeTier.name}
                 </span>
               </div>
-              <p className="mt-2 text-xs sm:text-sm leading-relaxed text-espresso-light/75">
-                This preset is linked to the actual Swell box listing and bundles products shoppers can also find on the site, with custom outside-lid names and inside-lid messages.
-              </p>
-              <div key={activeTier.id} className="mt-5 grid gap-3 sm:grid-cols-2 animate-custom-fade-in transition-all duration-500">
+              
+              <div key={activeTier.id} className="mt-4 grid gap-3 sm:grid-cols-2 animate-custom-fade-in transition-all duration-500">
                 {includedProducts.map((product) => (
                   <article
                     key={product.id}
@@ -508,6 +506,65 @@ export function PrebuiltBridesmaidProposalBoxBuilder({
                     </div>
                   </article>
                 ))}
+              </div>
+
+              {/* Limited Checkout Bonus nested inside the "What's inside" section */}
+              <div className="mt-6 pt-6 border-t border-gold/20">
+                <div className="bg-gold/[0.03] border border-gold/40 p-4 sm:p-5 rounded-xl shadow-inner relative overflow-hidden">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1.5">
+                        <span className="inline-flex h-2 w-2 rounded-full bg-gold animate-ping" />
+                        <p className="font-sans text-[10px] font-bold uppercase tracking-[0.18em] text-gold">Limited checkout bonus</p>
+                      </div>
+                      <p className="text-xs sm:text-sm leading-relaxed text-espresso font-semibold">
+                        Free bridal hair claw & cream silk scrunchies included, valued at {formatCurrency(bonusUnitValue)} per box.
+                      </p>
+                    </div>
+
+                    <div className="flex items-center gap-3 bg-white px-4 py-2 border border-gold/30 rounded-lg shadow-sm w-fit">
+                      <Clock3 className="h-4.5 w-4.5 text-gold animate-pulse" />
+                      <div>
+                        {secondsLeft > 0 ? (
+                          <span className="font-mono text-xl sm:text-2xl font-bold text-espresso tracking-tight">
+                            {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
+                          </span>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() => setSecondsLeft(timerSeconds)}
+                            className="flex h-8 items-center justify-center border border-espresso bg-espresso px-3 rounded font-sans text-[10px] font-bold uppercase tracking-[0.12em] text-cream transition-colors hover:bg-espresso-light"
+                          >
+                            Reset timer
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="mt-4 grid grid-cols-2 gap-3">
+                    {bonusItems.map((product) => (
+                      <article key={product.id} className="flex gap-3 border border-gold/25 bg-white p-3 rounded-lg shadow-sm hover:border-gold hover:shadow-md transition-all duration-300">
+                        <div className="relative h-14 w-14 sm:h-16 sm:w-16 flex-shrink-0 overflow-hidden bg-cream-dark rounded-md border border-gold/20">
+                          <Image src={product.image} alt={product.name} fill sizes="80px" className="object-cover" />
+                        </div>
+                        <div className="min-w-0 flex-1 flex flex-col justify-between">
+                          <div>
+                            <h4 className="line-clamp-1 font-serif text-xs sm:text-sm leading-tight text-espresso font-semibold">{product.name}</h4>
+                            <p className="mt-0.5 font-sans text-[10px] font-semibold text-gold">{formatCurrency(product.price)} value</p>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => setDetailProduct(product)}
+                            className="mt-1 text-left font-sans text-[8px] sm:text-[9px] font-bold uppercase tracking-[0.12em] text-espresso/50 transition-colors hover:text-gold"
+                          >
+                            View details &rarr;
+                          </button>
+                        </div>
+                      </article>
+                    ))}
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -740,48 +797,7 @@ export function PrebuiltBridesmaidProposalBoxBuilder({
                     ))}
                   </section>
 
-                  <section className="border border-gold-pale/40 bg-cream p-4">
-                    <div className="flex items-center justify-between gap-3">
-                      <div>
-                        <p className="font-sans text-[10px] font-bold uppercase tracking-[0.16em] text-gold">Limited checkout bonus</p>
-                        <p className="mt-1 text-sm leading-5 text-espresso">
-                          Free bridal hair claw and cream silk bridal scrunchies per box, valued at {formatCurrency(bonusUnitValue)} per box.
-                        </p>
-                      </div>
-                      <Clock3 className="h-5 w-5 flex-shrink-0 text-gold" />
-                    </div>
-                    {secondsLeft > 0 ? (
-                      <p className="mt-3 font-serif text-3xl text-espresso">
-                        {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
-                      </p>
-                    ) : (
-                      <button
-                        type="button"
-                        onClick={() => setSecondsLeft(timerSeconds)}
-                        className="mt-3 flex h-11 w-full items-center justify-center border border-espresso bg-espresso px-4 font-sans text-xs font-bold uppercase tracking-[0.16em] text-cream"
-                      >
-                        Reset timer
-                      </button>
-                    )}
-                    <div className="mt-4 grid grid-cols-2 gap-2">
-                      {bonusItems.map((product) => (
-                        <article key={product.id} className="border border-gold-pale/35 bg-white p-2">
-                          <div className="relative aspect-square overflow-hidden bg-cream-dark">
-                            <Image src={product.image} alt={product.name} fill sizes="120px" className="object-cover" />
-                          </div>
-                          <h4 className="mt-2 line-clamp-2 font-serif text-sm leading-tight text-espresso">{product.name}</h4>
-                          <p className="mt-1 font-sans text-[10px] font-semibold text-gold">{formatCurrency(product.price)} value</p>
-                          <button
-                            type="button"
-                            onClick={() => setDetailProduct(product)}
-                            className="mt-2 font-sans text-[10px] font-bold uppercase tracking-[0.14em] text-espresso/55 transition-colors hover:text-espresso"
-                          >
-                            View detail
-                          </button>
-                        </article>
-                      ))}
-                    </div>
-                  </section>
+
 
                   <section className="border border-gold-pale/40 bg-white p-4">
                     <h3 className="mb-3 font-sans text-xs font-bold uppercase tracking-[0.18em] text-espresso">Box summary</h3>
