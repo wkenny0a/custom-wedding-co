@@ -11,6 +11,7 @@ export type BuilderProduct = {
   slug: string
   price: number
   image: string
+  images?: string[]
   description?: string
   options?: BuilderOption[]
 }
@@ -27,20 +28,15 @@ export type BuilderOption = {
   }[]
 }
 
-export type BuilderBaseProduct = {
-  id: string
-  name: string
-  slug: string
-  price: number
-  options?: BuilderOption[]
-}
+type TierId = 'signature' | 'luxe'
 
 type Tier = {
-  id: 'signature' | 'luxe'
+  id: TierId
   name: string
   eyebrow: string
   price: number
   productKeys: ProductKey[]
+  product: BuilderProduct
   description: string
 }
 
@@ -50,15 +46,23 @@ type ProductKey =
   | 'jewelryCase'
   | 'sleepCollection'
   | 'robe'
-  | 'cosmeticPouch'
+  | 'slippers'
+
+type BonusKey = 'hairClaw' | 'scrunchies'
 
 type PrebuiltBridesmaidProposalBoxBuilderProps = {
-  baseBox: BuilderBaseProduct
+  tierProducts: Record<TierId, BuilderProduct>
   products: Record<ProductKey, BuilderProduct>
+  bonusProducts: Record<BonusKey, BuilderProduct>
 }
 
-const boxBasePrice = 15
 const timerSeconds = 10 * 60
+const defaultLidMessage = 'Will you be my bridesmaid?'
+
+type Personalization = {
+  name: string
+  message: string
+}
 
 const colors = [
   {
@@ -84,13 +88,6 @@ const colors = [
   },
 ]
 
-const designs = [
-  { id: 1, name: 'Classic Script', image: '/images/gift-boxes/monograms/4.png' },
-  { id: 2, name: 'Modern Serif', image: '/images/gift-boxes/monograms/3.png' },
-  { id: 3, name: 'Botanical Wreath', image: '/images/gift-boxes/monograms/10.png' },
-  { id: 4, name: 'Regal Monogram', image: '/images/gift-boxes/monograms/11.png' },
-]
-
 const reviewImages = [
   '/images/ugc/bridesmaid-review-1.jpeg',
   '/images/ugc/bridesmaid-review-2.jpeg',
@@ -110,7 +107,7 @@ const faqs = [
   },
   {
     q: 'Can I personalize each box?',
-    a: 'Yes. Add bridesmaid names and a lid message before adding the bundle to cart. The personalization details are attached to the box order.',
+    a: 'Yes. Add a separate outside-lid name and inside-lid message for every box in the order. Those details are attached to the box order.',
   },
   {
     q: 'Do the items exist on the site?',
@@ -118,7 +115,7 @@ const faqs = [
   },
   {
     q: 'How does the free gift timer work?',
-    a: 'While the timer is active, the order metadata includes the free scrunchie and pouch value for each box. If the timer expires, you can reset it.',
+    a: 'While the timer is active, the order metadata includes the free hair claw and silk scrunchies value for each box. If the timer expires, you can reset it.',
   },
   {
     q: 'How soon should I order?',
@@ -150,10 +147,10 @@ function getCheckoutUrl(cart: unknown) {
 }
 
 function getTierMsrp(tier: Tier, products: Record<ProductKey, BuilderProduct>) {
-  return boxBasePrice + tier.productKeys.reduce((sum, key) => sum + products[key].price, 0)
+  return tier.productKeys.reduce((sum, key) => sum + products[key].price, 0)
 }
 
-function buildProductOptions(product: BuilderProduct, designId: number, names: string) {
+function buildProductOptions(product: BuilderProduct, names: string) {
   const options: { name: string; value: string }[] = []
 
   for (const option of product.options || []) {
@@ -165,7 +162,7 @@ function buildProductOptions(product: BuilderProduct, designId: number, names: s
 
       if (optionName.includes('design')) {
         selectedValue =
-          option.values.find((value) => getOptionValueName(value).toLowerCase() === `design #${designId}`.toLowerCase()) ||
+          option.values.find((value) => getOptionValueName(value).toLowerCase() === 'design #1') ||
           option.values[0]
       } else if (optionName.includes('font color')) {
         selectedValue =
@@ -201,17 +198,18 @@ function buildProductOptions(product: BuilderProduct, designId: number, names: s
 }
 
 export function PrebuiltBridesmaidProposalBoxBuilder({
-  baseBox,
+  tierProducts,
   products,
+  bonusProducts,
 }: PrebuiltBridesmaidProposalBoxBuilderProps) {
   const { addToCart, applyCoupon, cart } = useCart()
-  const [tierId, setTierId] = useState<Tier['id']>('signature')
+  const [tierId, setTierId] = useState<TierId>('signature')
   const [quantity, setQuantity] = useState(1)
   const [isCustomQuantity, setIsCustomQuantity] = useState(false)
   const [selectedColor, setSelectedColor] = useState(colors[2])
-  const [selectedDesign, setSelectedDesign] = useState(designs[0])
-  const [names, setNames] = useState('')
-  const [lidMessage, setLidMessage] = useState('Will you be my bridesmaid?')
+  const [personalizations, setPersonalizations] = useState<Personalization[]>([
+    { name: '', message: defaultLidMessage },
+  ])
   const [previewTab, setPreviewTab] = useState<'box' | 'inside' | 'lid'>('box')
   const [imageIndex, setImageIndex] = useState(0)
   const [secondsLeft, setSecondsLeft] = useState(timerSeconds)
@@ -225,35 +223,46 @@ export function PrebuiltBridesmaidProposalBoxBuilder({
         id: 'signature',
         name: 'The Bridesmaid Proposal Box',
         eyebrow: 'Signature tier',
-        price: 70,
+        price: tierProducts.signature.price || 70,
         productKeys: ['compactMirror', 'hairbrush', 'jewelryCase', 'sleepCollection'],
+        product: tierProducts.signature,
         description: 'A ready-to-personalize proposal box with the keepsake details bridesmaids actually use.',
       },
       {
         id: 'luxe',
-        name: 'The Luxe Bridesmaid Proposal Box',
+        name: 'The Bridesmaid Luxe Proposal Box',
         eyebrow: 'Luxe tier',
-        price: 99,
-        productKeys: ['compactMirror', 'hairbrush', 'jewelryCase', 'sleepCollection', 'robe', 'cosmeticPouch'],
-        description: 'The full proposal and getting-ready gift experience with robe and cosmetic pouch upgrades.',
+        price: tierProducts.luxe.price || 99,
+        productKeys: ['compactMirror', 'hairbrush', 'jewelryCase', 'sleepCollection', 'robe', 'slippers'],
+        product: tierProducts.luxe,
+        description: 'The full proposal and getting-ready gift experience with robe and custom slipper upgrades.',
       },
     ],
-    [],
+    [tierProducts],
   )
 
   const activeTier = tiers.find((tier) => tier.id === tierId) || tiers[0]
   const includedProducts = activeTier.productKeys.map((key) => products[key])
+  const bonusItems = [bonusProducts.hairClaw, bonusProducts.scrunchies]
+  const nameList = personalizations.map((item) => item.name.trim()).filter(Boolean).join(', ')
+  const messageList = personalizations.map((item, index) => `Box ${index + 1}: ${item.message.trim()}`).join(' | ')
+  const primaryPersonalization = personalizations[0] || { name: '', message: defaultLidMessage }
   const msrpUnit = getTierMsrp(activeTier, products)
   const bundleSavingsUnit = Math.max(0, msrpUnit - activeTier.price)
-  const timerGiftValue = secondsLeft > 0 ? 30 * quantity : 0
+  const bonusUnitValue = bonusItems.reduce((sum, product) => sum + product.price, 0)
+  const timerGiftValue = secondsLeft > 0 ? bonusUnitValue * quantity : 0
   const subtotal = activeTier.price * quantity
   const totalMsrp = msrpUnit * quantity
   const totalSavings = bundleSavingsUnit * quantity + timerGiftValue
-  const canSubmit = names.trim().length > 0 && lidMessage.trim().length > 0 && !isSubmitting
+  const canSubmit =
+    personalizations.length === quantity &&
+    personalizations.every((item) => item.name.trim().length > 0 && item.message.trim().length > 0) &&
+    !isSubmitting
 
+  const tierImages =
+    activeTier.product.images?.length ? activeTier.product.images : activeTier.product.image ? [activeTier.product.image] : []
   const galleryImages = [
-    '/images/gift-boxes/bridesmaid-box.png',
-    '/images/home/bridesmaid_box_lifestyle.png',
+    ...tierImages,
     ...includedProducts.map((product) => product.image),
   ].filter(Boolean)
 
@@ -266,26 +275,33 @@ export function PrebuiltBridesmaidProposalBoxBuilder({
   }, [secondsLeft])
 
   useEffect(() => {
+    setPersonalizations((current) =>
+      Array.from({ length: quantity }, (_, index) => current[index] || { name: '', message: defaultLidMessage }),
+    )
+  }, [quantity])
+
+  useEffect(() => {
     setImageIndex(0)
   }, [tierId])
 
   const minutes = Math.floor(secondsLeft / 60)
   const seconds = secondsLeft % 60
 
+  const updatePersonalization = (index: number, field: keyof Personalization, value: string) => {
+    setPersonalizations((current) =>
+      current.map((item, itemIndex) => (itemIndex === index ? { ...item, [field]: value } : item)),
+    )
+  }
+
   const handleAddToCart = async () => {
     if (!canSubmit) return
     setIsSubmitting(true)
 
     try {
-      const baseOptions = [
-        { name: 'Box Color', value: selectedColor.swellName },
-        { name: 'Matching Shredded Paper', value: 'Yes' },
-        { name: 'Exterior Bow Tie Ribbon', value: 'Yes' },
-        { name: 'Inner Lid Message', value: lidMessage.trim() },
-      ]
-
       const baseMetadata = {
         prebuilt_bridesmaid_box: true,
+        prebuilt_box_parent_listing_id: activeTier.product.id,
+        prebuilt_box_parent_listing_slug: activeTier.product.slug,
         prebuilt_box_tier: activeTier.name,
         prebuilt_box_display_unit_price: formatCurrency(activeTier.price),
         prebuilt_box_msrp_unit: formatCurrency(msrpUnit),
@@ -294,28 +310,29 @@ export function PrebuiltBridesmaidProposalBoxBuilder({
         prebuilt_box_total_display: formatCurrency(subtotal),
         prebuilt_box_total_savings: formatCurrency(totalSavings),
         prebuilt_box_coupon: activeTier.id === 'luxe' ? 'PREBUILT99' : 'PREBUILT70',
-        prebuilt_box_names: names.trim(),
+        prebuilt_box_names: nameList,
+        prebuilt_box_inner_lid_messages: messageList,
+        prebuilt_box_personalizations: JSON.stringify(personalizations),
         prebuilt_box_color: selectedColor.label,
-        prebuilt_box_lid_design: selectedDesign.name,
-        prebuilt_box_lid_message: lidMessage.trim(),
         prebuilt_box_included_products: includedProducts.map((product) => product.name).join(', '),
+        prebuilt_box_bonus_products: bonusItems.map((product) => product.name).join(', '),
         prebuilt_box_timer_gift:
           secondsLeft > 0
-            ? `Free scrunchie and pouch per box (${formatCurrency(timerGiftValue)} value)`
+            ? `Free hair claw and silk scrunchies per box (${formatCurrency(timerGiftValue)} value)`
             : 'Timer expired',
       }
 
-      let updatedCart = await addToCart(baseBox.id, quantity, baseOptions, baseMetadata, true)
+      let updatedCart = await addToCart(activeTier.product.id, quantity, [], baseMetadata, true)
 
       for (const product of includedProducts) {
         updatedCart = await addToCart(
           product.id,
           quantity,
-          buildProductOptions(product, selectedDesign.id, names),
+          buildProductOptions(product, nameList),
           {
             prebuilt_bridesmaid_box_component: true,
             prebuilt_box_tier: activeTier.name,
-            prebuilt_box_names: names.trim(),
+            prebuilt_box_names: nameList,
           },
           true,
         )
@@ -413,6 +430,9 @@ export function PrebuiltBridesmaidProposalBoxBuilder({
                         : 'border-gold-pale/35 bg-white/65 hover:border-gold/70'
                     }`}
                   >
+                    <div className="relative mb-4 aspect-[4/3] overflow-hidden bg-cream-dark">
+                      <Image src={tier.product.image} alt={tier.name} fill sizes="(min-width: 768px) 240px, 100vw" className="object-cover" />
+                    </div>
                     <p className="font-sans text-[10px] font-bold uppercase tracking-[0.18em] text-gold">{tier.eyebrow}</p>
                     <h2 className="mt-2 font-serif text-2xl leading-tight text-espresso">{tier.name}</h2>
                     <p className="mt-2 text-sm leading-6 text-espresso-light/75">{tier.description}</p>
@@ -435,7 +455,7 @@ export function PrebuiltBridesmaidProposalBoxBuilder({
             <div className="mt-6 border border-gold-pale/40 bg-white/75 p-5">
               <h2 className="font-serif text-2xl text-espresso">What&apos;s inside</h2>
               <p className="mt-2 text-sm leading-6 text-espresso-light/75">
-                This preset includes products shoppers can also find on the site, bundled with a customized outside and inside gift box valued at {formatCurrency(boxBasePrice)}.
+                This preset is linked to the actual Swell box listing and bundles products shoppers can also find on the site, with custom outside-lid names and inside-lid messages.
               </p>
               <div className="mt-5 grid gap-3 sm:grid-cols-2">
                 {includedProducts.map((product) => (
@@ -533,7 +553,7 @@ export function PrebuiltBridesmaidProposalBoxBuilder({
                             previewTab === tab ? 'bg-espresso text-cream' : 'text-espresso/55 hover:text-espresso'
                           }`}
                         >
-                          {tab}
+                          {tab === 'box' ? 'Outside' : tab === 'inside' ? 'Inside' : 'Message'}
                         </button>
                       ))}
                     </div>
@@ -542,6 +562,12 @@ export function PrebuiltBridesmaidProposalBoxBuilder({
                       {previewTab === 'box' && (
                         <div className="relative flex h-full items-center justify-center p-6">
                           <Image src={selectedColor.image} alt={`${selectedColor.label} bridesmaid box`} fill sizes="390px" className="object-contain p-6" />
+                          <p
+                            className="absolute left-1/2 top-[42%] max-w-[58%] -translate-x-1/2 text-center text-3xl leading-tight text-espresso"
+                            style={{ fontFamily: '"Brush Script MT", "Segoe Script", cursive' }}
+                          >
+                            {primaryPersonalization.name || 'Name preview'}
+                          </p>
                         </div>
                       )}
 
@@ -565,17 +591,17 @@ export function PrebuiltBridesmaidProposalBoxBuilder({
 
                       {previewTab === 'lid' && (
                         <div className="flex h-full flex-col items-center justify-center bg-white p-5 text-center">
-                          <div className="relative mb-4 h-20 w-20 overflow-hidden border border-gold-pale/40 bg-cream">
-                            <Image src={selectedDesign.image} alt={selectedDesign.name} fill sizes="80px" className="object-cover" />
-                          </div>
+                          <p className="mb-3 font-sans text-[10px] font-bold uppercase tracking-[0.18em] text-gold">
+                            Inside lid message
+                          </p>
                           <p
                             className="max-w-[260px] text-3xl leading-tight text-espresso"
                             style={{ fontFamily: '"Brush Script MT", "Segoe Script", cursive' }}
                           >
-                            {lidMessage || 'Will you be my bridesmaid?'}
+                            {primaryPersonalization.message || defaultLidMessage}
                           </p>
                           <p className="mt-4 font-sans text-[10px] font-bold uppercase tracking-[0.18em] text-espresso-light/65">
-                            {names || 'Bridesmaid names'}
+                            {primaryPersonalization.name || 'Outside lid name'}
                           </p>
                         </div>
                       )}
@@ -601,55 +627,46 @@ export function PrebuiltBridesmaidProposalBoxBuilder({
                     </div>
                   </section>
 
-                  <section>
-                    <h3 className="mb-3 font-sans text-xs font-bold uppercase tracking-[0.18em] text-espresso">Lid design</h3>
-                    <div className="grid grid-cols-4 gap-2">
-                      {designs.map((design) => (
-                        <button
-                          key={design.id}
-                          type="button"
-                          onClick={() => setSelectedDesign(design)}
-                          className={`relative aspect-square overflow-hidden border transition-colors ${
-                            selectedDesign.id === design.id ? 'border-gold' : 'border-gold-pale/35 hover:border-gold'
-                          }`}
-                        >
-                          <Image src={design.image} alt={design.name} fill sizes="80px" className="object-cover" />
-                          {selectedDesign.id === design.id && (
-                            <span className="absolute inset-0 flex items-center justify-center bg-gold/20">
-                              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-gold text-white">
-                                <Check className="h-3 w-3" />
-                              </span>
-                            </span>
-                          )}
-                        </button>
-                      ))}
-                    </div>
-                  </section>
-
                   <section className="grid gap-3">
-                    <label>
-                      <span className="mb-1 block font-sans text-[10px] font-bold uppercase tracking-[0.16em] text-espresso/55">
-                        Bridesmaid names
-                      </span>
-                      <textarea
-                        value={names}
-                        onChange={(event) => setNames(event.target.value)}
-                        placeholder="Emily, Sophia, Ava"
-                        rows={2}
-                        className="w-full resize-none border border-gold-pale/50 bg-white px-3 py-3 font-serif text-sm text-espresso outline-none focus:border-gold"
-                      />
-                    </label>
-                    <label>
-                      <span className="mb-1 block font-sans text-[10px] font-bold uppercase tracking-[0.16em] text-espresso/55">
-                        Lid message
-                      </span>
-                      <input
-                        type="text"
-                        value={lidMessage}
-                        onChange={(event) => setLidMessage(event.target.value)}
-                        className="h-11 w-full border border-gold-pale/50 bg-white px-3 font-serif text-sm text-espresso outline-none focus:border-gold"
-                      />
-                    </label>
+                    <div>
+                      <h3 className="font-sans text-xs font-bold uppercase tracking-[0.18em] text-espresso">
+                        Personalize each box
+                      </h3>
+                      <p className="mt-1 text-xs leading-5 text-espresso-light/70">
+                        Add one outside-lid name and one inside-lid message for every box in this order.
+                      </p>
+                    </div>
+                    {personalizations.map((item, index) => (
+                      <div key={index} className="border border-gold-pale/40 bg-cream p-3">
+                        <p className="mb-2 font-sans text-[10px] font-bold uppercase tracking-[0.16em] text-gold">
+                          Box {index + 1}
+                        </p>
+                        <label>
+                          <span className="mb-1 block font-sans text-[10px] font-bold uppercase tracking-[0.16em] text-espresso/55">
+                            Outside lid name
+                          </span>
+                          <input
+                            type="text"
+                            value={item.name}
+                            onChange={(event) => updatePersonalization(index, 'name', event.target.value)}
+                            placeholder="Emily"
+                            className="h-11 w-full border border-gold-pale/50 bg-white px-3 font-serif text-sm text-espresso outline-none focus:border-gold"
+                          />
+                        </label>
+                        <label className="mt-3 block">
+                          <span className="mb-1 block font-sans text-[10px] font-bold uppercase tracking-[0.16em] text-espresso/55">
+                            Inside lid message
+                          </span>
+                          <input
+                            type="text"
+                            value={item.message}
+                            onChange={(event) => updatePersonalization(index, 'message', event.target.value)}
+                            placeholder={defaultLidMessage}
+                            className="h-11 w-full border border-gold-pale/50 bg-white px-3 font-serif text-sm text-espresso outline-none focus:border-gold"
+                          />
+                        </label>
+                      </div>
+                    ))}
                   </section>
 
                   <section className="border border-gold-pale/40 bg-cream p-4">
@@ -657,7 +674,7 @@ export function PrebuiltBridesmaidProposalBoxBuilder({
                       <div>
                         <p className="font-sans text-[10px] font-bold uppercase tracking-[0.16em] text-gold">Limited checkout bonus</p>
                         <p className="mt-1 text-sm leading-5 text-espresso">
-                          Free scrunchie and pouch per box, valued at {formatCurrency(30)} per box.
+                          Free bridal hair claw and cream silk bridal scrunchies per box, valued at {formatCurrency(bonusUnitValue)} per box.
                         </p>
                       </div>
                       <Clock3 className="h-5 w-5 flex-shrink-0 text-gold" />
@@ -675,6 +692,24 @@ export function PrebuiltBridesmaidProposalBoxBuilder({
                         Reset timer
                       </button>
                     )}
+                    <div className="mt-4 grid grid-cols-2 gap-2">
+                      {bonusItems.map((product) => (
+                        <article key={product.id} className="border border-gold-pale/35 bg-white p-2">
+                          <div className="relative aspect-square overflow-hidden bg-cream-dark">
+                            <Image src={product.image} alt={product.name} fill sizes="120px" className="object-cover" />
+                          </div>
+                          <h4 className="mt-2 line-clamp-2 font-serif text-sm leading-tight text-espresso">{product.name}</h4>
+                          <p className="mt-1 font-sans text-[10px] font-semibold text-gold">{formatCurrency(product.price)} value</p>
+                          <button
+                            type="button"
+                            onClick={() => setDetailProduct(product)}
+                            className="mt-2 font-sans text-[10px] font-bold uppercase tracking-[0.14em] text-espresso/55 transition-colors hover:text-espresso"
+                          >
+                            View detail
+                          </button>
+                        </article>
+                      ))}
+                    </div>
                   </section>
 
                   <section className="border border-gold-pale/40 bg-white p-4">
