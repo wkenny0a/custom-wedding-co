@@ -307,6 +307,13 @@ export function PrebuiltBridesmaidProposalBoxBuilder({
     })
   }
 
+  const changeGalleryImage = (direction: -1 | 1) => {
+    setImageIndex((current) => {
+      if (galleryImages.length <= 1) return 0
+      return (current + direction + galleryImages.length) % galleryImages.length
+    })
+  }
+
   const handleAddToCart = async () => {
     if (!canSubmit) return
     setIsSubmitting(true)
@@ -397,7 +404,7 @@ export function PrebuiltBridesmaidProposalBoxBuilder({
         </div>
 
         <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_430px] lg:items-start">
-          <div className="order-1">
+          <div className="order-1 min-w-0">
             <div className="border border-gold-pale/40 bg-white p-4 shadow-xl shadow-espresso/5">
               <div className="relative aspect-[4/3] overflow-hidden bg-cream-dark">
                 <Image
@@ -412,20 +419,42 @@ export function PrebuiltBridesmaidProposalBoxBuilder({
                   {activeTier.eyebrow}
                 </div>
               </div>
-              <div className="mt-4 grid grid-cols-5 gap-2">
-                {galleryImages.slice(0, 5).map((image, index) => (
-                  <button
-                    key={`${image}-${index}`}
-                    type="button"
-                    onClick={() => setImageIndex(index)}
-                    className={`relative aspect-square overflow-hidden border bg-cream-dark transition-colors ${
-                      imageIndex === index ? 'border-gold' : 'border-gold-pale/35 hover:border-gold/70'
-                    }`}
-                    aria-label={`View gallery image ${index + 1}`}
-                  >
-                    <Image src={image} alt="" fill sizes="120px" className="object-cover" />
-                  </button>
-                ))}
+              <div className="mt-4 flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => changeGalleryImage(-1)}
+                  disabled={galleryImages.length <= 1}
+                  className="flex h-12 w-9 flex-shrink-0 items-center justify-center border border-gold-pale/40 bg-cream text-espresso transition-colors hover:border-gold disabled:cursor-not-allowed disabled:opacity-35"
+                  aria-label="View previous gallery image"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </button>
+                <div className="min-w-0 flex-1 overflow-x-auto pb-1">
+                  <div className="flex gap-2">
+                    {galleryImages.map((image, index) => (
+                      <button
+                        key={`${image}-${index}`}
+                        type="button"
+                        onClick={() => setImageIndex(index)}
+                        className={`relative h-14 w-14 flex-shrink-0 overflow-hidden border bg-cream-dark transition-colors sm:h-20 sm:w-20 ${
+                          imageIndex === index ? 'border-gold' : 'border-gold-pale/35 hover:border-gold/70'
+                        }`}
+                        aria-label={`View gallery image ${index + 1} of ${galleryImages.length}`}
+                      >
+                        <Image src={image} alt="" fill sizes="80px" className="object-cover" />
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => changeGalleryImage(1)}
+                  disabled={galleryImages.length <= 1}
+                  className="flex h-12 w-9 flex-shrink-0 items-center justify-center border border-gold-pale/40 bg-cream text-espresso transition-colors hover:border-gold disabled:cursor-not-allowed disabled:opacity-35"
+                  aria-label="View next gallery image"
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </button>
               </div>
             </div>
 
@@ -494,7 +523,7 @@ export function PrebuiltBridesmaidProposalBoxBuilder({
             </div>
           </div>
 
-          <aside className="order-2">
+          <aside className="order-2 min-w-0">
             <div className="lg:sticky lg:top-24">
               <div className="border border-gold-pale/40 bg-white/90 p-5 shadow-xl shadow-espresso/5 backdrop-blur">
                 <div className="mb-5 flex items-start justify-between gap-4 border-b border-gold-pale/40 pb-4">
