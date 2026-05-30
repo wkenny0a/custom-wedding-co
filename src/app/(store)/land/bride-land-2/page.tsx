@@ -407,6 +407,18 @@ export default async function BrideLandingPageTwo() {
         </div>
 
         <div className="relative z-10 text-center max-w-5xl mx-auto space-y-6 pt-12">
+          {/* Premium Top-Level Social Proof Badge */}
+          <div className="flex flex-col items-center gap-1.5 animate-pulse pb-1">
+            <div className="flex items-center justify-center gap-0.5 text-gold-light">
+              {Array.from({ length: 5 }).map((_, i) => (
+                <Star key={i} className="w-4.5 h-4.5 fill-gold-light text-gold-light" />
+              ))}
+            </div>
+            <p className="font-sans text-[10px] sm:text-xs font-bold uppercase tracking-[0.24em] text-cream-dark/95">
+              Over 10,000+ Happy Bridesmaids & 5-Star Reviews
+            </p>
+          </div>
+
           <div className="inline-flex items-center gap-2 border border-gold/30 bg-gold/10 rounded-full px-4 py-1.5 text-[0.7rem] uppercase tracking-[0.2em] text-gold-light font-semibold animate-fade-in">
             <Sparkles className="w-3.5 h-3.5" /> Personalized Bridesmaid Proposal Box
           </div>
