@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useState, useCallback } from 'react';
 import swell from '@/lib/swell';
 import { useCart } from '@/context/CartContext';
+import { trackInitiateCheckout } from '@/lib/analytics';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 export interface ContactInfo {
@@ -76,6 +77,22 @@ export function CheckoutProvider({ children }: { children: React.ReactNode }) {
   });
   const [shippingRates, setShippingRates] = useState<ShippingRate[]>([]);
   const [selectedRate, setSelectedRate] = useState<ShippingRate | null>(null);
+
+  const hasTrackedCheckoutRef = React.useRef(false);
+  React.useEffect(() => {
+    if (cart?.items?.length > 0 && !hasTrackedCheckoutRef.current) {
+      hasTrackedCheckoutRef.current = true;
+      trackInitiateCheckout({
+        items: cart.items.map((i: any) => ({
+          id: i.product_id || i.product?.id || '',
+          name: i.product?.name || 'Unknown Product',
+          price: i.price || 0,
+          quantity: i.quantity || 1,
+        })),
+        total: cart.sub_total ?? cart.subTotal ?? cart.total ?? 0,
+      });
+    }
+  }, [cart]);
 
   const saveContact = useCallback(async (c: ContactInfo) => {
     setIsWorking(true);

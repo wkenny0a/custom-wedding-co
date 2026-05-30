@@ -7,12 +7,24 @@ import { useCart } from '@/context/CartContext'
 import { MultiItemBuilder } from './MultiItemBuilder'
 import Link from 'next/link'
 import imageCompression from 'browser-image-compression'
+import { trackViewContent } from '@/lib/analytics'
 
 export function ProductInfo({ product, onStyleImageSelect, hideMobileSticky = false }: { product: any, onStyleImageSelect?: (url: string | null) => void, hideMobileSticky?: boolean }) {
     const [quantity, setQuantity] = useState(1)
     const [isAdding, setIsAdding] = useState(false)
     const [customDesignFile, setCustomDesignFile] = useState<File | null>(null)
     const { addToCart, setIsCartOpen, cart } = useCart()
+
+    useEffect(() => {
+        if (product?._id || product?.id) {
+            trackViewContent({
+                id: product._id || product.id,
+                name: product.name || 'Unknown Product',
+                price: Number(product.price) || 0,
+                category: product.category?.title || 'Unknown Category',
+            })
+        }
+    }, [product])
 
     // ── Classify options: use Swell's input_type for robust detection ──
     // Variant/select options: have values to choose from

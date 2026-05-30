@@ -1,11 +1,50 @@
 'use client';
 
+import { useEffect, useRef } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
+import swell from '@/lib/swell';
+import { trackPurchase } from '@/lib/analytics';
 
 export default function OrderConfirmation() {
   const params = useSearchParams();
   const orderId = params.get('order_id') || '';
+  const trackedRef = useRef(false);
+
+  useEffect(() => {
+    if (!orderId || trackedRef.current) return;
+
+    // Prevent double-tracking on refreshes using localStorage
+    const alreadyTrackedKey = `tracked_order_${orderId}`;
+    if (localStorage.getItem(alreadyTrackedKey)) {
+      trackedRef.current = true;
+      return;
+    }
+
+    async function fetchAndTrackOrder() {
+      try {
+        const order = await (swell as any).orders.get(orderId);
+        if (order) {
+          trackPurchase({
+            orderId: order.id,
+            total: order.sub_total ?? order.subTotal ?? order.total ?? 0,
+            items: (order.items || []).map((i: any) => ({
+              id: i.product_id || i.product?.id || '',
+              name: i.product?.name || 'Unknown Product',
+              price: i.price || 0,
+              quantity: i.quantity || 1,
+            })),
+          });
+          localStorage.setItem(alreadyTrackedKey, 'true');
+          trackedRef.current = true;
+        }
+      } catch (err) {
+        console.error('Failed to track purchase:', err);
+      }
+    }
+
+    fetchAndTrackOrder();
+  }, [orderId]);
 
   const NEXT_STEPS = [
     {

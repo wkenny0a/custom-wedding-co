@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { useCart } from '@/context/CartContext';
 import { Button } from '@/components/ui/Button';
 import { Check, Sparkles, ShoppingBag } from 'lucide-react';
+import { trackViewContent } from '@/lib/analytics';
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 const BOX_COLORS = [
@@ -82,6 +83,17 @@ export default function PrebuiltBridesmaidBoxConfigurator({
   // Carousel states for the visual grid
   const [activeCarouselIndex, setActiveCarouselIndex] = useState<number>(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (baseBoxProduct?.id) {
+      trackViewContent({
+        id: baseBoxProduct.id,
+        name: baseBoxProduct.name || 'Prebuilt Bridesmaid Proposal Box',
+        price: selectedTier === 'deluxe' ? 99 : 70,
+        category: 'Gifts & Boxes'
+      });
+    }
+  }, [baseBoxProduct, selectedTier]);
 
   // Dynamic products list based on selected tier
   const classicStufferSlugs = [

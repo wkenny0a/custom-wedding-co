@@ -1,6 +1,9 @@
 'use client';
 
 import Script from 'next/script';
+import { useEffect } from 'react';
+import { usePathname } from 'next/navigation';
+import { trackPageView } from '@/lib/analytics';
 
 /**
  * AnalyticsScripts
@@ -27,6 +30,12 @@ const PINTEREST_TAG_ID = process.env.NEXT_PUBLIC_PINTEREST_TAG_ID || 'YOUR_PINTE
 const CLARITY_PROJECT_ID = process.env.NEXT_PUBLIC_CLARITY_PROJECT_ID || 'YOUR_CLARITY_PROJECT_ID';
 
 export function AnalyticsScripts() {
+  const pathname = usePathname();
+
+  useEffect(() => {
+    trackPageView();
+  }, [pathname]);
+
   return (
     <>
       {/* ═══════════════════════════════════════════════════════════════════

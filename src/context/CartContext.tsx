@@ -111,6 +111,20 @@ export function CartProvider({ children }: { children: ReactNode }) {
             }
             if (updatedCart) {
                 setCart(updatedCart)
+                
+                // Fire e-commerce tracking events across all pixels for all added items in the batch
+                try {
+                    items.forEach((item) => {
+                        const addedItem = (updatedCart as any)?.items?.find((i: any) => i.product_id === item.productId);
+                        trackAddToCart({
+                            id: item.productId,
+                            name: addedItem?.product?.name || 'Bridesmaid Box Item',
+                            price: addedItem?.price || 0,
+                            quantity: item.quantity,
+                        });
+                    });
+                } catch (_) { /* analytics should never break checkout */ }
+
                 setIsCartOpen(true)
             }
         } catch (error: any) {

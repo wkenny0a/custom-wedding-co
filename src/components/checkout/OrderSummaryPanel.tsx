@@ -14,6 +14,24 @@ export default function OrderSummaryPanel() {
   const grandTotal = cart.grand_total ?? 0;
   const freeShipping = shipping === 0 && subtotal > 0;
 
+  // Calculate pre-built bundle savings compared to individual keepsakes MSRP
+  let totalBundleSavings = 0;
+  items.forEach((item: any) => {
+    const slug = item.product?.slug || '';
+    const name = (item.product?.name || item.description || '').toLowerCase();
+    
+    // Signature box tier ($113.97 MSRP)
+    if (slug === 'the-bridesmaid-proposal-box' || (name.includes('the bridesmaid proposal box') && !name.includes('luxe'))) {
+      const msrpValue = 113.97;
+      totalBundleSavings += (msrpValue - (item.price || 0)) * item.quantity;
+    }
+    // Luxe box tier ($228.95 MSRP)
+    else if (slug === 'the-bridesmaid-luxe-proposal-box' || name.includes('the bridesmaid luxe proposal box') || name.includes('luxe')) {
+      const msrpValue = 228.95;
+      totalBundleSavings += (msrpValue - (item.price || 0)) * item.quantity;
+    }
+  });
+
   return (
     <div className="bg-white/60 backdrop-blur-sm border border-gold-pale/30 rounded-2xl overflow-hidden">
       <div className="px-6 py-4 border-b border-gold-pale/20">
@@ -73,6 +91,18 @@ export default function OrderSummaryPanel() {
           <span>Subtotal</span>
           <span>${subtotal.toFixed(2)}</span>
         </div>
+
+        {totalBundleSavings > 0 && (
+          <div className="bg-green-50 border border-green-200/50 rounded-xl px-4 py-3 text-xs font-sans text-green-800 space-y-1 my-2">
+            <div className="flex justify-between font-semibold">
+              <span>🎉 Bundle Gifting Savings</span>
+              <span>−${totalBundleSavings.toFixed(2)}</span>
+            </div>
+            <p className="text-[10px] text-green-700/80 leading-normal">
+              You saved <strong>${totalBundleSavings.toFixed(2)}</strong> by choosing pre-built personalized proposal keepsakes instead of buying them separately!
+            </p>
+          </div>
+        )}
 
         {discount > 0 && (
           <div className="flex justify-between text-sm font-sans text-green-700">

@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react'
 import Image from 'next/image'
 import { ArrowRight, Check, ChevronLeft, ChevronRight, Clock3, PackageCheck, ShoppingBag, Sparkles, Star, X } from 'lucide-react'
 import { useCart } from '@/context/CartContext'
+import { trackViewContent } from '@/lib/analytics'
 
 export type BuilderProduct = {
   id: string
@@ -190,6 +191,17 @@ export function PrebuiltBridesmaidProposalBoxBuilder({
   )
 
   const activeTier = tiers.find((tier) => tier.id === tierId) || tiers[0]
+
+  useEffect(() => {
+    if (activeTier?.product?.id) {
+      trackViewContent({
+        id: activeTier.product.id,
+        name: activeTier.product.name || 'Prebuilt Bridesmaid Proposal Box',
+        price: activeTier.price,
+        category: 'Gifts & Boxes',
+      })
+    }
+  }, [activeTier])
   const includedProducts = activeTier.productKeys.map((key) => products[key])
   const bonusItems = [bonusProducts.hairClaw, bonusProducts.scrunchies]
   const nameList = personalizations.map((item) => item.name.trim()).filter(Boolean).join(', ')
