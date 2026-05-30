@@ -458,8 +458,8 @@ export default async function BrideLandingPageTwo() {
         <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
           <div className="lg:col-span-5 relative aspect-[4/5] rounded-3xl overflow-hidden shadow-2xl border border-gold/10">
             <Image
-              src="/images/ugc/bridesmaid-review-1.jpeg"
-              alt="Real bridesmaid crying happy tears during proposal box unboxing"
+              src="/images/ugc/bridesmaid-review-1-moh.jpg"
+              alt="Real bridesmaid holding custom maid of honor proposal box open"
               fill
               sizes="(min-width: 1024px) 38vw, 90vw"
               className="object-cover"
