@@ -51,12 +51,13 @@ export function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
                             <Link href="/gifts/welcome-gift-box" onClick={onClose} className="font-sans text-sm uppercase tracking-widest text-espresso/80 hover:text-gold transition-colors">Welcome Box</Link>
                         </div>
                     </div>
-                    <Link href="/shop/welcome-signs-signage" onClick={onClose} className="font-serif text-2xl text-espresso hover:text-gold transition-colors">Signage & Décor</Link>
+                    <Link href="/shop/signage-displays" onClick={onClose} className="font-serif text-2xl text-espresso hover:text-gold transition-colors">Signage & Decor</Link>
                     <Link href="/shop/barware-drinkware" onClick={onClose} className="font-serif text-2xl text-espresso hover:text-gold transition-colors">Tabletop & Bar</Link>
                     <Link href="/shop/favors-party-extras" onClick={onClose} className="font-serif text-2xl text-espresso hover:text-gold transition-colors">Wedding Favors</Link>
 
                     <div className="mt-8 pt-8 border-t border-gold/20 flex flex-col gap-4">
                         <Link href="/our-story" onClick={onClose} className="font-sans tracking-wide uppercase text-sm text-gray-600 hover:text-gold">Our Story</Link>
+                        <Link href="/reviews" onClick={onClose} className="font-sans tracking-wide uppercase text-sm text-gray-600 hover:text-gold">Reviews</Link>
                         <Link href="/how-to-order" onClick={onClose} className="font-sans tracking-wide uppercase text-sm text-gray-600 hover:text-gold">How to Order</Link>
                         <Link href="/contact" onClick={onClose} className="font-sans tracking-wide uppercase text-sm text-gray-600 hover:text-gold">Contact Us</Link>
                     </div>

@@ -14,23 +14,6 @@ type InfoPage = {
 }
 
 const pages: Record<string, InfoPage> = {
-  about: {
-    eyebrow: 'Custom Wedding Co.',
-    title: 'About Custom Wedding Co.',
-    description: 'Personalized wedding details, gift boxes, barware, favors, and keepsakes crafted for modern celebrations.',
-    intro:
-      'We create personalized wedding details that feel thoughtful, useful, and beautifully made, from bridal party gifts to reception favors and welcome boxes.',
-    sections: [
-      {
-        title: 'What We Make',
-        body: 'Our collection focuses on custom wedding gifts, guest-experience details, favor displays, barware, signage, keepsakes, and curated boxes for the people who make your day feel complete.',
-      },
-      {
-        title: 'How We Work',
-        body: 'Most personalized products include a digital proof before production, so couples can review names, dates, monograms, artwork, and wording before the final piece is crafted.',
-      },
-    ],
-  },
   'our-story': {
     eyebrow: 'Our Story',
     title: 'Personal Details for the Moments People Remember',
@@ -194,7 +177,7 @@ export default async function InfoPage({ params }: { params: Promise<{ slug: str
   if (!page) notFound()
 
   return (
-    <main className="bg-cream text-espresso">
+    <main className="bg-cream pb-20 text-espresso sm:pb-0">
       <section className="border-b border-gold/20 bg-cream-dark px-4 py-16 sm:px-6 lg:px-12 lg:py-24">
         <div className="mx-auto max-w-4xl text-center">
           <p className="font-sans text-xs font-bold uppercase tracking-[0.22em] text-gold">{page.eyebrow}</p>

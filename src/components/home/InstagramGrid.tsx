@@ -22,7 +22,12 @@ export function InstagramGrid() {
                     <h2 className="font-display text-4xl md:text-5xl text-espresso mb-6">
                         Share Your Moment
                     </h2>
-                    <a href="#" className="font-sans font-medium text-espresso hover:text-gold transition-colors underline underline-offset-4">
+                    <a
+                        href="https://www.instagram.com/customweddingco/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="font-sans font-medium text-espresso hover:text-gold transition-colors underline underline-offset-4"
+                    >
                         @customweddingco
                     </a>
                 </div>
@@ -31,7 +36,9 @@ export function InstagramGrid() {
                     {instagramPosts.map((post, i) => (
                         <a
                             key={i}
-                            href="#"
+                            href="https://www.instagram.com/customweddingco/"
+                            target="_blank"
+                            rel="noopener noreferrer"
                             className={`relative aspect-square overflow-hidden group ${i >= 6 ? 'hidden lg:block' : ''}`}
                         >
                             <div className="absolute inset-0 bg-espresso/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10 flex items-center justify-center">
