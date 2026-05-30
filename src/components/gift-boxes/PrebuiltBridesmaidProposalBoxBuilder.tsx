@@ -266,6 +266,36 @@ export function PrebuiltBridesmaidProposalBoxBuilder({
     setIsSubmitting(true)
 
     try {
+      const optionsArray: any[] = []
+
+      // 1. Box Color
+      optionsArray.push({ name: 'Box Color', value: selectedColor.swellName || selectedColor.label })
+
+      // 2. Bridesmaid Names
+      optionsArray.push({ name: 'Bridesmaid Names', value: nameList })
+
+      // 3. Inner Lid Message
+      optionsArray.push({ name: 'Inner Lid Message', value: messageList })
+
+      // 4. Included Keepsakes
+      optionsArray.push({
+        name: 'Included Keepsakes',
+        value: includedProducts.map((product) => product.name).join(', '),
+      })
+
+      // 5. Free Checkout Bonus
+      if (secondsLeft > 0) {
+        optionsArray.push({
+          name: 'Free Checkout Bonus',
+          value: `${bonusItems.map((product) => product.name).join(', ')} (Included)`,
+        })
+      } else {
+        optionsArray.push({
+          name: 'Free Checkout Bonus',
+          value: 'None (Timer Expired)',
+        })
+      }
+
       const baseMetadata = {
         prebuilt_bridesmaid_box: true,
         prebuilt_box_parent_listing_id: activeTier.product.id,
@@ -291,7 +321,7 @@ export function PrebuiltBridesmaidProposalBoxBuilder({
             : 'Timer expired',
       }
 
-      await addToCart(activeTier.product.id, quantity, [], baseMetadata, true)
+      await addToCart(activeTier.product.id, quantity, optionsArray, baseMetadata, true)
 
       window.location.href = '/checkout'
     } catch (error) {
