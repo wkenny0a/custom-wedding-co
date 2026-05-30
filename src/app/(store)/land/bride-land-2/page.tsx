@@ -487,8 +487,8 @@ export default async function BrideLandingPageTwo() {
           <div className="text-center space-y-4">
             <span className="text-xs uppercase tracking-[0.24em] text-gold font-bold">Unboxing Details</span>
             <h2 className="font-serif text-3xl md:text-5xl text-espresso">Everything Inside Feels Thoughtful</h2>
-            <p className="text-espresso/70 font-sans text-sm md:text-base max-w-lg mx-auto">
-              Curated luxury items that pair beautifully together to form an unforgettable getting-ready set.
+            <p className="text-espresso/70 font-sans text-sm md:text-base max-w-2xl mx-auto">
+              Curated luxury items that pair beautifully together to form an unforgettable getting-ready set—and much more! Scroll down to the interactive builder below to see full details, additional keepsakes, box colors, and customization variants.
             </p>
           </div>
 
