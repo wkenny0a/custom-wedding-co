@@ -393,7 +393,7 @@ export default async function BrideLandingPageTwo() {
     <main className="w-full max-w-full overflow-x-hidden bg-cream text-espresso">
 
       {/* ─── 1. HERO SECTION ──────────────────────────────────────────────── */}
-      <section className="relative min-h-[90vh] flex items-center justify-center py-20 px-4 sm:px-6 md:px-8 bg-espresso overflow-hidden">
+      <section className="relative min-h-[75vh] sm:min-h-[85vh] flex items-center justify-center pt-10 pb-16 sm:py-20 px-4 sm:px-6 md:px-8 bg-espresso overflow-hidden">
         <div className="absolute inset-0 z-0">
           <Image
             src="/images/home/bridesmaid_box_lifestyle.png"
@@ -406,9 +406,9 @@ export default async function BrideLandingPageTwo() {
           <div className="absolute inset-0 bg-gradient-to-b from-espresso/40 via-espresso/50 to-espresso/90" />
         </div>
 
-        <div className="relative z-10 text-center max-w-5xl mx-auto space-y-6 pt-12">
+        <div className="relative z-10 text-center max-w-5xl mx-auto space-y-6 pt-2 sm:pt-6">
           {/* Premium Top-Level Social Proof Badge */}
-          <div className="flex flex-col items-center gap-1.5 animate-pulse pb-1">
+          <div className="flex flex-col items-center gap-1.5 pb-1">
             <div className="flex items-center justify-center gap-0.5 text-gold-light">
               {Array.from({ length: 5 }).map((_, i) => (
                 <Star key={i} className="w-4.5 h-4.5 fill-gold-light text-gold-light" />
