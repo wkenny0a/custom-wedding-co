@@ -271,30 +271,28 @@ export function PrebuiltBridesmaidProposalBoxBuilder({
       // 1. Box Color
       optionsArray.push({ name: 'Box Color', value: selectedColor.swellName || selectedColor.label })
 
-      // 2. Bridesmaid Names
-      optionsArray.push({ name: 'Bridesmaid Names', value: nameList })
-
-      // 3. Inner Lid Message
-      optionsArray.push({ name: 'Inner Lid Message', value: messageList })
-
-      // 4. Included Keepsakes
-      optionsArray.push({
-        name: 'Included Keepsakes',
-        value: includedProducts.map((product) => product.name).join(', '),
+      // 2. Personalization & Keepsakes (Consolidated with clean line breaks)
+      let detailsString = ''
+      personalizations.forEach((item, index) => {
+        detailsString += `Name ${index + 1}: ${item.name.trim()}\n`
+        detailsString += `Box Message ${index + 1}: ${item.message.trim()}\n\n`
       })
 
-      // 5. Free Checkout Bonus
+      detailsString += `Included Keepsakes:\n`
+      includedProducts.forEach((product) => {
+        detailsString += `- ${product.name}\n`
+      })
+
       if (secondsLeft > 0) {
-        optionsArray.push({
-          name: 'Free Checkout Bonus',
-          value: `${bonusItems.map((product) => product.name).join(', ')} (Included)`,
+        detailsString += `\nFree Checkout Bonus:\n`
+        bonusItems.forEach((product) => {
+          detailsString += `- ${product.name}\n`
         })
       } else {
-        optionsArray.push({
-          name: 'Free Checkout Bonus',
-          value: 'None (Timer Expired)',
-        })
+        detailsString += `\nFree Checkout Bonus:\n- None (Timer Expired)\n`
       }
+
+      optionsArray.push({ name: 'Personalization & Keepsakes', value: detailsString })
 
       const baseMetadata = {
         prebuilt_bridesmaid_box: true,
