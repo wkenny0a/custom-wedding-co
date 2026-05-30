@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import Image from 'next/image'
-import { Facebook, Heart, Instagram, ShieldCheck, Sparkles, Truck } from 'lucide-react'
+import { Facebook, Instagram, ShieldCheck, Sparkles, Truck } from 'lucide-react'
 
 const shopLinks = [
     { href: '/shop/signage-displays', label: 'Signage & Displays' },
@@ -43,7 +43,6 @@ export function Footer() {
                         <a href="https://www.pinterest.com/customweddingco/" target="_blank" rel="noopener noreferrer" aria-label="Custom Wedding Co. on Pinterest" className="w-10 h-10 rounded-full border border-espresso flex items-center justify-center hover:bg-espresso hover:text-cream transition-colors">
                             <span className="font-serif text-lg font-bold leading-none">P</span>
                         </a>
-                        <a href="https://www.etsy.com/shop/CustomWeddingCo" target="_blank" rel="noopener noreferrer" aria-label="Custom Wedding Co. on Etsy" className="w-10 h-10 rounded-full border border-espresso flex items-center justify-center hover:bg-espresso hover:text-cream transition-colors"><Heart size={18} /></a>
                         <a href="https://facebook.com/customweddingco" target="_blank" rel="noopener noreferrer" aria-label="Custom Wedding Co. on Facebook" className="w-10 h-10 rounded-full border border-espresso flex items-center justify-center hover:bg-espresso hover:text-cream transition-colors"><Facebook size={18} /></a>
                     </div>
                 </div>
@@ -74,10 +73,8 @@ export function Footer() {
                     <Link href="/our-story" className="font-sans text-sm hover:text-gold transition-colors">Our Story</Link>
                     <Link href="/about" className="font-sans text-sm hover:text-gold transition-colors">About Us</Link>
                     <Link href="/reviews" className="font-sans text-sm hover:text-gold transition-colors">Customer Reviews</Link>
-                    <Link href="/real-weddings" className="font-sans text-sm hover:text-gold transition-colors">Real Weddings</Link>
                     <Link href="/press" className="font-sans text-sm hover:text-gold transition-colors">Press</Link>
                     <Link href="/blog" className="font-sans text-sm hover:text-gold transition-colors">Blog</Link>
-                    <a href="https://www.etsy.com/shop/CustomWeddingCo" target="_blank" rel="noopener noreferrer" className="font-sans text-sm hover:text-gold transition-colors">Etsy Shop</a>
                 </div>
             </div>
 

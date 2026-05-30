@@ -4,7 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "prebuild": "node scripts/verify-footer-navigation.mjs",
     "build": "next build",
+    "verify:footer": "node scripts/verify-footer-navigation.mjs",
     "start": "next start",
     "lint": "eslint"
   },
