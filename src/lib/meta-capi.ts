@@ -88,7 +88,7 @@ export async function sendCAPIEvent(event: CAPIEvent): Promise<boolean> {
     return false;
   }
 
-  const payload = {
+  const payload: any = {
     data: [
       {
         event_name: event.eventName,
@@ -124,6 +124,11 @@ export async function sendCAPIEvent(event: CAPIEvent): Promise<boolean> {
       },
     ],
   };
+
+  const testCode = process.env.META_TEST_EVENT_CODE;
+  if (testCode) {
+    payload.test_event_code = testCode;
+  }
 
   try {
     const response = await fetch(`${ENDPOINT}?access_token=${ACCESS_TOKEN}`, {
