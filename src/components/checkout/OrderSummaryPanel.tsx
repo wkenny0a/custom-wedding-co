@@ -7,16 +7,26 @@ export default function OrderSummaryPanel() {
 
   if (!cart) return null;
 
+  const EXPRESS_SHIPPING_PRODUCT_ID = '6a269ab4ca51510012a16442';
   const items: any[] = cart.items || [];
-  const subtotal = cart.sub_total ?? cart.grand_total ?? 0;
-  const shipping = cart.shipment_total ?? 0;
+  const hasExpress = items.some((item: any) => item.product?.id === EXPRESS_SHIPPING_PRODUCT_ID);
+  
+  // Filter out the Express Shipping product from display list
+  const displayItems = items.filter((item: any) => item.product?.id !== EXPRESS_SHIPPING_PRODUCT_ID);
+
+  // Raw cart totals
+  const rawSubtotal = cart.sub_total ?? cart.grand_total ?? 0;
   const discount = cart.discount_total ?? 0;
   const grandTotal = cart.grand_total ?? 0;
-  const freeShipping = shipping === 0 && subtotal > 0;
+
+  // Calculate adjusted subtotal and shipping for display
+  const displaySubtotal = hasExpress ? Math.max(0, rawSubtotal - 15) : rawSubtotal;
+  const displayShippingPrice = hasExpress ? 15 : 0;
+  const freeShipping = !hasExpress && displaySubtotal > 0;
 
   // Calculate pre-built bundle savings compared to individual keepsakes MSRP
   let totalBundleSavings = 0;
-  items.forEach((item: any) => {
+  displayItems.forEach((item: any) => {
     const slug = item.product?.slug || '';
     const name = (item.product?.name || item.description || '').toLowerCase();
     
@@ -37,13 +47,13 @@ export default function OrderSummaryPanel() {
       <div className="px-6 py-4 border-b border-gold-pale/20">
         <h2 className="font-serif text-xl text-espresso">Your Order</h2>
         <p className="text-xs font-sans text-espresso/50 uppercase tracking-widest mt-1">
-          {items.length} item{items.length !== 1 ? 's' : ''}
+          {displayItems.length} item{displayItems.length !== 1 ? 's' : ''}
         </p>
       </div>
 
       {/* Line Items */}
       <div className="divide-y divide-gold-pale/20">
-        {items.map((item: any) => {
+        {displayItems.map((item: any) => {
           const imgUrl = item.product?.images?.[0]?.file?.url ?? '';
           const options: { name: string; value: string }[] = item.options || [];
           const lineTotal = (item.price ?? 0) * (item.quantity ?? 1);
@@ -89,7 +99,7 @@ export default function OrderSummaryPanel() {
       <div className="px-6 py-4 border-t border-gold-pale/20 space-y-2">
         <div className="flex justify-between text-sm font-sans text-espresso/70">
           <span>Subtotal</span>
-          <span>${subtotal.toFixed(2)}</span>
+          <span>${displaySubtotal.toFixed(2)}</span>
         </div>
 
         {totalBundleSavings > 0 && (
@@ -114,7 +124,11 @@ export default function OrderSummaryPanel() {
         <div className="flex justify-between text-sm font-sans text-espresso/70">
           <span>Shipping</span>
           <span className={freeShipping ? 'text-green-700 font-semibold' : ''}>
-            {shipping === 0 ? (subtotal > 0 ? 'Calculated next' : 'Free') : `$${shipping.toFixed(2)}`}
+            {hasExpress ? (
+              'Express Shipping — $15.00'
+            ) : (
+              'Free Standard Shipping'
+            )}
           </span>
         </div>
 
@@ -124,28 +138,60 @@ export default function OrderSummaryPanel() {
         </div>
       </div>
 
-      {/* Free Shipping Progress */}
-      {subtotal < 99 && (
-        <div className="px-6 pb-4">
-          <div className="bg-cream-dark/40 rounded-xl px-4 py-3 text-xs font-sans text-espresso/70 text-center">
-            Add <strong className="text-espresso">${(99 - subtotal).toFixed(2)}</strong> more for{' '}
-            <span className="text-green-700 font-semibold">Free Shipping</span>
+      {/* Premium Trust Section */}
+      <div className="px-6 py-5 bg-cream/40 border-t border-gold-pale/20 space-y-4">
+        <p className="text-center font-serif text-xs uppercase tracking-wider text-espresso/60 font-semibold">
+          Your Purchase is Fully Guaranteed
+        </p>
+        
+        <div className="space-y-3">
+          <div className="flex gap-3 items-start">
+            <span className="text-lg flex-shrink-0">🎨</span>
+            <div>
+              <p className="text-xs font-serif font-bold text-espresso">Artisan Proofing Process</p>
+              <p className="text-[10px] font-sans text-espresso/60 leading-normal mt-0.5">
+                We email a digital design mockup of your custom box lid within 24 hours. Production starts only after your design is approved!
+              </p>
+            </div>
+          </div>
+          
+          <div className="flex gap-3 items-start">
+            <span className="text-lg flex-shrink-0">🛡️</span>
+            <div>
+              <p className="text-xs font-serif font-bold text-espresso">The Custom Wedding Co. Guarantee</p>
+              <p className="text-[10px] font-sans text-espresso/60 leading-normal mt-0.5">
+                Any keepsake that arrives misspelled, incorrect, or damaged will be immediately replaced and shipped within 24 hours — free of charge.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex gap-3 items-start">
+            <span className="text-lg flex-shrink-0">🔒</span>
+            <div>
+              <p className="text-xs font-serif font-bold text-espresso">Secured & Encrypted Payments</p>
+              <p className="text-[10px] font-sans text-espresso/60 leading-normal mt-0.5">
+                All transactions are encrypted with AES-256 SSL security protocols and processed via Stripe. Your card data is never stored.
+              </p>
+            </div>
           </div>
         </div>
-      )}
 
-      {/* Trust Badges */}
-      <div className="px-6 pb-5 flex justify-center gap-6 border-t border-gold-pale/20 pt-4">
-        {[
-          { icon: '🔒', label: 'Secure' },
-          { icon: '✨', label: 'Handcrafted' },
-          { icon: '💛', label: 'Guaranteed' },
-        ].map(b => (
-          <div key={b.label} className="flex flex-col items-center gap-1">
-            <span className="text-lg">{b.icon}</span>
-            <span className="text-[9px] font-sans uppercase tracking-wider text-espresso/50">{b.label}</span>
+        {/* Secure Checkout Badges */}
+        <div className="flex justify-center items-center gap-6 pt-3 border-t border-gold-pale/10">
+          <div className="flex items-center gap-1.5 opacity-55 hover:opacity-80 transition-opacity">
+            <svg className="w-3.5 h-3.5 text-espresso/60" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+            </svg>
+            <span className="text-[9px] font-sans uppercase font-bold tracking-wider text-espresso/70">SSL Secured</span>
           </div>
-        ))}
+          
+          <div className="flex items-center gap-1.5 opacity-55 hover:opacity-80 transition-opacity">
+            <svg className="w-3.5 h-3.5 text-espresso/60" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z" />
+            </svg>
+            <span className="text-[9px] font-sans uppercase font-bold tracking-wider text-espresso/70">PCI Compliant</span>
+          </div>
+        </div>
       </div>
     </div>
   );

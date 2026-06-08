@@ -57,6 +57,14 @@ export const useCheckout = () => {
   return ctx;
 };
 
+// The Express Shipping product created in Swell
+const EXPRESS_SHIPPING_PRODUCT_ID = '6a269ab4ca51510012a16442';
+
+const DEFAULT_SHIPPING_RATES: ShippingRate[] = [
+  { id: 'standard', name: 'Standard Shipping', price: 0, description: 'Arrives 8–10 days' },
+  { id: 'express', name: 'Express Shipping', price: 15, description: 'Arrives 4–6 days' }
+];
+
 // The Personal Concierge product — already exists in Swell from CartDrawer
 const ORDER_BUMP_PRODUCT_ID = '69e9a9c652ca2a001272aa14';
 
@@ -75,8 +83,10 @@ export function CheckoutProvider({ children }: { children: React.ReactNode }) {
   const [address, setAddress] = useState<ShippingAddress>({
     address1: '', address2: '', city: '', state: '', zip: '', country: 'US',
   });
-  const [shippingRates, setShippingRates] = useState<ShippingRate[]>([]);
-  const [selectedRate, setSelectedRate] = useState<ShippingRate | null>(null);
+  const [shippingRates, setShippingRates] = useState<ShippingRate[]>(DEFAULT_SHIPPING_RATES);
+  const [selectedRate, setSelectedRate] = useState<ShippingRate | null>({
+    id: 'standard', name: 'Standard Shipping', price: 0, description: 'Arrives 8–10 days'
+  });
 
   const hasTrackedCheckoutRef = React.useRef(false);
   React.useEffect(() => {
@@ -91,6 +101,18 @@ export function CheckoutProvider({ children }: { children: React.ReactNode }) {
         })),
         total: cart.sub_total ?? cart.subTotal ?? cart.total ?? 0,
       });
+    }
+  }, [cart]);
+
+  // Sync selectedRate state with cart items on mount/update
+  React.useEffect(() => {
+    if (cart) {
+      const hasExpress = cart.items?.some((i: any) => i.product?.id === EXPRESS_SHIPPING_PRODUCT_ID);
+      if (hasExpress) {
+        setSelectedRate({ id: 'express', name: 'Express Shipping', price: 15, description: 'Arrives 4–6 days' });
+      } else {
+        setSelectedRate({ id: 'standard', name: 'Standard Shipping', price: 0, description: 'Arrives 8–10 days' });
+      }
     }
   }, [cart]);
 
@@ -143,16 +165,7 @@ export function CheckoutProvider({ children }: { children: React.ReactNode }) {
 
       updateCart(res);
       setAddress(a);
-      // Fetch shipping rates after address is saved
-      const ratesResponse: any = await swell.cart.getShippingRates();
-      const services: ShippingRate[] = (ratesResponse?.services || []).map((s: any) => ({
-        id: s.id,
-        name: s.name,
-        price: s.price ?? 0,
-        description: s.description || '',
-      }));
-      setShippingRates(services);
-      // If no rates returned, still go to payment (free shipping scenario)
+      setShippingRates(DEFAULT_SHIPPING_RATES);
       setStep(3);
     } catch (e: any) {
       setCheckoutError(e?.message || 'Something went wrong updating address.');
@@ -165,8 +178,26 @@ export function CheckoutProvider({ children }: { children: React.ReactNode }) {
     setIsWorking(true);
     setCheckoutError(null);
     try {
+      let updatedCart = cart;
+      const hasExpressInCart = cart?.items?.some((i: any) => i.product?.id === EXPRESS_SHIPPING_PRODUCT_ID);
+
+      if (rate.id === 'express' && !hasExpressInCart) {
+        updatedCart = await swell.cart.addItem({
+          product_id: EXPRESS_SHIPPING_PRODUCT_ID,
+          quantity: 1
+        });
+      } else if (rate.id === 'standard' && hasExpressInCart) {
+        const item = cart?.items?.find((i: any) => i.product?.id === EXPRESS_SHIPPING_PRODUCT_ID);
+        if (item) {
+          updatedCart = await swell.cart.removeItem(item.id);
+        }
+      }
+
       const res: any = await swell.cart.update({
-        shipping: { service: rate.id },
+        shipping: {
+          service: rate.id,
+          service_name: rate.name,
+        },
       } as any);
 
       if (res?.errors) {
@@ -176,7 +207,6 @@ export function CheckoutProvider({ children }: { children: React.ReactNode }) {
       }
 
       updateCart(res); // Sync the global cart state with the new totals!
-
       setSelectedRate(rate);
       setStep(4);
     } catch (e: any) {
@@ -184,7 +214,7 @@ export function CheckoutProvider({ children }: { children: React.ReactNode }) {
     } finally {
       setIsWorking(false);
     }
-  }, [updateCart]);
+  }, [cart, updateCart]);
 
   const setBumpAdded = useCallback(async (val: boolean) => {
     setBumpAddedState(val);

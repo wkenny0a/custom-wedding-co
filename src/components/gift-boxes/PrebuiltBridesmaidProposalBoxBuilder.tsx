@@ -616,6 +616,11 @@ export function PrebuiltBridesmaidProposalBoxBuilder({
                   <div className="text-right">
                     <p className="font-sans text-[10px] uppercase tracking-[0.14em] text-espresso/45">Bundle</p>
                     <p className="font-serif text-2xl text-espresso">{formatCurrency(activeTier.price)}</p>
+                    {bundleSavingsUnit > 0 && (
+                      <p className="font-sans text-[10px] font-bold text-gold mt-0.5">
+                        Save {formatCurrency(bundleSavingsUnit)}!
+                      </p>
+                    )}
                   </div>
                 </div>
 

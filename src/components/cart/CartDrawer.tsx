@@ -67,11 +67,19 @@ export function CartDrawer() {
         }
     }
 
+    const EXPRESS_SHIPPING_PRODUCT_ID = '6a269ab4ca51510012a16442';
     const items = cart?.items || []
     
+    // Filter out the Express Shipping product from cart drawer display list
+    const displayItems = items.filter((item: any) => item.product?.id !== EXPRESS_SHIPPING_PRODUCT_ID);
+    const hasExpressInCart = items.some((item: any) => item.product?.id === EXPRESS_SHIPPING_PRODUCT_ID);
+
     // Calculate display subtotal including mock items if API isn't ready
     let subtotal = cart?.sub_total ?? cart?.subTotal ?? items.reduce((sum: number, item: any) => sum + (item.price_total ?? ((item.price ?? 0) * (item.quantity ?? 1))), 0)
     
+    if (hasExpressInCart) {
+        subtotal = Math.max(0, subtotal - 15);
+    }
     if (mockRushAdded) subtotal += RUSH_PROCESSING_FEE;
     if (mockUpsellAdded) subtotal += 9.99; // mock heirloom rose set price
 
@@ -104,32 +112,22 @@ export function CartDrawer() {
                     </button>
                 </div>
 
-                {/* Free Shipping Progress Bar */}
-                {items.length > 0 && (
-                    <div className="px-6 py-4 bg-white border-b border-gold/10">
-                        <div className="flex justify-between items-center mb-2">
-                            <span className="font-sans text-xs font-semibold text-espresso uppercase tracking-wider">
-                                {amountAwayFromFreeShipping > 0 
-                                    ? `You're $${amountAwayFromFreeShipping.toFixed(2)} away from Free Shipping` 
-                                    : `✨ You've unlocked Free Shipping!`}
-                            </span>
-                        </div>
-                        <div className="h-1.5 w-full bg-espresso/10 rounded-full overflow-hidden">
-                            <div 
-                                className="h-full bg-gold transition-all duration-700 ease-out"
-                                style={{ width: `${progressPercentage}%` }}
-                            />
-                        </div>
+                {/* Free Shipping Applied Banner */}
+                {displayItems.length > 0 && (
+                    <div className="px-6 py-3 bg-green-50 border-b border-green-200/40 text-center">
+                        <span className="font-sans text-xs font-semibold text-green-800 tracking-wider">
+                            ✨ Free Standard Shipping Applied (8–10 Days)
+                        </span>
                     </div>
                 )}
 
                 {/* Loading / Empty State */}
                 <div className="flex-1 overflow-y-auto px-6 py-6 flex flex-col gap-6">
-                    {isLoading && items.length === 0 ? (
+                    {isLoading && displayItems.length === 0 ? (
                         <div className="flex-1 flex items-center justify-center text-espresso/60 font-sans tracking-wide">
                             Loading your selections...
                         </div>
-                    ) : items.length === 0 ? (
+                    ) : displayItems.length === 0 ? (
                         <div className="flex-1 flex flex-col items-center justify-center text-center gap-5">
                             <div className="w-16 h-16 rounded-full bg-cream-dark flex items-center justify-center">
                                 <Sparkles className="w-8 h-8 text-gold" strokeWidth={1.5} />
@@ -148,7 +146,7 @@ export function CartDrawer() {
                     ) : (
                         <div className="flex flex-col gap-6">
                             {/* Line Items */}
-                            {items.map((item: any) => (
+                            {displayItems.map((item: any) => (
                                 <div key={item.id} className="flex gap-4 border-b border-gold/10 pb-6 group">
                                     {/* Product Image */}
                                     <div className="relative w-20 h-28 bg-gray-100 flex-shrink-0 overflow-hidden">
@@ -222,7 +220,7 @@ export function CartDrawer() {
                             ))}
 
                             {/* One-Click Upsell Block */}
-                            {!mockUpsellAdded && !items.some((i: any) => i.product?.id === UPSELL_PRODUCT_ID) && (
+                            {!mockUpsellAdded && !displayItems.some((i: any) => i.product?.id === UPSELL_PRODUCT_ID) && (
                                 <div className="mt-2 bg-cream-dark/40 p-4 border border-gold/20 flex gap-4 items-center">
                                     <div className="w-16 h-16 bg-white relative flex-shrink-0 overflow-hidden border border-espresso/10">
                                         <Image src="https://cdn.swell.store/customweddingco/69ea40d08a8d0f0012a7ec2e/f15db5b27a760f4da5bf0d3ba6b75970/roses-classic-cream.jpg" alt="Heirloom Rose Set" fill className="object-cover" />
@@ -247,7 +245,7 @@ export function CartDrawer() {
                 </div>
 
                 {/* Footer Section (Order Bump, Totals, Trust Zone, Checkout) */}
-                {items.length > 0 && (
+                {displayItems.length > 0 && (
                     <div className="bg-white border-t border-gold/20 flex flex-col">
                         
                         {/* Concierge Order Bump */}
